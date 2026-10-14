@@ -1,5 +1,5 @@
 title: Stagecoach
-description: Stagecoaches in eleven woods, a coach stop in every village and a road network between them. The pack developer and modder guides.
+description: Stagecoaches in eleven woods, a coach stop in every village and a road network between them. The player guide, the pack developer guide and the modder guide.
 remote_theme: just-the-docs/just-the-docs
 plugins:
   - jekyll-remote-theme

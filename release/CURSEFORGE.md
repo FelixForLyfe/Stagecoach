@@ -2,13 +2,8 @@
 
 Everything in this folder (`release/`), in the order the CurseForge author console asks for it.
 
-**Where things stand (2026-10-14):** the project has 1.0.2 (Fabric 1.20.1) and the 1.0.3 files. 1.1.0 was built
-(fourteen files, `changelogs/1.1.0/`) but never uploaded. **1.2.0 is fourteen files**, one per Minecraft version and
-loader, all built from the same release.
-
-⚠ Decide before uploading: either upload 1.1.0 first and then 1.2.0, or skip 1.1.0. If you skip it, the players who
-update from 1.0.3 get both releases' changes at once, so paste `CHANGELOG.md`'s 1.2.0 *and* 1.1.0 sections (or the
-two per-file changelogs one after the other) into each 1.2.0 file.
+**Where things stand (2026-10-14):** the project has 1.0.2 (Fabric 1.20.1), the 1.0.3 files and the fourteen
+1.1.0 files. **1.2.0 is fourteen files**, one per Minecraft version and loader, all built from the same release.
 
 ## 1. Upload the fourteen 1.2.0 files
 
@@ -72,7 +67,7 @@ condition; the same file is inside every jar as `LICENSE_Stagecoach`).
 | Logo | `logo-1024.png` |
 | Source | `https://github.com/FelixForLyfe/Stagecoach` |
 | Issues | `https://github.com/FelixForLyfe/Stagecoach/issues` |
-| Wiki | `https://felixforlyfe.github.io/Stagecoach/` |
+| Wiki | `https://felixforlyfe.github.io/Stagecoach/players/` (the player guide; the site's home links the pack and modder guides) |
 | Comments | Enabled: the description's "About this mod" asks players for bug reports and ideas there |
 
 With villages and item fares, a summary like `Stagecoaches in eleven woods and a coach stop in every village: build a

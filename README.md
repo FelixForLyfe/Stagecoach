@@ -29,6 +29,8 @@ journeys, drawn through a resource pack the plugin serves itself.
 
 **[felixforlyfe.github.io/Stagecoach](https://felixforlyfe.github.io/Stagecoach/)**
 
+- [Player guide](https://felixforlyfe.github.io/Stagecoach/players/): crafting, placing, discovering and travelling,
+  village stops, options, questions.
 - [Pack developer guide](https://felixforlyfe.github.io/Stagecoach/pack/): settings, commands, permissions,
   structures and villages, travel rules, advancements, theming, export and import. No code needed.
 - [Modder guide](https://felixforlyfe.github.io/Stagecoach/modders/): the Java API, events on every loader, and

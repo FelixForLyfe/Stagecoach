@@ -10,8 +10,10 @@ stop; players build the rest. Right-click a stop to discover it, then pay a fare
 road to any stop you know. A journey takes time: you watch the road roll past, and you arrive in front of the
 destination coach. Everything is checked by the server and survives crashes.
 
-This site is for the people who build on it:
+This site is for players and for the people who build on it:
 
+- **[Player guide](players/)** — how to craft and place a coach, discover stops, travel, the village stops, your
+  options, and answers to common questions.
 - **[Pack developer guide](pack/)** — modpack makers and server owners: every setting, command and permission
   node, coaches in your own structures, villages and natural generation, travel rules, advancements, travel scenes,
   and export and import. No code needed.
