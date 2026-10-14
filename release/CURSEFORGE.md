@@ -2,8 +2,11 @@
 
 Everything in this folder (`release/`), in the order the CurseForge author console asks for it.
 
-**Where things stand (2026-10-14):** the project has 1.0.2 (Fabric 1.20.1), the 1.0.3 files and the fourteen
-1.1.0 files. **1.2.0 is fourteen files**, one per Minecraft version and loader, all built from the same release.
+**Where things stand (2026-10-14):** project 1711971 has 1.0.2 (Fabric 1.20.1), the 1.0.3 files, the fourteen 1.1.0
+files and, uploaded 2026-10-14, the fourteen **1.2.0** files (file ids 9174553–9174569). Display names are the file
+names; uploads go Fabric, then Forge, then NeoForge, oldest Minecraft first; tags are the Minecraft version, the
+loader, Java 17/21/25 and Client + Server; only GeckoLib (and Fabric API on Fabric) are listed, as required
+dependencies.
 
 ## 1. Upload the fourteen 1.2.0 files
 
