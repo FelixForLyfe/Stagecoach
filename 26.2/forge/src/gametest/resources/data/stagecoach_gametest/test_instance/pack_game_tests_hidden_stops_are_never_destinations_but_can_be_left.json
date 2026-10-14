@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:function",
+  "function": "stagecoach_gametest:pack_game_tests_hidden_stops_are_never_destinations_but_can_be_left",
+  "environment": "minecraft:default",
+  "structure": "stagecoach:gametest/road",
+  "max_ticks": 20,
+  "padding": 1
+}

@@ -1,0 +1,21 @@
+{
+  "requires_mods": [
+    "integrated_villages"
+  ],
+  "target_pools": [
+    "integrated_villages:clockwork_village/house/cartographer",
+    "integrated_villages:clockwork_village/house/clock",
+    "integrated_villages:clockwork_village/house/house1",
+    "integrated_villages:clockwork_village/house/house2",
+    "integrated_villages:clockwork_village/house/leatherworker"
+  ],
+  "piece": [
+    "stagecoach:village/coach_stop_integrated",
+    "stagecoach:village/coach_stop_integrated_roadside",
+    "stagecoach:village/coach_stop_integrated_compact"
+  ],
+  "guaranteed": true,
+  "theme": "stagecoach:plains",
+  "wood": "spruce",
+  "projection": "rigid"
+}

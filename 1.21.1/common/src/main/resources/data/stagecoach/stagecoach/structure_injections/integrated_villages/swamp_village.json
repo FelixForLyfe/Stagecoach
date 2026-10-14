@@ -1,0 +1,17 @@
+{
+  "requires_mods": [
+    "integrated_villages"
+  ],
+  "target_pools": [
+    "integrated_villages:swamp_village/house/house"
+  ],
+  "piece": [
+    "stagecoach:village/coach_stop_integrated",
+    "stagecoach:village/coach_stop_integrated_roadside",
+    "stagecoach:village/coach_stop_integrated_compact"
+  ],
+  "guaranteed": true,
+  "theme": "stagecoach:swamp",
+  "wood": "oak",
+  "projection": "rigid"
+}

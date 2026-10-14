@@ -1,0 +1,45 @@
+{
+  "patterns": [
+    "{prefix}{suffix}",
+    "{prefix}{suffix} Crossing",
+    "{prefix}{suffix} Stop"
+  ],
+  "prefix": [
+    "Petal",
+    "Blossom",
+    "Bloom",
+    "Silk",
+    "Lantern",
+    "Plum",
+    "Bell",
+    "Dawn",
+    "Pale",
+    "Lilac",
+    "Peony",
+    "Lily",
+    "Rosy",
+    "Honey",
+    "Pearl",
+    "Wisteria",
+    "Sweet",
+    "Satin",
+    "Peach",
+    "Briar"
+  ],
+  "suffix": [
+    "dale",
+    "vale",
+    "brook",
+    "glen",
+    "grove",
+    "field",
+    "mere",
+    "bank",
+    "hill",
+    "ridge",
+    "way",
+    "crest",
+    "ford",
+    "garth"
+  ]
+}

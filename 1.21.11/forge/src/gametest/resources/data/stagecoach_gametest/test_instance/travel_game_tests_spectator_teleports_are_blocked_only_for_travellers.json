@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:function",
+  "function": "stagecoach_gametest:travel_game_tests_spectator_teleports_are_blocked_only_for_travellers",
+  "environment": "minecraft:default",
+  "structure": "stagecoach:gametest/road",
+  "max_ticks": 20,
+  "padding": 1
+}

@@ -1,0 +1,102 @@
+plugins {
+    id 'java'
+    id 'net.minecraftforge.gradle'
+}
+
+version = rootProject.mod_version
+group = rootProject.maven_group
+base { archivesName = "Stagecoach-forge-${rootProject.minecraft_version}" }
+
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+apply from: "${rootDir}/gradle/compat.gradle"
+
+def common = "${rootDir}/common/src"
+
+// Jade and JEI have no Forge build for 1.21.11: their plugins stay out of this jar.
+def notOnForge = { element ->
+    def path = element.file.path.replace('\\', '/')
+    path.contains('/common/src/main/java/net/feelix/stagecoach/compat/') && (path.contains('/compat/jade/') || path.contains('/compat/jei/'))
+}
+
+sourceSets {
+    main {
+        java.srcDir "${common}/main/java"
+        java.exclude notOnForge
+        resources.srcDir "${common}/main/resources"
+        // Forge loads a separate GameTest source set as a second copy of the mod, so the tests join main only for a
+        // test run (./gradlew :forge:runGameTestServer -Pgametests). Release jars are built without it.
+        if (project.hasProperty('gametests')) {
+            java.srcDir "${common}/gametest/java"
+            java.srcDir "src/gametest/java"
+            resources.srcDir "${common}/gametest/resources"
+            resources.srcDir "src/gametest/resources"
+        }
+    }
+}
+
+// Forge finds a dev mod only when its classes and resources share one folder.
+sourceSets.each {
+    def dir = layout.buildDirectory.dir("sourcesSets/$it.name")
+    it.output.resourcesDir = dir
+    it.java.destinationDirectory = dir
+}
+
+minecraft {
+    mappings channel: 'official', version: rootProject.minecraft_version
+    runs {
+        configureEach {
+            workingDir = layout.projectDirectory.dir('run')
+            args '--mixin.config', 'stagecoach.mixins.json', '--mixin.config', 'stagecoach-forge.mixins.json'
+        }
+        register('client')
+        register('server') {
+            args '--nogui'
+        }
+        register('gameTestServer') {
+            workingDir = layout.projectDirectory.dir('run/gametest')
+            systemProperty 'forge.enabledGameTestNamespaces', 'stagecoach_gametest,stagecoach'
+        }
+    }
+}
+
+repositories {
+    minecraft.mavenizer(it)
+    maven fg.forgeMaven
+    maven fg.minecraftLibsMaven
+    mavenCentral()
+    exclusiveContent {
+        forRepository { maven { name = 'Modrinth'; url = 'https://api.modrinth.com/maven' } }
+        filter { includeGroup 'maven.modrinth' }
+    }
+}
+
+dependencies {
+    implementation minecraft.dependency("net.minecraftforge:forge:${rootProject.forge_version}")
+    annotationProcessor 'net.minecraftforge:eventbus-validator:7.0.5'
+    implementation "maven.modrinth:geckolib:${rootProject.geckolib_forge}"
+    compileOnly("maven.modrinth:open-parties-and-claims:${rootProject.opac_forge}") { transitive = false }
+    compileOnly("maven.modrinth:xaeros-minimap:${rootProject.xaero_forge}") { transitive = false }
+    compileOnly compatJar(rootProject.journeymap_forge_url, rootProject.journeymap_forge_sha1, 'META-INF/jarjar/journeymap-api-')
+}
+
+processResources {
+    inputs.property "version", project.version
+    filesMatching("META-INF/mods.toml") { expand "version": project.version }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 21
+}
+
+jar {
+    from("${rootDir}/../LICENSE") { rename { "${it}_Stagecoach" } }
+    manifest {
+        attributes('MixinConfigs': 'stagecoach.mixins.json,stagecoach-forge.mixins.json')
+    }
+}
+
+java {
+    withSourcesJar()
+}

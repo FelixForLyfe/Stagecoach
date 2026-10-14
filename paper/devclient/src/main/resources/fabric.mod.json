@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "stagecoach_devclient",
+  "version": "0.0.0",
+  "name": "Stagecoach plugin dev client",
+  "description": "A vanilla client for testing the Stagecoach plugin. With -Dstagecoach.harness=true it also takes screenshots and follows #commands from the server (tools/e2e/shots.js).",
+  "environment": "client",
+  "mixins": ["stagecoach_devclient.mixins.json"],
+  "depends": { "minecraft": "1.21.11" }
+}

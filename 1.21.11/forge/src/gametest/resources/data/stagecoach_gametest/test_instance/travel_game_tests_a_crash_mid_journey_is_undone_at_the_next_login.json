@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:function",
+  "function": "stagecoach_gametest:travel_game_tests_a_crash_mid_journey_is_undone_at_the_next_login",
+  "environment": "minecraft:default",
+  "structure": "stagecoach:gametest/road",
+  "max_ticks": 20,
+  "padding": 1
+}

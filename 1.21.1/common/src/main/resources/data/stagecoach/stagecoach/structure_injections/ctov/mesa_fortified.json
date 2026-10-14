@@ -1,0 +1,17 @@
+{
+  "requires_mods": [
+    "ctov"
+  ],
+  "target_pools": [
+    "ctov:village/mesa_fortified/house"
+  ],
+  "piece": [
+    "stagecoach:village/coach_stop_small",
+    "stagecoach:village/coach_stop_small_roadside",
+    "stagecoach:village/coach_stop_small_compact"
+  ],
+  "guaranteed": true,
+  "theme": "stagecoach:badlands",
+  "wood": "spruce",
+  "projection": "rigid"
+}

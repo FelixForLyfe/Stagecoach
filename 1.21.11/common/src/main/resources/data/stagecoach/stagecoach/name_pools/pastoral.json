@@ -1,0 +1,46 @@
+{
+  "patterns": [
+    "{prefix}{suffix}",
+    "{prefix}{suffix} Crossing",
+    "{prefix}{suffix} Stop"
+  ],
+  "prefix": [
+    "Mill",
+    "Brook",
+    "Green",
+    "Sedge",
+    "Thorn",
+    "Elm",
+    "Wheat",
+    "Barley",
+    "Cowslip",
+    "Willow",
+    "Bramble",
+    "Meadow",
+    "Apple",
+    "Honey",
+    "Lark",
+    "Rye",
+    "Hazel",
+    "Fern",
+    "Cress",
+    "Linden"
+  ],
+  "suffix": [
+    "ford",
+    "field",
+    "stead",
+    "bury",
+    "wick",
+    "ton",
+    "dale",
+    "ley",
+    "worth",
+    "mead",
+    "cote",
+    "hurst",
+    "thorpe",
+    "well",
+    "by"
+  ]
+}

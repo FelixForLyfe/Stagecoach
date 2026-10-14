@@ -1,0 +1,29 @@
+package net.feelix.stagecoach.forge;
+
+import net.feelix.stagecoach.client.ClientPlatform;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.resources.Identifier;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+/** Only ever loaded on the physical client. */
+final class ForgeClientNetwork implements ClientPlatform {
+    private static final Map<Identifier, ClientReceiver> RECEIVERS = new ConcurrentHashMap<>();
+
+    static void receive(ForgeNetwork.Envelope message) {
+        ClientReceiver receiver = RECEIVERS.get(message.id());
+        if (receiver != null) receiver.receive(Minecraft.getInstance(), message.buf());
+    }
+
+    @Override
+    public void registerClientReceiver(Identifier channel, ClientReceiver receiver) {
+        RECEIVERS.put(channel, receiver);
+    }
+
+    @Override
+    public void sendToServer(Identifier channel, FriendlyByteBuf buf) {
+        ForgeNetwork.sendToServer(channel, buf);
+    }
+}

@@ -1,0 +1,43 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "stagecoach:builtin_advancements"
+    }
+  ],
+  "conditions": [
+    {
+      "type": "stagecoach:builtin_advancements"
+    }
+  ],
+  "parent": "stagecoach:main/first_journey",
+  "display": {
+    "icon": {
+      "item": "minecraft:compass"
+    },
+    "title": {
+      "translate": "advancements.stagecoach.well_travelled.title"
+    },
+    "description": {
+      "translate": "advancements.stagecoach.well_travelled.description"
+    },
+    "frame": "goal",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "well_travelled": {
+      "trigger": "stagecoach:stop_discovered",
+      "conditions": {
+        "total_discovered": {
+          "min": 10
+        }
+      }
+    }
+  },
+  "requirements": [
+    [
+      "well_travelled"
+    ]
+  ]
+}

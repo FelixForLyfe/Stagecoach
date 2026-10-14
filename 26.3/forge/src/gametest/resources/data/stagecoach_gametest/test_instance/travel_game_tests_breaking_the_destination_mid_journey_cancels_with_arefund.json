@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:function",
+  "function": "stagecoach_gametest:travel_game_tests_breaking_the_destination_mid_journey_cancels_with_arefund",
+  "environment": "minecraft:default",
+  "structure": "stagecoach:gametest/road",
+  "max_ticks": 20,
+  "padding": 1
+}

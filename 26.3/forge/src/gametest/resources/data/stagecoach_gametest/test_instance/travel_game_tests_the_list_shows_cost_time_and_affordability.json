@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:function",
+  "function": "stagecoach_gametest:travel_game_tests_the_list_shows_cost_time_and_affordability",
+  "environment": "minecraft:default",
+  "structure": "stagecoach:gametest/road",
+  "max_ticks": 20,
+  "padding": 1
+}

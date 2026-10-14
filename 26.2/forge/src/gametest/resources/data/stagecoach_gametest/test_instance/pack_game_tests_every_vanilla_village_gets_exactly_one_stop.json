@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:function",
+  "function": "stagecoach_gametest:pack_game_tests_every_vanilla_village_gets_exactly_one_stop",
+  "environment": "minecraft:default",
+  "structure": "stagecoach:gametest/road",
+  "max_ticks": 400,
+  "padding": 1
+}

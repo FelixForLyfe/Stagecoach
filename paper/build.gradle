@@ -1,0 +1,99 @@
+plugins {
+    id 'java'
+}
+
+group = 'net.feelix'
+version = project.plugin_version
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven { url = 'https://repo.papermc.io/repository/maven-public/' }
+}
+
+dependencies {
+    compileOnly "io.papermc.paper:paper-api:${project.paper_api_version}"
+
+    testImplementation "io.papermc.paper:paper-api:${project.paper_api_version}"
+    testImplementation platform('org.junit:junit-bom:5.11.4')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = 21
+    options.compilerArgs += ['-Xlint:deprecation']
+}
+
+// The resource pack, zipped the same way every build (fixed order, no timestamps) so its SHA-1 only changes when
+// the pack does - clients cache packs by that hash.
+def packZip = tasks.register('packZip', Zip) {
+    from 'pack'
+    archiveFileName = 'stagecoach-pack.zip'
+    destinationDirectory = layout.buildDirectory.dir('generated/pack')
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
+}
+
+processResources {
+    inputs.property 'version', project.version
+    filesMatching('plugin.yml') {
+        expand(version: project.version)
+    }
+    from(packZip)
+}
+
+jar {
+    archiveFileName = "Stagecoach-paper-${project.minecraft_version}-${project.version}.jar"
+    from('../LICENSE') {
+        rename { 'LICENSE_Stagecoach' }
+    }
+}
+
+// The Stagecoach Pack Merger: a separate, double-clickable jar for server owners who put Stagecoach into their own
+// resource pack (src/merger, plain Java + Swing, with the same stagecoach-pack.zip inside).
+sourceSets {
+    merger
+}
+
+def mergerJar = tasks.register('mergerJar', Jar) {
+    archiveFileName = "Stagecoach-pack-merger-${project.version}.jar"
+    from sourceSets.merger.output
+    from(packZip)
+    from('../LICENSE') {
+        rename { 'LICENSE_Stagecoach' }
+    }
+    manifest {
+        attributes('Main-Class': 'net.feelix.stagecoach.merger.MergerApp')
+    }
+}
+
+// The resource pack on its own, next to the jars: the exact zip the plugin serves (same bytes, same SHA-1), for
+// hosting it yourself (resourcePack.url) or uploading it as a separate download.
+def resourcePackRelease = tasks.register('resourcePackRelease', Copy) {
+    inputs.property 'version', project.version // the name changes with the version, so a bump must copy again
+    from(packZip)
+    into layout.buildDirectory.dir('libs')
+    rename { "Stagecoach-resourcepack-${project.minecraft_version}-${project.version}.zip" }
+}
+
+tasks.named('assemble') {
+    dependsOn mergerJar, resourcePackRelease
+}
+
+sourceSets.test.compileClasspath += sourceSets.merger.output
+sourceSets.test.runtimeClasspath += sourceSets.merger.output
+
+tasks.named('processTestResources') {
+    from(packZip)
+}
+
+test {
+    useJUnitPlatform()
+}

@@ -1,0 +1,77 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "MIT with an attribution condition"
+issueTrackerURL = "https://github.com/FelixForLyfe/Stagecoach/issues"
+
+[[mods]]
+modId = "stagecoach"
+version = "${version}"
+displayName = "Stagecoach"
+authors = "Feelix"
+logoFile = "assets/stagecoach/icon.png"
+displayURL = "https://github.com/FelixForLyfe/Stagecoach"
+description = '''
+Stagecoaches in eleven woods, and a travel network between them: place and name a stop, find coach stops in villages, discover others, and pay XP or items to ride the road. Crash-safe, server-authoritative, and built to be customised by pack makers.
+'''
+
+[[mixins]]
+config = "stagecoach.mixins.json"
+
+[[mixins]]
+config = "stagecoach-neoforge.mixins.json"
+
+[[dependencies.stagecoach]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.11,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.stagecoach]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.11,1.21.12)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.stagecoach]]
+modId = "geckolib"
+type = "required"
+versionRange = "[5.4,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.stagecoach]]
+modId = "jade"
+type = "optional"
+versionRange = "*"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.stagecoach]]
+modId = "jei"
+type = "optional"
+versionRange = "*"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.stagecoach]]
+modId = "journeymap"
+type = "optional"
+versionRange = "*"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.stagecoach]]
+modId = "xaerominimap"
+type = "optional"
+versionRange = "*"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.stagecoach]]
+modId = "openpartiesandclaims"
+type = "optional"
+versionRange = "*"
+ordering = "NONE"
+side = "SERVER"

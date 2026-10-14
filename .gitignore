@@ -1,0 +1,47 @@
+# Gradle
+.gradle/
+build/
+
+# IDE and run output
+bin/
+out/
+run/
+runs/
+run-harness/
+logs/
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+.eclipse/
+.classpath
+.project
+.settings/
+.factorypath
+*.launch
+*.log
+*.out
+
+# Python and Node
+__pycache__/
+*.pyc
+node_modules/
+
+# Built jars (the wrapper and the e2e test plugin are the exceptions)
+*.jar
+!**/gradle/wrapper/gradle-wrapper.jar
+!paper/tools/e2e/protect-plugin/E2EProtect.jar
+
+# Editor files
+.linen/
+
+# Helpers tied to the author's machine
+tools/collect_jars.py
+tools/make_launchers.py
+tools/make_test_worlds.py
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini

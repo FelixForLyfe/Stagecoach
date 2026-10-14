@@ -1,0 +1,103 @@
+plugins {
+    id 'dev.architectury.loom'
+    id 'java'
+}
+
+version = rootProject.mod_version
+group = rootProject.maven_group
+base { archivesName = "Stagecoach-forge-${rootProject.minecraft_version}" }
+
+repositories {
+    mavenCentral()
+    maven { name = 'Forge'; url = 'https://maven.minecraftforge.net/' }
+    maven { name = 'Architectury'; url = 'https://maven.architectury.dev/' }
+    maven { name = 'GeckoLib'; url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
+    maven { name = 'JEI'; url = 'https://maven.blamejared.com/' }
+    maven { name = 'FTB'; url = 'https://maven.ftb.dev/releases/' }
+    exclusiveContent {
+        forRepository { maven { name = 'Modrinth'; url = 'https://api.modrinth.com/maven' } }
+        filter { includeGroup 'maven.modrinth' }
+    }
+}
+
+apply from: "${rootDir}/gradle/compat.gradle"
+
+def common = "${rootDir}/common/src"
+
+sourceSets {
+    main {
+        java.srcDir "${common}/main/java"
+        resources.srcDir "${common}/main/resources"
+    }
+    // Shared GameTests + the Forge registration hook. Dev-only: never in the release jar.
+    gametest {
+        java.srcDir "${common}/gametest/java"
+        resources.srcDir "${common}/gametest/resources"
+        compileClasspath += sourceSets.main.compileClasspath + sourceSets.main.output
+        runtimeClasspath += sourceSets.main.runtimeClasspath + sourceSets.main.output
+    }
+}
+
+loom {
+    forge {
+        mixinConfig "stagecoach.mixins.json"
+    }
+    mods {
+        // In dev the GameTest classes are part of the one "stagecoach" mod, so Forge's annotation scan finds the
+        // RegisterGameTestsEvent listener. The release jar is built from main alone.
+        stagecoach {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.gametest
+        }
+    }
+    runs {
+        gametest {
+            server()
+            name "Forge Game Test"
+            runDir "run/gametest"
+            source sourceSets.gametest
+            // Forge's GameTest server: runs every registered test, then exits (non-zero on a failure).
+            property "forge.enableGameTest", "true"
+            property "forge.gameTestServer", "true"
+            property "forge.enabledGameTestNamespaces", "stagecoach"
+        }
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
+    mappings "net.fabricmc:yarn:${rootProject.yarn_mappings}:v2"
+    forge "net.minecraftforge:forge:${rootProject.forge_version}"
+    modImplementation "software.bernie.geckolib:geckolib-forge-1.20.1:${rootProject.geckolib_version}"
+    // GeckoLib carries mclib inside its jar; Forge unpacks it in a real install, Loom doesn't in dev.
+    forgeRuntimeLibrary "com.eliotlash.mclib:mclib:20"
+
+    // Optional integrations (Forge builds of the same versions the Fabric jar is compiled against).
+    modCompileOnly "maven.modrinth:jade:${rootProject.jade_forge_version}"
+    modCompileOnly "mezz.jei:jei-1.20.1-forge:${rootProject.jei_forge_version}"
+    modCompileOnly("dev.ftb.mods:ftb-chunks-forge:${rootProject.ftbchunks_forge_version}") { transitive = false }
+    modCompileOnly("net.darkhax.gamestages:GameStages-Forge-1.20.1:${rootProject.gamestages_version}") { transitive = false }
+    modCompileOnly("maven.modrinth:open-parties-and-claims:${rootProject.opac_forge_version}") { transitive = false }
+    modCompileOnly("maven.modrinth:kubejs:${rootProject.kubejs_forge_version}") { transitive = false }
+    modCompileOnly("maven.modrinth:rhino:${rootProject.rhino_forge_version}") { transitive = false }
+    modCompileOnly("maven.modrinth:architectury-api:${rootProject.architectury_forge_version}") { transitive = false }
+    modCompileOnly("maven.modrinth:xaeros-minimap:${rootProject.xaero_forge_version}") { transitive = false }
+    modCompileOnly compatJar(rootProject.journeymap_forge_url, rootProject.journeymap_forge_sha1, 'META-INF/jarjar/journeymap-api-')
+}
+
+processResources {
+    inputs.property "version", project.version
+    filesMatching("META-INF/mods.toml") { expand "version": project.version }
+}
+
+tasks.withType(JavaCompile).configureEach { it.options.release = 17 }
+
+jar {
+    from("${rootDir}/../LICENSE") { rename { "${it}_Stagecoach" } }
+}
+
+java {
+    withSourcesJar()
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}

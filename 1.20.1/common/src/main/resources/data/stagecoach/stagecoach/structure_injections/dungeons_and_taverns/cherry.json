@@ -1,0 +1,12 @@
+{
+  "requires_mods": [],
+  "target_pools": [
+    "nova_structures:tavern"
+  ],
+  "piece": "stagecoach:village/coach_stop_tavern_cherry",
+  "guaranteed": false,
+  "weight": 6,
+  "theme": "stagecoach:tavern",
+  "wood": "cherry",
+  "projection": "rigid"
+}

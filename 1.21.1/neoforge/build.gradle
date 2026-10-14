@@ -1,0 +1,94 @@
+plugins {
+    id 'dev.architectury.loom'
+    id 'java'
+}
+
+version = rootProject.mod_version
+group = rootProject.maven_group
+base { archivesName = "Stagecoach-neoforge-${rootProject.minecraft_version}" }
+
+repositories {
+    mavenCentral()
+    maven { name = 'NeoForge'; url = 'https://maven.neoforged.net/releases/' }
+    maven { name = 'Architectury'; url = 'https://maven.architectury.dev/' }
+    maven { name = 'GeckoLib'; url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
+    maven { name = 'JEI'; url = 'https://maven.blamejared.com/' }
+    maven { name = 'FTB'; url = 'https://maven.ftb.dev/releases/' }
+    exclusiveContent {
+        forRepository { maven { name = 'Modrinth'; url = 'https://api.modrinth.com/maven' } }
+        filter { includeGroup 'maven.modrinth' }
+    }
+}
+
+apply from: "${rootDir}/gradle/compat.gradle"
+
+def common = "${rootDir}/common/src"
+
+sourceSets {
+    main {
+        java.srcDir "${common}/main/java"
+        resources.srcDir "${common}/main/resources"
+    }
+    gametest {
+        java.srcDir "${common}/gametest/java"
+        resources.srcDir "${common}/gametest/resources"
+        compileClasspath += sourceSets.main.compileClasspath + sourceSets.main.output
+        runtimeClasspath += sourceSets.main.runtimeClasspath + sourceSets.main.output
+    }
+}
+
+loom {
+    mods {
+        stagecoach {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.gametest
+        }
+    }
+    runs {
+        gametest {
+            server()
+            name "NeoForge Game Test"
+            runDir "run/gametest"
+            source sourceSets.gametest
+            property "neoforge.enableGameTest", "true"
+            property "neoforge.gameTestServer", "true"
+            property "neoforge.enabledGameTestNamespaces", "stagecoach"
+        }
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
+    mappings loom.layered {
+        it.mappings("net.fabricmc:yarn:${rootProject.yarn_mappings}:v2")
+        it.mappings("dev.architectury:yarn-mappings-patch-neoforge:${rootProject.yarn_neoforge_patch}")
+    }
+    neoForge "net.neoforged:neoforge:${rootProject.neoforge_version}"
+    modImplementation "software.bernie.geckolib:geckolib-neoforge-1.21.1:${rootProject.geckolib_version}"
+
+    modCompileOnly "maven.modrinth:jade:${rootProject.jade_neoforge_version}"
+    modCompileOnly "mezz.jei:jei-1.21.1-neoforge:${rootProject.jei_version}"
+    modCompileOnly("dev.ftb.mods:ftb-chunks-neoforge:${rootProject.ftbchunks_version}") { transitive = false }
+    modCompileOnly("maven.modrinth:open-parties-and-claims:${rootProject.opac_neoforge_version}") { transitive = false }
+    modCompileOnly("maven.modrinth:xaeros-minimap:${rootProject.xaero_neoforge_version}") { transitive = false }
+    modCompileOnly("maven.modrinth:kubejs:${rootProject.kubejs_neoforge_version}") { transitive = false }
+    modCompileOnly("maven.modrinth:rhino:${rootProject.rhino_neoforge_version}") { transitive = false }
+    modCompileOnly compatJar(rootProject.journeymap_neoforge_url, rootProject.journeymap_neoforge_sha1, 'META-INF/jarjar/journeymap-api-')
+}
+
+processResources {
+    inputs.property "version", project.version
+    filesMatching("META-INF/neoforge.mods.toml") { expand "version": project.version }
+}
+
+tasks.withType(JavaCompile).configureEach { it.options.release = 21 }
+
+jar {
+    from("${rootDir}/../LICENSE") { rename { "${it}_Stagecoach" } }
+}
+
+java {
+    withSourcesJar()
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}

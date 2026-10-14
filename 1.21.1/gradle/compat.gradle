@@ -1,0 +1,50 @@
+import java.security.MessageDigest
+import java.util.zip.ZipEntry
+import java.util.zip.ZipInputStream
+import java.util.zip.ZipOutputStream
+
+// Mod jars compiled against but never shipped, for the ones a plain Maven coordinate can't serve: JourneyMap publishes
+// its API only inside the mod's jar, and an older Loom refuses jars built by a newer one. Each is fetched by URL,
+// checked against its SHA-1, and stored without the Fabric-Loom-Version manifest line. Fetched directly: resolving
+// through the repositories this early would freeze them before Loom adds its own.
+
+def entry = { byte[] jar, String prefix ->
+    new ZipInputStream(new ByteArrayInputStream(jar)).withCloseable { zin ->
+        for (ZipEntry e = zin.nextEntry; e != null; e = zin.nextEntry) {
+            if (e.name.startsWith(prefix) && e.name.endsWith('.jar')) return zin.readAllBytes()
+        }
+        throw new GradleException("no $prefix*.jar inside the download")
+    }
+}
+
+def withoutLoomVersion = { byte[] jar ->
+    def out = new ByteArrayOutputStream()
+    new ZipOutputStream(out).withCloseable { zout ->
+        new ZipInputStream(new ByteArrayInputStream(jar)).withCloseable { zin ->
+            for (ZipEntry e = zin.nextEntry; e != null; e = zin.nextEntry) {
+                byte[] data = zin.readAllBytes()
+                if (e.name == 'META-INF/MANIFEST.MF') {
+                    def lines = new String(data, 'UTF-8').readLines().findAll { !it.startsWith('Fabric-Loom-Version') }
+                    data = (lines.join('\r\n') + '\r\n').getBytes('UTF-8')
+                }
+                zout.putNextEntry(new ZipEntry(e.name))
+                zout.write(data)
+                zout.closeEntry()
+            }
+        }
+    }
+    out.toByteArray()
+}
+
+ext.compatJar = { String url, String sha1, String nested = null ->
+    File out = layout.buildDirectory.file("compat/${sha1.take(10)}-${url.tokenize('/').last()}").get().asFile
+    if (!out.exists()) {
+        byte[] bytes = URI.create(url).toURL().bytes
+        String got = MessageDigest.getInstance('SHA-1').digest(bytes).encodeHex().toString()
+        if (got != sha1) throw new GradleException("$url has SHA-1 $got, expected $sha1")
+        if (nested != null) bytes = entry(bytes, nested)
+        out.parentFile.mkdirs()
+        out.bytes = withoutLoomVersion(bytes)
+    }
+    return files(out)
+}

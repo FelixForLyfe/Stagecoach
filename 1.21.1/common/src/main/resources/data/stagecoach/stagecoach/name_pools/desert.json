@@ -1,0 +1,45 @@
+{
+  "patterns": [
+    "{prefix}{suffix}",
+    "{prefix}{suffix} Crossing",
+    "{prefix}{suffix} Stop"
+  ],
+  "prefix": [
+    "Sun",
+    "Dune",
+    "Amber",
+    "Oasis",
+    "Sand",
+    "Mirage",
+    "Copper",
+    "Ochre",
+    "Scorpion",
+    "Cactus",
+    "Dust",
+    "Palm",
+    "Gold",
+    "Salt",
+    "Henna",
+    "Wind",
+    "Glass",
+    "Myrrh",
+    "Jackal",
+    "Flint"
+  ],
+  "suffix": [
+    "reach",
+    "well",
+    "sand",
+    "rock",
+    "spring",
+    "gate",
+    "crest",
+    "bluff",
+    "ridge",
+    "hollow",
+    "flats",
+    "wash",
+    "basin",
+    "cairn"
+  ]
+}

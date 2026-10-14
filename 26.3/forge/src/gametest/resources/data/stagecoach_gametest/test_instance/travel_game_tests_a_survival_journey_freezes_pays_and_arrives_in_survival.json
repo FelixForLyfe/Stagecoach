@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:function",
+  "function": "stagecoach_gametest:travel_game_tests_a_survival_journey_freezes_pays_and_arrives_in_survival",
+  "environment": "minecraft:default",
+  "structure": "stagecoach:gametest/road",
+  "max_ticks": 300,
+  "padding": 1
+}

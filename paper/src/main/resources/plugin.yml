@@ -1,0 +1,24 @@
+name: Stagecoach
+version: '${version}'
+main: net.feelix.stagecoach.bukkit.StagecoachPlugin
+api-version: '1.21.11'
+author: Feelix
+description: Craftable stagecoaches in eleven woods - build a road network, discover stops and pay XP to travel between them.
+load: POSTWORLD
+
+commands:
+  stagecoach:
+    description: Stagecoach help, cancel a journey, and admin tools.
+    usage: /<command> [help|cancel|give|list|remove|reload]
+    aliases: [coach]
+
+permissions:
+  stagecoach.use:
+    description: Discover stagecoaches, open their destination list and travel.
+    default: true
+  stagecoach.place:
+    description: Place stagecoaches.
+    default: true
+  stagecoach.admin:
+    description: Rename and take down anyone's stagecoach; /stagecoach give, list, remove and reload.
+    default: op

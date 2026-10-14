@@ -1,0 +1,19 @@
+{
+  "requires_mods": [
+    "integrated_villages"
+  ],
+  "target_pools": [
+    "integrated_villages:oasis_village/house/house_large",
+    "integrated_villages:oasis_village/house/house_small",
+    "integrated_villages:oasis_village/house/tower"
+  ],
+  "piece": [
+    "stagecoach:village/coach_stop_integrated",
+    "stagecoach:village/coach_stop_integrated_roadside",
+    "stagecoach:village/coach_stop_integrated_compact"
+  ],
+  "guaranteed": true,
+  "theme": "stagecoach:desert",
+  "wood": "spruce",
+  "projection": "rigid"
+}

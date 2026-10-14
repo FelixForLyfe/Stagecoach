@@ -1,0 +1,63 @@
+{
+  "patterns": [
+    "The {adj} {noun}",
+    "The {adj} {noun} Inn",
+    "The {noun} and {other}"
+  ],
+  "adj": [
+    "Rusty",
+    "Golden",
+    "Drowsy",
+    "Merry",
+    "Jolly",
+    "Crooked",
+    "Silver",
+    "Laughing",
+    "Sleepy",
+    "Wandering",
+    "Tipsy",
+    "Old",
+    "Lucky",
+    "Copper",
+    "Thirsty",
+    "Hidden",
+    "Weary",
+    "Hollow",
+    "Muddy",
+    "Patient"
+  ],
+  "noun": [
+    "Lantern",
+    "Wheel",
+    "Horseshoe",
+    "Tankard",
+    "Kettle",
+    "Saddle",
+    "Barrel",
+    "Stirrup",
+    "Mule",
+    "Badger",
+    "Ox",
+    "Hound",
+    "Anvil",
+    "Plough",
+    "Bell",
+    "Hearth",
+    "Wagon",
+    "Mare",
+    "Rooster",
+    "Milestone"
+  ],
+  "other": [
+    "Bridle",
+    "Lamp",
+    "Harness",
+    "Whip",
+    "Yoke",
+    "Spoke",
+    "Axle",
+    "Ladle",
+    "Bucket",
+    "Mile"
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "schemaVersion": 1,
+  "id": "stagecoach",
+  "version": "${version}",
+  "name": "Stagecoach",
+  "description": "Stagecoaches in eleven woods, and a travel network between them: place and name a stop, find coach stops in villages, discover others, and pay XP or items to ride the road. Crash-safe, server-authoritative, and built to be customised by pack makers.",
+  "authors": [
+    "Feelix"
+  ],
+  "contact": {
+    "homepage": "https://github.com/FelixForLyfe/Stagecoach",
+    "sources": "https://github.com/FelixForLyfe/Stagecoach",
+    "issues": "https://github.com/FelixForLyfe/Stagecoach/issues"
+  },
+  "license": "MIT with an attribution condition",
+  "icon": "assets/stagecoach/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "net.feelix.stagecoach.fabric.FabricStagecoach"
+    ],
+    "client": [
+      "net.feelix.stagecoach.fabric.FabricStagecoachClient"
+    ],
+    "jade": [
+      "net.feelix.stagecoach.compat.jade.StagecoachJadePlugin"
+    ],
+    "jei_mod_plugin": [
+      "net.feelix.stagecoach.compat.jei.StagecoachJeiPlugin"
+    ],
+    "modmenu": [
+      "net.feelix.stagecoach.fabric.StagecoachModMenu"
+    ],
+    "journeymap": [
+      "net.feelix.stagecoach.compat.journeymap.StagecoachJourneyMap"
+    ]
+  },
+  "mixins": [
+    "stagecoach.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.15.0",
+    "fabric-api": "*",
+    "geckolib": ">=4.8.4",
+    "minecraft": "~1.20.1",
+    "java": ">=17"
+  },
+  "suggests": {
+    "jade": "*",
+    "jei": "*",
+    "ftbchunks": "*",
+    "modmenu": "*",
+    "journeymap": "*",
+    "xaerominimap": "*",
+    "openpartiesandclaims": "*",
+    "kubejs": "*",
+    "fabric-permissions-api-v0": "*"
+  }
+}

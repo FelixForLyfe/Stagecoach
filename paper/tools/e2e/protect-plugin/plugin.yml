@@ -1,0 +1,4 @@
+name: E2EProtect
+version: 1.0.0
+main: e2e.protect.ProtectPlugin
+api-version: "1.21"

@@ -1,0 +1,45 @@
+{
+  "patterns": [
+    "{prefix}{suffix}",
+    "{prefix}{suffix} Crossing",
+    "{prefix}{suffix} Stop"
+  ],
+  "prefix": [
+    "Gull",
+    "Salt",
+    "Shell",
+    "Tide",
+    "Kelp",
+    "Coral",
+    "Wave",
+    "Pearl",
+    "Sand",
+    "Drift",
+    "Gale",
+    "Brine",
+    "Dune",
+    "Spray",
+    "Foam",
+    "Crab",
+    "Tern",
+    "Skerry",
+    "Oyster",
+    "Mussel"
+  ],
+  "suffix": [
+    "haven",
+    "port",
+    "mouth",
+    "cove",
+    "bay",
+    "sands",
+    "quay",
+    "point",
+    "strand",
+    "wick",
+    "cliff",
+    "holm",
+    "shore",
+    "reach"
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "requires_mods": [],
+  "target_pools": [
+    "nova_structures:dappled_village/dappled_house"
+  ],
+  "piece": [
+    "stagecoach:village/coach_stop_dt_dappled",
+    "stagecoach:village/coach_stop_dt_dappled_roadside",
+    "stagecoach:village/coach_stop_dt_dappled_compact"
+  ],
+  "guaranteed": true,
+  "theme": "stagecoach:plains",
+  "wood": "spruce",
+  "projection": "rigid"
+}

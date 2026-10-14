@@ -1,0 +1,45 @@
+{
+  "patterns": [
+    "{prefix}{suffix}",
+    "{prefix}{suffix} Crossing",
+    "{prefix}{suffix} Stop"
+  ],
+  "prefix": [
+    "Reed",
+    "Fen",
+    "Mire",
+    "Bog",
+    "Moss",
+    "Heron",
+    "Toad",
+    "Willow",
+    "Peat",
+    "Frog",
+    "Rush",
+    "Sedge",
+    "Cattail",
+    "Eel",
+    "Mist",
+    "Mud",
+    "Bittern",
+    "Alder",
+    "Lily",
+    "Newt"
+  ],
+  "suffix": [
+    "carr",
+    "fen",
+    "mere",
+    "marsh",
+    "moor",
+    "wick",
+    "holm",
+    "ham",
+    "by",
+    "ley",
+    "sey",
+    "pool",
+    "bank",
+    "stow"
+  ]
+}

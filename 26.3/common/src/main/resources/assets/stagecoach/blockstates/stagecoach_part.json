@@ -1,0 +1,37 @@
+{
+  "variants": {
+    "wood=oak": {
+      "model": "stagecoach:block/oak_stagecoach"
+    },
+    "wood=spruce": {
+      "model": "stagecoach:block/spruce_stagecoach"
+    },
+    "wood=birch": {
+      "model": "stagecoach:block/birch_stagecoach"
+    },
+    "wood=jungle": {
+      "model": "stagecoach:block/jungle_stagecoach"
+    },
+    "wood=acacia": {
+      "model": "stagecoach:block/acacia_stagecoach"
+    },
+    "wood=dark_oak": {
+      "model": "stagecoach:block/dark_oak_stagecoach"
+    },
+    "wood=mangrove": {
+      "model": "stagecoach:block/mangrove_stagecoach"
+    },
+    "wood=cherry": {
+      "model": "stagecoach:block/cherry_stagecoach"
+    },
+    "wood=bamboo": {
+      "model": "stagecoach:block/bamboo_stagecoach"
+    },
+    "wood=crimson": {
+      "model": "stagecoach:block/crimson_stagecoach"
+    },
+    "wood=warped": {
+      "model": "stagecoach:block/warped_stagecoach"
+    }
+  }
+}

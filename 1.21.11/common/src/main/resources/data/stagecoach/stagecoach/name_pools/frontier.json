@@ -1,0 +1,46 @@
+{
+  "patterns": [
+    "{prefix} {suffix}",
+    "{prefix} {suffix} Crossing",
+    "{prefix} {suffix} Stop"
+  ],
+  "prefix": [
+    "Dust",
+    "Red",
+    "Copper",
+    "Coyote",
+    "Mesa",
+    "Cactus",
+    "Rattle",
+    "Sage",
+    "Silver",
+    "Iron",
+    "Lone",
+    "Dry",
+    "Bone",
+    "Canyon",
+    "Flint",
+    "Rust",
+    "Tumble",
+    "Buzzard",
+    "Mule",
+    "Spur"
+  ],
+  "suffix": [
+    "Gulch",
+    "Creek",
+    "Bluff",
+    "Ridge",
+    "Rock",
+    "Flats",
+    "Wash",
+    "Butte",
+    "Gap",
+    "Springs",
+    "Fork",
+    "Hollow",
+    "Bend",
+    "Draw",
+    "Rest"
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PCP",
+    "LDL",
+    "DGD"
+  ],
+  "key": {
+    "P": "minecraft:warped_planks",
+    "C": "minecraft:chest",
+    "L": "minecraft:lead",
+    "D": "minecraft:diamond_block",
+    "G": "minecraft:gold_block"
+  },
+  "result": {
+    "id": "stagecoach:warped_stagecoach",
+    "count": 1
+  }
+}

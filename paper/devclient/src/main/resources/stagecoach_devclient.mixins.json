@@ -1,0 +1,8 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.feelix.stagecoach.devclient.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": ["ChatComponentMixin", "MinecraftMixin", "ServerDataMixin", "WindowMixin"],
+  "injectors": { "defaultRequire": 1 }
+}

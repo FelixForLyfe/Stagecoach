@@ -1,0 +1,14 @@
+pluginManagement {
+    repositories {
+        maven { name = 'Fabric'; url = 'https://maven.fabricmc.net/' }
+        maven { name = 'NeoForge'; url = 'https://maven.neoforged.net/releases/' }
+        maven { name = 'Forge'; url = 'https://maven.minecraftforge.net/' }
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+
+rootProject.name = 'stagecoach-1.21.11'
+include 'fabric'
+include 'neoforge'
+include 'forge'

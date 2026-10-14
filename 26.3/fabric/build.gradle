@@ -1,0 +1,105 @@
+plugins {
+    id 'net.fabricmc.fabric-loom'
+    id 'java'
+}
+
+version = rootProject.mod_version
+group = rootProject.maven_group
+base { archivesName = "Stagecoach-fabric-${rootProject.minecraft_version}" }
+
+repositories {
+    mavenCentral()
+    exclusiveContent {
+        forRepository { maven { name = 'Modrinth'; url = 'https://api.modrinth.com/maven' } }
+        filter { includeGroup 'maven.modrinth' }
+    }
+}
+
+apply from: "${rootDir}/gradle/compat.gradle"
+
+def common = "${rootDir}/common/src"
+
+sourceSets {
+    main {
+        java.srcDir "${common}/main/java"
+        resources.srcDir "${common}/main/resources"
+    }
+    test {
+        java.srcDir "${common}/test/java"
+    }
+    gametest {
+        java.srcDir "${common}/gametest/java"
+        resources.srcDir "${common}/gametest/resources"
+        compileClasspath += sourceSets.main.compileClasspath + sourceSets.main.output
+        runtimeClasspath += sourceSets.main.runtimeClasspath + sourceSets.main.output
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
+    implementation "net.fabricmc:fabric-loader:${rootProject.loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
+    implementation "maven.modrinth:geckolib:${rootProject.geckolib_fabric}"
+
+    compileOnly "maven.modrinth:jade:${rootProject.jade_fabric}"
+    compileOnly "maven.modrinth:jei:${rootProject.jei_fabric}"
+    compileOnly "maven.modrinth:modmenu:${rootProject.modmenu_fabric}"
+    compileOnly("maven.modrinth:open-parties-and-claims:${rootProject.opac_fabric}") { transitive = false }
+    compileOnly("maven.modrinth:xaeros-minimap:${rootProject.xaero_fabric}") { transitive = false }
+    compileOnly("maven.modrinth:fabric-permissions-api:${rootProject.permissions_fabric}") { transitive = false }
+    compileOnly compatJar(rootProject.journeymap_fabric_url, rootProject.journeymap_fabric_sha1, 'META-INF/jars/journeymap-api-')
+
+    testImplementation platform('org.junit:junit-bom:5.10.2')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation 'com.google.code.gson:gson:2.11.0'
+}
+
+// The footprint test reads common/src/main/resources/.../stagecoach.geo.json relative to the root.
+test {
+    useJUnitPlatform()
+    workingDir = rootDir
+}
+
+processResources {
+    inputs.property "version", project.version
+    filesMatching("fabric.mod.json") { expand "version": project.version }
+}
+
+loom {
+    mods {
+        stagecoach { sourceSet sourceSets.main }
+        stagecoach_gametest { sourceSet sourceSets.gametest }
+    }
+    runs {
+        gametest {
+            server()
+            name "Game Test"
+            source sourceSets.gametest
+            vmArg "-Dfabric-api.gametest"
+            runDir "run/gametest"
+        }
+        // Dev only: screenshots of the coach and the screens in a hidden, muted client (run/clientgametest/screenshots).
+        clientGameTest {
+            client()
+            name "Client Game Test"
+            source sourceSets.gametest
+            vmArg "-Dfabric.client.gametest"
+            vmArg "-Dstagecoach.hidden=true"
+            runDir "run/clientgametest"
+        }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach { it.options.release = 25 }
+
+jar {
+    from("${rootDir}/../LICENSE") { rename { "${it}_Stagecoach" } }
+}
+
+java {
+    withSourcesJar()
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
+}
+

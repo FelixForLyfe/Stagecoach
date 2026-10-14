@@ -1,0 +1,105 @@
+plugins {
+    id 'dev.architectury.loom'
+    id 'java'
+}
+
+version = rootProject.mod_version
+group = rootProject.maven_group
+base { archivesName = "Stagecoach-fabric-${rootProject.minecraft_version}" }
+
+repositories {
+    mavenCentral()
+    maven { name = 'Architectury'; url = 'https://maven.architectury.dev/' }
+    maven { name = 'GeckoLib'; url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
+    maven { name = 'JEI'; url = 'https://maven.blamejared.com/' }
+    maven { name = 'FTB'; url = 'https://maven.ftb.dev/releases/' }
+    maven { name = 'TerraformersMC'; url = 'https://maven.terraformersmc.com/releases/' }
+    exclusiveContent {
+        forRepository { maven { name = 'Modrinth'; url = 'https://api.modrinth.com/maven' } }
+        filter { includeGroup 'maven.modrinth' }
+    }
+}
+
+apply from: "${rootDir}/gradle/compat.gradle"
+
+def common = "${rootDir}/common/src"
+
+sourceSets {
+    main {
+        java.srcDir "${common}/main/java"
+        resources.srcDir "${common}/main/resources"
+    }
+    test {
+        java.srcDir "${common}/test/java"
+    }
+    gametest {
+        java.srcDir "${common}/gametest/java"
+        resources.srcDir "${common}/gametest/resources"
+        compileClasspath += sourceSets.main.compileClasspath + sourceSets.main.output
+        runtimeClasspath += sourceSets.main.runtimeClasspath + sourceSets.main.output
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
+    mappings "net.fabricmc:yarn:${rootProject.yarn_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${rootProject.loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
+    modImplementation("software.bernie.geckolib:geckolib-fabric-1.21.1:${rootProject.geckolib_version}") {
+        exclude group: "net.fabricmc", module: "fabric-loader" // its POM asks for a newer loader than the one we pin
+    }
+
+    modCompileOnly "maven.modrinth:jade:${rootProject.jade_fabric_version}"
+    modCompileOnly("mezz.jei:jei-1.21.1-fabric:${rootProject.jei_version}") { transitive = false }
+    modCompileOnly("dev.ftb.mods:ftb-chunks-fabric:${rootProject.ftbchunks_version}") { transitive = false }
+    modCompileOnly("com.terraformersmc:modmenu:${rootProject.modmenu_version}") { transitive = false }
+    modCompileOnly("me.lucko:fabric-permissions-api:${rootProject.permissions_api_version}") { transitive = false }
+    modCompileOnly("maven.modrinth:open-parties-and-claims:${rootProject.opac_fabric_version}") { transitive = false }
+    modCompileOnly("maven.modrinth:xaeros-minimap:${rootProject.xaero_fabric_version}") { transitive = false }
+    modCompileOnly compatJar(rootProject.journeymap_fabric_url, rootProject.journeymap_fabric_sha1, 'META-INF/jars/journeymap-api-')
+
+    testImplementation platform('org.junit:junit-bom:5.10.2')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    // Gradle 9 no longer brings the launcher along.
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation 'com.google.code.gson:gson:2.11.0'
+}
+
+// The footprint test reads common/src/main/resources/.../stagecoach.geo.json relative to the root.
+test {
+    useJUnitPlatform()
+    workingDir = rootDir
+}
+
+processResources {
+    inputs.property "version", project.version
+    filesMatching("fabric.mod.json") { expand "version": project.version }
+}
+
+loom {
+    mods {
+        stagecoach { sourceSet sourceSets.main }
+        stagecoach_gametest { sourceSet sourceSets.gametest }
+    }
+    runs {
+        gametest {
+            server()
+            name "Game Test"
+            source sourceSets.gametest
+            vmArg "-Dfabric-api.gametest"
+            runDir "run/gametest"
+        }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach { it.options.release = 21 }
+
+jar {
+    from("${rootDir}/../LICENSE") { rename { "${it}_Stagecoach" } }
+}
+
+java {
+    withSourcesJar()
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}

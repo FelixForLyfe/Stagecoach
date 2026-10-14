@@ -1,0 +1,45 @@
+{
+  "patterns": [
+    "{prefix}{suffix}",
+    "{prefix}{suffix} Crossing",
+    "{prefix}{suffix} Stop"
+  ],
+  "prefix": [
+    "Acacia",
+    "Lion",
+    "Grass",
+    "Thorn",
+    "Baobab",
+    "Ochre",
+    "Dry",
+    "Tall",
+    "Wide",
+    "Sun",
+    "Dust",
+    "Hoof",
+    "Horn",
+    "Ember",
+    "Long",
+    "Flat",
+    "Copper",
+    "Bush",
+    "Rain",
+    "Wild"
+  ],
+  "suffix": [
+    "field",
+    "ridge",
+    "run",
+    "wash",
+    "spring",
+    "rise",
+    "flats",
+    "bluff",
+    "hollow",
+    "gap",
+    "crest",
+    "plain",
+    "rest",
+    "pool"
+  ]
+}

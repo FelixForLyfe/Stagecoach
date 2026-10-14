@@ -1,0 +1,9 @@
+{
+  "model": {
+    "type": "minecraft:special",
+    "base": "stagecoach:item/mangrove_stagecoach",
+    "model": {
+      "type": "geckolib:geckolib"
+    }
+  }
+}

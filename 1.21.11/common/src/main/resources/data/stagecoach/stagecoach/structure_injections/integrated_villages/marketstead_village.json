@@ -1,0 +1,18 @@
+{
+  "requires_mods": [
+    "integrated_villages"
+  ],
+  "target_pools": [
+    "integrated_villages:marketstead_village/house/house1",
+    "integrated_villages:marketstead_village/house/house2"
+  ],
+  "piece": [
+    "stagecoach:village/coach_stop_integrated",
+    "stagecoach:village/coach_stop_integrated_roadside",
+    "stagecoach:village/coach_stop_integrated_compact"
+  ],
+  "guaranteed": true,
+  "theme": "stagecoach:plains",
+  "wood": "oak",
+  "projection": "rigid"
+}

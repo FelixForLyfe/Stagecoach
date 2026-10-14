@@ -1,0 +1,5 @@
+{
+  "builtin": "road",
+  "coach": true,
+  "ambient_sound": "stagecoach:journey.loop"
+}

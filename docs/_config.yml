@@ -1,0 +1,15 @@
+title: Stagecoach
+description: Stagecoaches in eleven woods, a coach stop in every village and a road network between them. The pack developer and modder guides.
+remote_theme: just-the-docs/just-the-docs
+plugins:
+  - jekyll-remote-theme
+url: https://felixforlyfe.github.io
+baseurl: /Stagecoach
+search_enabled: true
+heading_anchors: true
+aux_links:
+  "Stagecoach on GitHub": https://github.com/FelixForLyfe/Stagecoach
+aux_links_new_tab: true
+back_to_top: true
+back_to_top_text: "Back to top"
+footer_content: "Stagecoach by Feelix. MIT licence with an attribution condition."

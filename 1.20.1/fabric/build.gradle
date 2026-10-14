@@ -1,0 +1,142 @@
+plugins {
+    id 'dev.architectury.loom'
+    id 'java'
+}
+
+version = rootProject.mod_version
+group = rootProject.maven_group
+base { archivesName = "Stagecoach-fabric-${rootProject.minecraft_version}" }
+
+repositories {
+    mavenCentral()
+    maven { name = 'Architectury'; url = 'https://maven.architectury.dev/' }
+    maven { name = 'GeckoLib'; url = 'https://dl.cloudsmith.io/public/geckolib3/geckolib/maven/' }
+    maven { name = 'JEI'; url = 'https://maven.blamejared.com/' }
+    maven { name = 'FTB'; url = 'https://maven.ftb.dev/releases/' }
+    maven { name = 'TerraformersMC'; url = 'https://maven.terraformersmc.com/releases/' }
+    exclusiveContent {
+        forRepository { maven { name = 'Modrinth'; url = 'https://api.modrinth.com/maven' } }
+        filter { includeGroup 'maven.modrinth' }
+    }
+}
+
+apply from: "${rootDir}/gradle/compat.gradle"
+
+def common = "${rootDir}/common/src"
+
+// GameTests (shared sources, plus a Fabric-only fabric.mod.json) and the dev screenshot harness live in their own
+// source sets, so none of it ships in the release jar.
+sourceSets {
+    main {
+        java.srcDir "${common}/main/java"
+        resources.srcDir "${common}/main/resources"
+    }
+    test {
+        java.srcDir "${common}/test/java"
+    }
+    gametest {
+        java.srcDir "${common}/gametest/java"
+        resources.srcDir "${common}/gametest/resources"
+        compileClasspath += sourceSets.main.compileClasspath + sourceSets.main.output
+        runtimeClasspath += sourceSets.main.runtimeClasspath + sourceSets.main.output
+    }
+    devshots {
+        compileClasspath += sourceSets.main.compileClasspath + sourceSets.main.output
+        runtimeClasspath += sourceSets.main.runtimeClasspath + sourceSets.main.output
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${rootProject.minecraft_version}"
+    mappings "net.fabricmc:yarn:${rootProject.yarn_mappings}:v2"
+    modImplementation "net.fabricmc:fabric-loader:${rootProject.loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${rootProject.fabric_api_version}"
+    // Required at runtime on both sides (fabric.mod.json "depends"). Not bundled: the pack already ships it.
+    modImplementation "software.bernie.geckolib:geckolib-fabric-1.20.1:${rootProject.geckolib_version}"
+
+    // Optional integrations: only reached through their own entrypoints (jade, jei_mod_plugin, modmenu) or behind
+    // Platform#isModLoaded, so the mod runs without any of them.
+    modCompileOnly "maven.modrinth:jade:${rootProject.jade_fabric_version}"
+    modCompileOnly("mezz.jei:jei-1.20.1-fabric:${rootProject.jei_fabric_version}") { transitive = false }
+    modCompileOnly("dev.ftb.mods:ftb-chunks-fabric:${rootProject.ftbchunks_fabric_version}") { transitive = false }
+    modCompileOnly("com.terraformersmc:modmenu:${rootProject.modmenu_version}") { transitive = false }
+    modCompileOnly("me.lucko:fabric-permissions-api:${rootProject.permissions_api_version}") { transitive = false }
+    modCompileOnly compatJar(rootProject.opac_fabric_url, rootProject.opac_fabric_sha1)
+    modCompileOnly("maven.modrinth:kubejs:${rootProject.kubejs_fabric_version}") { transitive = false }
+    modCompileOnly("maven.modrinth:rhino:${rootProject.rhino_fabric_version}") { transitive = false }
+    modCompileOnly("maven.modrinth:architectury-api:${rootProject.architectury_fabric_version}") { transitive = false }
+    modCompileOnly compatJar(rootProject.xaero_fabric_url, rootProject.xaero_fabric_sha1)
+    modCompileOnly compatJar(rootProject.journeymap_fabric_url, rootProject.journeymap_fabric_sha1, 'META-INF/jars/journeymap-api-')
+
+    // JUnit 5 for the plain-Java rules (no Minecraft imports), per this repo's test-writing rules.
+    testImplementation platform('org.junit:junit-bom:5.10.2')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    // Gson comes from Minecraft's own dependencies at runtime (MC 1.20.1 ships 2.10.1). Declared for the TEST
+    // classpath so the config tests never depend on Loom's classpath ordering.
+    testImplementation 'com.google.code.gson:gson:2.10.1'
+}
+
+// Minecraft 1.20.1 ships LWJGL 3.3.1 and Sodium (in the pack) refuses to start on anything else; Architectury Loom's dev
+// runtime pulls 3.3.2-snapshot. Pinned so dev clients run what players run. Compile-time API is identical.
+configurations.configureEach {
+    resolutionStrategy.eachDependency { details ->
+        if (details.requested.group == 'org.lwjgl') details.useVersion '3.3.1'
+    }
+}
+
+// The footprint test reads common/src/main/resources/.../stagecoach.geo.json relative to the root.
+test {
+    useJUnitPlatform()
+    workingDir = rootDir
+}
+
+processResources {
+    inputs.property "version", project.version
+    filesMatching("fabric.mod.json") { expand "version": project.version }
+}
+
+loom {
+    mods {
+        stagecoach { sourceSet sourceSets.main }
+        stagecoach_devshots { sourceSet sourceSets.devshots }
+        stagecoach_gametest { sourceSet sourceSets.gametest }
+    }
+    runs {
+        // No runGametest task exists by default (see assets/reference/testing-infrastructure-setup.md).
+        gametest {
+            server()
+            name "Game Test"
+            source sourceSets.gametest
+            vmArg "-Dfabric-api.gametest"
+            runDir "run/gametest"
+        }
+        // Dev-only screenshot and crash harness (`./gradlew :fabric:runDevshots`); never part of the jar.
+        devshots {
+            client()
+            name "Dev Shots"
+            source sourceSets.devshots
+            runDir "run/devshots"
+            // ui (default) | coach | crash1 | crash2 | mp | compat - e.g. ./gradlew :fabric:runDevshots -PdevshotsMode=crash1
+            // mp joins the dedicated dev server (runServer, port 25568) as "Tester" instead of opening the saved world.
+            def devshotsMode = project.findProperty('devshotsMode') ?: 'ui'
+            if (devshotsMode == 'mp') {
+                programArgs "--quickPlayMultiplayer", "localhost:25568", "--username", "Tester"
+            } else {
+                programArgs "--quickPlaySingleplayer", "devshots"
+            }
+            vmArg "-Dstagecoach.devshots=${devshotsMode}"
+        }
+    }
+}
+
+tasks.withType(JavaCompile).configureEach { it.options.release = 17 }
+
+jar {
+    from("${rootDir}/../LICENSE") { rename { "${it}_Stagecoach" } }
+}
+
+java {
+    withSourcesJar()
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}

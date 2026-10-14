@@ -1,0 +1,5 @@
+package net.feelix.stagecoach.api;
+
+public enum EndReason {
+    COMPLETED, CANCELLED, DISCONNECTED, SERVER_STOPPED, ADMIN, DESTINATION_GONE, GAME_MODE_CHANGED, DIED, RECOVERED
+}

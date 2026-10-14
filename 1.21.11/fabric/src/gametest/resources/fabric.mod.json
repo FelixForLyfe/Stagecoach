@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "stagecoach_gametest",
+  "version": "0.0.0",
+  "name": "Stagecoach GameTests",
+  "description": "Dev-only: the Stagecoach GameTest suites (server and client) and their test structures. Never shipped.",
+  "environment": "*",
+  "entrypoints": {
+    "fabric-gametest": [
+      "net.feelix.stagecoach.gametest.StagecoachGameTests",
+      "net.feelix.stagecoach.gametest.TravelGameTests",
+      "net.feelix.stagecoach.gametest.PackGameTests",
+      "net.feelix.stagecoach.gametest.EventGameTests"
+    ],
+    "main": [
+      "net.feelix.stagecoach.gametest.FabricEventHooks"
+    ],
+    "fabric-client-gametest": [
+      "net.feelix.stagecoach.fabric.clientgametest.StagecoachClientGameTest"
+    ]
+  },
+  "depends": {
+    "stagecoach": "*"
+  },
+  "mixins": [
+    "stagecoach-clientgametest.mixins.json"
+  ]
+}

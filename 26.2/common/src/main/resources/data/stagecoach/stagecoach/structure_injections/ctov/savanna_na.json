@@ -1,0 +1,17 @@
+{
+  "requires_mods": [
+    "ctov"
+  ],
+  "target_pools": [
+    "ctov:village/savanna_na/house"
+  ],
+  "piece": [
+    "stagecoach:village/coach_stop_small",
+    "stagecoach:village/coach_stop_small_roadside",
+    "stagecoach:village/coach_stop_small_compact"
+  ],
+  "guaranteed": true,
+  "theme": "stagecoach:savanna",
+  "wood": "spruce",
+  "projection": "rigid"
+}

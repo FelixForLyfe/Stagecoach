@@ -1,0 +1,9 @@
+{
+  "model": {
+    "type": "minecraft:special",
+    "base": "stagecoach:item/warped_stagecoach",
+    "model": {
+      "type": "geckolib:geckolib"
+    }
+  }
+}

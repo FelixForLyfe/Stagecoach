@@ -1,0 +1,91 @@
+plugins {
+    id 'net.neoforged.moddev'
+    id 'java'
+}
+
+version = rootProject.mod_version
+group = rootProject.maven_group
+base { archivesName = "Stagecoach-neoforge-${rootProject.minecraft_version}" }
+
+repositories {
+    mavenCentral()
+    exclusiveContent {
+        forRepository { maven { name = 'Modrinth'; url = 'https://api.modrinth.com/maven' } }
+        filter { includeGroup 'maven.modrinth' }
+    }
+}
+
+apply from: "${rootDir}/gradle/compat.gradle"
+
+def common = "${rootDir}/common/src"
+
+sourceSets {
+    main {
+        java.srcDir "${common}/main/java"
+        resources.srcDir "${common}/main/resources"
+    }
+    // Shared GameTests + the NeoForge registration hook (+ a dev-only stand-in for Fabric's @GameTest annotation,
+    // which the shared tests are written against). Never in the release jar.
+    gametest {
+        java.srcDir "${common}/gametest/java"
+        resources.srcDir "${common}/gametest/resources"
+        compileClasspath += sourceSets.main.compileClasspath + sourceSets.main.output
+        runtimeClasspath += sourceSets.main.runtimeClasspath + sourceSets.main.output
+    }
+}
+
+neoForge {
+    version = rootProject.neoforge_version
+    // GeckoLib's own META-INF/interface_injections.json (BlockEntityRenderState implements GeoRenderState), so the
+    // compiler sees what GeckoLib applies at runtime - ModDevGradle does not read it from dependencies.
+    interfaceInjectionData {
+        from(file('interface_injections.json'))
+    }
+    mods {
+        stagecoach {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.gametest
+        }
+    }
+    runs {
+        client {
+            client()
+            gameDirectory = project.file('run')
+            // -PquickPlay=<world folder> opens that world straight away (ModDevGradle's --args would replace the launch arguments)
+            if (project.hasProperty('quickPlay')) programArguments.addAll('--quickPlaySingleplayer', project.quickPlay as String)
+        }
+        gameTestServer {
+            type = "gameTestServer"
+            sourceSet = sourceSets.gametest
+            gameDirectory = project.file("run/gametest")
+            systemProperty 'neoforge.enabledGameTestNamespaces', 'stagecoach_gametest,stagecoach'
+        }
+    }
+}
+
+dependencies {
+    implementation "maven.modrinth:geckolib:${rootProject.geckolib_neoforge}"
+    gametestImplementation "maven.modrinth:geckolib:${rootProject.geckolib_neoforge}"
+    compileOnly "maven.modrinth:jade:${rootProject.jade_neoforge}"
+    compileOnly "maven.modrinth:jei:${rootProject.jei_neoforge}"
+    compileOnly("maven.modrinth:open-parties-and-claims:${rootProject.opac_neoforge}") { transitive = false }
+    compileOnly("maven.modrinth:xaeros-minimap:${rootProject.xaero_neoforge}") { transitive = false }
+    compileOnly compatJar(rootProject.journeymap_neoforge_url, rootProject.journeymap_neoforge_sha1, 'META-INF/jarjar/journeymap-api-')
+}
+
+processResources {
+    inputs.property "version", project.version
+    filesMatching("META-INF/neoforge.mods.toml") { expand "version": project.version }
+}
+
+tasks.withType(JavaCompile).configureEach { it.options.release = 25 }
+
+jar {
+    from("${rootDir}/../LICENSE") { rename { "${it}_Stagecoach" } }
+}
+
+java {
+    withSourcesJar()
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
+}

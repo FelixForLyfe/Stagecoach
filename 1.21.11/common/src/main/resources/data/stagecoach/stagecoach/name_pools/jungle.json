@@ -1,0 +1,46 @@
+{
+  "patterns": [
+    "{prefix} {suffix}",
+    "{prefix} {suffix} Crossing",
+    "{prefix} {suffix} Stop"
+  ],
+  "prefix": [
+    "Vine",
+    "Fern",
+    "Parrot",
+    "Jade",
+    "Orchid",
+    "Mango",
+    "Monsoon",
+    "Canopy",
+    "Bamboo",
+    "Cocoa",
+    "Emerald",
+    "Lotus",
+    "Rain",
+    "Moss",
+    "Liana",
+    "Banyan",
+    "Kapok",
+    "Cacao",
+    "Teak",
+    "Ocelot"
+  ],
+  "suffix": [
+    "Falls",
+    "Hollow",
+    "Grove",
+    "Glade",
+    "Pool",
+    "Bend",
+    "Rest",
+    "Reach",
+    "Landing",
+    "Ford",
+    "Run",
+    "Creek",
+    "Deep",
+    "Shade",
+    "Basin"
+  ]
+}

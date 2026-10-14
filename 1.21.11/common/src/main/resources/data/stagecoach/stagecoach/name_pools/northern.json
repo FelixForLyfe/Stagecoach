@@ -1,0 +1,45 @@
+{
+  "patterns": [
+    "{prefix}{suffix}",
+    "{prefix}{suffix} Crossing",
+    "{prefix}{suffix} Stop"
+  ],
+  "prefix": [
+    "Frost",
+    "Pine",
+    "Wolf",
+    "Stone",
+    "Elk",
+    "Birch",
+    "Snow",
+    "Iron",
+    "Hawk",
+    "Grey",
+    "Cold",
+    "Bear",
+    "Rime",
+    "Hearth",
+    "Sleet",
+    "Cairn",
+    "Fjord",
+    "Lynx",
+    "Spruce",
+    "Tarn"
+  ],
+  "suffix": [
+    "holm",
+    "fell",
+    "vik",
+    "gard",
+    "heim",
+    "stad",
+    "by",
+    "mark",
+    "vald",
+    "berg",
+    "nes",
+    "strand",
+    "dal",
+    "vang"
+  ]
+}

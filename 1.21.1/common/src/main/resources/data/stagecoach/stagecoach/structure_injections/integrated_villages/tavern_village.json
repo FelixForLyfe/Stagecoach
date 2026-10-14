@@ -1,0 +1,20 @@
+{
+  "requires_mods": [
+    "integrated_villages"
+  ],
+  "target_pools": [
+    "integrated_villages:tavern_village/animalhouse",
+    "integrated_villages:tavern_village/blacksmith",
+    "integrated_villages:tavern_village/farmhouse",
+    "integrated_villages:tavern_village/house"
+  ],
+  "piece": [
+    "stagecoach:village/coach_stop_integrated",
+    "stagecoach:village/coach_stop_integrated_roadside",
+    "stagecoach:village/coach_stop_integrated_compact"
+  ],
+  "guaranteed": true,
+  "theme": "stagecoach:tavern",
+  "wood": "dark_oak",
+  "projection": "rigid"
+}

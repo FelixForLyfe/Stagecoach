@@ -1,0 +1,17 @@
+{
+  "replace": false,
+  "values": [
+    "stagecoach:oak_stagecoach",
+    "stagecoach:spruce_stagecoach",
+    "stagecoach:birch_stagecoach",
+    "stagecoach:jungle_stagecoach",
+    "stagecoach:acacia_stagecoach",
+    "stagecoach:dark_oak_stagecoach",
+    "stagecoach:mangrove_stagecoach",
+    "stagecoach:cherry_stagecoach",
+    "stagecoach:bamboo_stagecoach",
+    "stagecoach:crimson_stagecoach",
+    "stagecoach:warped_stagecoach",
+    "stagecoach:stagecoach_part"
+  ]
+}

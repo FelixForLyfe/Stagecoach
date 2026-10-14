@@ -1,0 +1,31 @@
+plugins {
+    id 'fabric-loom' version '1.17-SNAPSHOT'
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+}
+
+java {
+    toolchain { languageVersion = JavaLanguageVersion.of(21) }
+}
+
+loom {
+    runs {
+        client {
+            programArgs '--quickPlayMultiplayer', project.server_address, '--username', project.player_name
+            runDir 'run'
+        }
+        // tools/e2e/shots.js starts this one: its own folder and player, screenshots + #commands.
+        // -PautoPack=false leaves the resource-pack prompt up, exactly as a player sees it.
+        harness {
+            inherit client
+            name 'Harness client'
+            programArgs '--quickPlayMultiplayer', project.server_address, '--username', 'Shooter'
+            vmArgs '-Dstagecoach.harness=true', '-Dstagecoach.hidden=' + (project.findProperty('hidden') ?: 'true'), '-Dstagecoach.autoPack=' + (project.findProperty('autoPack') ?: 'true')
+            runDir 'run-harness'
+        }
+    }
+}

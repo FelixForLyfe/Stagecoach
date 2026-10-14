@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:function",
+  "function": "stagecoach_gametest:stagecoach_game_tests_an_explosion_removes_everything_and_drops_one_item",
+  "environment": "minecraft:default",
+  "structure": "stagecoach:gametest/empty",
+  "max_ticks": 20,
+  "padding": 1
+}

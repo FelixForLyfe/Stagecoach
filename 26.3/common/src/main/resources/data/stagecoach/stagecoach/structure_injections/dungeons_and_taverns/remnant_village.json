@@ -1,0 +1,15 @@
+{
+  "requires_mods": [],
+  "target_pools": [
+    "nova_structures:remnant/village_house"
+  ],
+  "piece": [
+    "stagecoach:village/coach_stop_dt_remnant",
+    "stagecoach:village/coach_stop_dt_remnant_roadside",
+    "stagecoach:village/coach_stop_dt_remnant_compact"
+  ],
+  "guaranteed": true,
+  "theme": "stagecoach:plains",
+  "wood": "oak",
+  "projection": "rigid"
+}

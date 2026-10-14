@@ -1,0 +1,138 @@
+# Stagecoach - every message the plugin shows. Edit freely; a key you delete falls back to the English default.
+# & colour codes work (&6 gold, &c red, &7 grey, ...). {0}, {1}, ... are filled in by the plugin.
+# Run /stagecoach reload after editing.
+
+wood-oak: Oak
+wood-spruce: Spruce
+wood-birch: Birch
+wood-jungle: Jungle
+wood-acacia: Acacia
+wood-dark_oak: Dark Oak
+wood-mangrove: Mangrove
+wood-cherry: Cherry
+wood-bamboo: Bamboo
+wood-crimson: Crimson
+wood-warped: Warped
+
+# ---- the item ----
+item-name: '{0} Stagecoach'
+item-lore:
+  - '&7Place it to add a stop to the road network.'
+  - '&7Right-click a stop to travel to any stop you know.'
+
+# ---- placing ----
+place-build-limit: "&cThe stagecoach won't fit this close to the edge of the world."
+place-blocked: '&cNot enough room for the stagecoach: {0} is in the way.'
+place-entity: '&cNot enough room for the stagecoach: {0} is in the way.'
+place-another: 'another stagecoach'
+place-protected: "&cPart of the stagecoach would stand on land you can't build on."
+place-no-permission: "&cYou aren't allowed to place stagecoaches."
+place-world: "&cStagecoaches can't be placed in this world."
+place-limit: '&cYou already have {0} stagecoaches, the most allowed on this server.'
+
+# ---- joining ----
+pack-prompt: '&6Stagecoach &fneeds this small pack to show the stagecoaches and their travel screen.'
+pack-no-answer: "&cThis server needs the Stagecoach resource pack.\n&7Join again and click Proceed when you're asked."
+pack-download-failed: "&cThe Stagecoach resource pack couldn't be downloaded.\n&7Tell the server owner: check resourcePack.port or resourcePack.url in plugins/Stagecoach/config.yml."
+
+# ---- naming (a popup screen when you place a coach, or Rename in its list) ----
+name-title: 'Name this Stagecoach'
+rename-title: 'Rename Stagecoach'
+name-hint: '&7Up to {0} letters'
+name-label: 'Name'
+name-kept: '&7The stagecoach keeps the name "{0}".'
+button-confirm: 'Confirm'
+button-cancel: 'Cancel'
+
+# ---- using a coach ----
+discovered: '&6Stagecoach discovered: {0}'
+arrived: '&6Arrived at {0}'
+renamed: '&6Stagecoach renamed to {0}'
+error-no-permission: "&cYou aren't allowed to use stagecoaches."
+error-not-owner: '&cOnly the owner can rename this stagecoach.'
+error-not-owner-break: '&cOnly the owner can take down this stagecoach.'
+error-protected-break: "&cYou can't take down a stagecoach here."
+error-bad-name: '&cA name must be 1 to {0} letters.'
+error-other-world: "&cStagecoaches don't run between worlds."
+error-combat: '&cYou were attacked moments ago - the coach leaves in {0} s.'
+error-no-xp: '&cThis journey costs {0} levels.'
+error-no-items: '&cThis journey costs {0} × {1}.'
+error-route-too-long: '&cThat stop is too far for one trip (at most {0} blocks). Travel via a stop in between.'
+error-cooldown: '&cThe coach needs a rest - you can travel again in {0} s.'
+error-too-far: '&cYou are too far from the stagecoach.'
+error-gone: '&cThat stagecoach is gone.'
+error-cannot-start: '&cThe journey could not start: your game mode could not be changed.'
+
+# ---- on the road (the travel screen) ----
+travel-title: 'Travelling to {0}'
+travel-remaining: '&f{0} &7remaining'
+button-cancel-journey: 'Cancel journey'
+abandon-title: 'Abandon journey?'
+abandon-message: '&7You will be set down at the stagecoach you left from, and your fare will be returned.'
+abandon-message-partial: '&7You will be set down at the stagecoach you left from, and {0}% of your fare will be returned.'
+button-abandon: '&cAbandon'
+button-keep-travelling: 'Keep travelling'
+not-travelling: '&7You are not on a journey.'
+end-cancelled: '&eJourney to {0} abandoned. Your fare was returned.'
+end-cancelled-partial: '&eJourney to {0} abandoned. {1}% of your fare was returned.'
+end-destination_gone: '&cThe stagecoach at {0} is gone. Your journey was cancelled and your fare returned.'
+end-game_mode_changed: '&cYour game mode was changed, so the journey to {0} was called off. Your fare was returned.'
+end-died: '&cYou died on the road to {0}. Your fare was returned.'
+end-recovered: '&cYour journey to {0} was interrupted when the server stopped. You are back where you set off, and your fare was returned.'
+
+# ---- the destination list (a popup screen) ----
+list-title: '{0}'
+list-levels: '&7You have &f{0} &7levels.'
+list-items: '&7You carry &f{0} &7× {1}.'
+list-free: '&aCreative: journeys are free.'
+list-empty: '&fNo other stagecoaches yet.'
+list-empty-hint: '&7Right-click one on your travels to add it to this list.'
+list-no-match: '&fNo stagecoach by that name.'
+list-too-many: '&7Showing the nearest {0} of {1}. Search to find the rest.'
+list-search: 'Search by name'
+button-search: 'Search'
+button-rename: 'Rename this stagecoach'
+button-close: 'Close'
+entry-label: '&6{0}  &7{1} &8| {2}'
+entry-label-unavailable: '&8{0}  {1} | {2}'
+entry-cost: '&a{0} levels'
+entry-cost-items: '&a{0} × {1}'
+entry-instant: 'instant'
+entry-free: '&aFree'
+entry-distance: '&7{0} blocks away'
+entry-coords: '&8X {0}  Y {1}  Z {2}  ({3})'
+entry-yours: '&eYour stagecoach'
+entry-discovered: '&7Discovered'
+entry-no-xp: '&cCosts {0} levels - you have too few'
+entry-no-items: '&cCosts {0} × {1} - you don''t have enough'
+entry-too-far: '&cToo far for one trip (at most {0} blocks) - travel via a stop in between'
+entry-other-world: '&cIn another world ({0})'
+confirm-title: 'Travel to {0}?'
+confirm-journey: '&7Journey: &f{0}  &7Cost: {1}'
+button-set-off: '&aSet off'
+button-back: 'Back'
+cannot-title: "Can't set off"
+
+# ---- commands ----
+cmd-help:
+  - '&6Stagecoach &7- craftable stagecoaches and a road network between them.'
+  - '&7Place a stagecoach, name it, and right-click it to see where you can go.'
+  - '&7Right-click someone else''s stagecoach to discover it. A journey costs a fare: XP levels, or items on some servers.'
+  - '&e/stagecoach cancel &7- abandon your journey (your fare comes back)'
+cmd-help-admin:
+  - '&e/stagecoach give <player> <wood> [amount] &7- give stagecoaches'
+  - '&e/stagecoach list [page] &7- every stagecoach on the server'
+  - '&e/stagecoach remove <id> &7- take a stagecoach down from anywhere'
+  - '&e/stagecoach reload &7- reload config.yml and messages.yml'
+cmd-no-permission: "&cYou don't have permission to do that."
+cmd-player-only: '&cOnly a player can do that.'
+cmd-unknown-player: '&cNo player called {0} is online.'
+cmd-unknown-wood: '&cUnknown wood {0}. Try: {1}'
+cmd-given: '&6Gave {0} {1} to {2}.'
+cmd-reloaded: '&6Stagecoach reloaded.'
+cmd-reload-warnings: '&econfig.yml has problems - see the console.'
+cmd-list-header: '&6Stagecoaches ({0}) &7- page {1} of {2}'
+cmd-list-line: '&7#{0} &f{1} &7{2} {3} {4} {5} &8owner {6}'
+cmd-list-empty: '&7No stagecoaches have been placed yet.'
+cmd-removed: '&6Removed stagecoach #{0} ({1}).'
+cmd-unknown-coach: '&cNo stagecoach has the id {0}.'

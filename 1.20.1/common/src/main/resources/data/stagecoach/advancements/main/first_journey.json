@@ -1,0 +1,39 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "stagecoach:builtin_advancements"
+    }
+  ],
+  "conditions": [
+    {
+      "type": "stagecoach:builtin_advancements"
+    }
+  ],
+  "parent": "stagecoach:main/root",
+  "display": {
+    "icon": {
+      "item": "minecraft:saddle"
+    },
+    "title": {
+      "translate": "advancements.stagecoach.first_journey.title"
+    },
+    "description": {
+      "translate": "advancements.stagecoach.first_journey.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "first_journey": {
+      "trigger": "stagecoach:journey_completed",
+      "conditions": {}
+    }
+  },
+  "requirements": [
+    [
+      "first_journey"
+    ]
+  ]
+}

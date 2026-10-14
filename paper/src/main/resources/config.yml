@@ -1,0 +1,91 @@
+# Stagecoach - settings. Run /stagecoach reload after editing.
+# A value that is missing, the wrong type or out of range falls back to its default (the console says which).
+
+# ---- the fare ----
+# A journey costs baseCost + (distance / blocksPerLevel, rounded up) XP levels, never more than maxCost.
+# Distance is measured flat (X and Z) between the two stagecoaches.
+baseCost: 1               # 0 - 1000
+blocksPerLevel: 5000      # 1 - 10000000
+maxCost: 10               # 0 - 1000
+
+# true: journeys cost items instead of XP levels. costItem is an item id ("minecraft:emerald") or an item tag with
+# a # in front ("#minecraft:logs" - any log pays). An id that isn't an item falls back to XP (the console says so).
+# Items are paid from the inventory and the off hand; a refund gives back the very items paid.
+itemCostEnabled: false
+costItem: "minecraft:emerald"
+itemBaseCost: 1           # 0 - 10000
+blocksPerItem: 1000       # 1 - 10000000
+maxItemCost: 32           # 0 - 10000
+
+# Creative players travel free. false: they pay like everyone else.
+creativeTravelsFree: true
+# How much of the fare comes back when a traveller cancels on the road. Every other early end (the destination
+# taken down, death, a server stop) always refunds in full.
+cancelRefundPercent: 100  # 0 - 100
+
+# ---- the road ----
+# A journey takes distance / blocksPerSecond seconds, but never less than minTravelSeconds or more than
+# maxTravelSeconds. With the defaults, 45,000 blocks is exactly the 10-minute cap.
+blocksPerSecond: 75       # 0.001 - 1000000
+minTravelSeconds: 5       # 0 - 86400
+maxTravelSeconds: 600     # 1 - 86400
+
+# The longest single trip in blocks; farther stops are greyed out and travellers change coaches on the way.
+# 0 = no limit.
+maxDistance: 0            # 0 - 100000000
+
+# true: no time on the road - pay and step out at the destination.
+instantTravel: false
+
+# Whether stagecoaches run between worlds (the Nether and the End are worlds too).
+allowCrossWorld: false
+
+# How close (in blocks) a player must stand to a stagecoach to use, rename or travel from it.
+useRange: 12              # 1 - 256
+
+# A player hit by a mob or another player can't set off for this many seconds. 0 turns it off.
+combatLockSeconds: 10     # 0 - 3600
+
+# After arriving, a player must wait this many seconds before the next journey. 0 turns it off.
+travelCooldownSeconds: 0  # 0 - 86400
+
+# ---- stagecoaches ----
+# true: a stop must be right-clicked once before it shows in your list. false: every stop is listed at once.
+discoveryRequired: true
+
+# true: only a stagecoach's owner (or someone with stagecoach.admin) can take it down.
+# Stagecoaches can never be blown up either way.
+onlyOwnerCanBreak: true
+
+# The most stagecoaches one player may own. 0 = no limit. stagecoach.admin is never limited.
+maxCoachesPerPlayer: 0    # 0 - 100000
+
+# The longest name a stagecoach may have.
+maxNameLength: 24         # 1 - 64
+
+# Worlds where stagecoaches can't be placed, by name ("world_nether") or key ("minecraft:the_nether").
+blockedWorlds: []
+
+# Holding a stagecoach shows a see-through coach where it would go: green if it fits, red if it doesn't.
+placementPreview: true
+
+# Whether stagecoaches can be crafted (two planks, a chest, two leads, three blocks of diamond, a block of gold).
+# false: only /stagecoach give hands them out.
+craftable: true
+
+# ---- the resource pack ----
+# The resource pack that gives players the stagecoach's look (the coach, its item, the travel screen). It is sent
+# while a player joins, next to the server's own pack if it has one.
+resourcePack:
+  # false: don't send it - your server's own resource pack already carries Stagecoach (add it with the Stagecoach
+  # Pack Merger, a separate download, or copy assets/stagecoach from plugins/Stagecoach/stagecoach-pack.zip).
+  send: true
+  # true: a player who declines the pack can't join (without it, coaches are invisible to them).
+  required: true
+  # The plugin serves the pack itself on this port. Open it in your firewall / host panel, like the game port.
+  port: 8163
+  # The address players reach the pack at. Blank = the address each player typed to join (fine for most servers).
+  host: ""
+  # If your host can't open another port: upload plugins/Stagecoach/stagecoach-pack.zip anywhere that gives a direct
+  # download link (it must be that exact file) and put the link here. Then the port above isn't used.
+  url: ""

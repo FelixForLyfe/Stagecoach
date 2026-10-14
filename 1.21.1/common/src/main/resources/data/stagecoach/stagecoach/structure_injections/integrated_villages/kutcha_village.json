@@ -1,0 +1,20 @@
+{
+  "requires_mods": [
+    "integrated_villages"
+  ],
+  "target_pools": [
+    "integrated_villages:kutcha_village/house/farmhouse",
+    "integrated_villages:kutcha_village/house/farmhouse1",
+    "integrated_villages:kutcha_village/house/farmhouse2",
+    "integrated_villages:kutcha_village/house/house"
+  ],
+  "piece": [
+    "stagecoach:village/coach_stop_integrated",
+    "stagecoach:village/coach_stop_integrated_roadside",
+    "stagecoach:village/coach_stop_integrated_compact"
+  ],
+  "guaranteed": true,
+  "theme": "stagecoach:savanna",
+  "wood": "spruce",
+  "projection": "rigid"
+}

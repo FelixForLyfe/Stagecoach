@@ -1,0 +1,22 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.feelix.stagecoach.mixin",
+  "plugin": "net.feelix.stagecoach.mixin.StagecoachMixinPlugin",
+  "compatibilityLevel": "JAVA_21",
+  "mixins": [
+    "ExplosionBehaviorMixin",
+    "PlayerManagerAccessor",
+    "PlayerManagerMixin",
+    "ServerPlayNetworkHandlerMixin",
+    "ServerPlayerEntityMixin",
+    "StructurePoolGeneratorMixin",
+    "StructurePoolMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "client": [
+    "GuiGraphicsExtractorAccessor"
+  ]
+}

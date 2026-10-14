@@ -1,0 +1,57 @@
+modLoader = "javafml"
+loaderVersion = "[65,)"
+license = "MIT with an attribution condition"
+issueTrackerURL = "https://github.com/FelixForLyfe/Stagecoach/issues"
+
+[[mods]]
+modId = "stagecoach"
+version = "${version}"
+displayName = "Stagecoach"
+authors = "Feelix"
+logoFile = "assets/stagecoach/icon.png"
+displayURL = "https://github.com/FelixForLyfe/Stagecoach"
+description = '''
+Stagecoaches in eleven woods, and a travel network between them: place and name a stop, find coach stops in villages, discover others, and pay XP or items to ride the road. Crash-safe, server-authoritative, and built to be customised by pack makers.
+'''
+
+[[dependencies.stagecoach]]
+modId = "forge"
+mandatory = true
+versionRange = "[65,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.stagecoach]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[26.2,26.3)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.stagecoach]]
+modId = "geckolib"
+mandatory = true
+versionRange = "[5.5,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.stagecoach]]
+modId = "journeymap"
+mandatory = false
+versionRange = "*"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.stagecoach]]
+modId = "xaerominimap"
+mandatory = false
+versionRange = "*"
+ordering = "NONE"
+side = "CLIENT"
+
+[[dependencies.stagecoach]]
+modId = "openpartiesandclaims"
+mandatory = false
+versionRange = "*"
+ordering = "NONE"
+side = "SERVER"

@@ -1,0 +1,14 @@
+{
+  "schemaVersion": 1,
+  "id": "stagecoach_devshots",
+  "version": "0.0.0",
+  "name": "Stagecoach dev screenshots",
+  "description": "Dev-only: places stagecoaches, screenshots them with collision outlines, quits. Never shipped.",
+  "environment": "client",
+  "entrypoints": {
+    "client": ["net.feelix.stagecoach.devshots.DevShots"]
+  },
+  "depends": {
+    "stagecoach": "*"
+  }
+}

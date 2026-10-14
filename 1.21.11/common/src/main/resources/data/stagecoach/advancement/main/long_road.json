@@ -1,0 +1,46 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "stagecoach:builtin_advancements"
+    }
+  ],
+  "neoforge:conditions": [
+    {
+      "type": "stagecoach:builtin_advancements"
+    }
+  ],
+  "forge:condition": {
+    "type": "stagecoach:builtin_advancements"
+  },
+  "parent": "stagecoach:main/first_journey",
+  "display": {
+    "icon": {
+      "id": "minecraft:filled_map"
+    },
+    "title": {
+      "translate": "advancements.stagecoach.long_road.title"
+    },
+    "description": {
+      "translate": "advancements.stagecoach.long_road.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "long_road": {
+      "trigger": "stagecoach:journey_completed",
+      "conditions": {
+        "distance": {
+          "min": 10000
+        }
+      }
+    }
+  },
+  "requirements": [
+    [
+      "long_road"
+    ]
+  ]
+}

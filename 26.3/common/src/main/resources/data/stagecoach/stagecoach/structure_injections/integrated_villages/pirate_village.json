@@ -1,0 +1,21 @@
+{
+  "requires_mods": [
+    "integrated_villages"
+  ],
+  "target_pools": [
+    "integrated_villages:pirate_village/house/blacksmith",
+    "integrated_villages:pirate_village/house/house",
+    "integrated_villages:pirate_village/house/leatherworker",
+    "integrated_villages:pirate_village/house/observatory",
+    "integrated_villages:pirate_village/house/tavern"
+  ],
+  "piece": [
+    "stagecoach:village/coach_stop_integrated",
+    "stagecoach:village/coach_stop_integrated_roadside",
+    "stagecoach:village/coach_stop_integrated_compact"
+  ],
+  "guaranteed": true,
+  "theme": "stagecoach:beach",
+  "wood": "dark_oak",
+  "projection": "rigid"
+}

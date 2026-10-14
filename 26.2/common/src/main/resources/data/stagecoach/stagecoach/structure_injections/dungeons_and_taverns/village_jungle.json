@@ -1,0 +1,15 @@
+{
+  "requires_mods": [],
+  "target_pools": [
+    "minecraft:jungle_village/jungle_house"
+  ],
+  "piece": [
+    "stagecoach:village/coach_stop_dt_jungle",
+    "stagecoach:village/coach_stop_dt_jungle_roadside",
+    "stagecoach:village/coach_stop_dt_jungle_compact"
+  ],
+  "guaranteed": true,
+  "theme": "stagecoach:jungle",
+  "wood": "jungle",
+  "projection": "rigid"
+}

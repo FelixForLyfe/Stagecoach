@@ -1,0 +1,6 @@
+{
+  "parent": "stagecoach:item/stagecoach_base",
+  "textures": {
+    "particle": "minecraft:block/warped_planks"
+  }
+}

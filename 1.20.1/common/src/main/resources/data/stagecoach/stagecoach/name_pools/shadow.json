@@ -1,0 +1,45 @@
+{
+  "patterns": [
+    "{prefix}{suffix}",
+    "{prefix}{suffix} Crossing",
+    "{prefix}{suffix} Stop"
+  ],
+  "prefix": [
+    "Shade",
+    "Crow",
+    "Thorn",
+    "Night",
+    "Bramble",
+    "Hollow",
+    "Moth",
+    "Owl",
+    "Grim",
+    "Fog",
+    "Briar",
+    "Elder",
+    "Yew",
+    "Mire",
+    "Hemlock",
+    "Bat",
+    "Wraith",
+    "Gall",
+    "Spindle",
+    "Sloe"
+  ],
+  "suffix": [
+    "wood",
+    "hollow",
+    "hurst",
+    "dell",
+    "glen",
+    "shaw",
+    "holt",
+    "mere",
+    "moor",
+    "gate",
+    "cross",
+    "brake",
+    "vale",
+    "ditch"
+  ]
+}

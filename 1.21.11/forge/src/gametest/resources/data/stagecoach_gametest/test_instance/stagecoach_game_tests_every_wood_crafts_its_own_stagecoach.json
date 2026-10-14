@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:function",
+  "function": "stagecoach_gametest:stagecoach_game_tests_every_wood_crafts_its_own_stagecoach",
+  "environment": "minecraft:default",
+  "structure": "stagecoach:gametest/empty",
+  "max_ticks": 20,
+  "padding": 1
+}

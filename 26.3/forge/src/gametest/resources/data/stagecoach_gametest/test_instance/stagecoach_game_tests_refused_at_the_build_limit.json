@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:function",
+  "function": "stagecoach_gametest:stagecoach_game_tests_refused_at_the_build_limit",
+  "environment": "minecraft:default",
+  "structure": "stagecoach:gametest/empty",
+  "max_ticks": 20,
+  "padding": 1
+}

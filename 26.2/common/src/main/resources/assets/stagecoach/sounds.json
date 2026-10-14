@@ -1,0 +1,43 @@
+{
+  "coach.place": {
+    "subtitle": "subtitles.stagecoach.coach.place",
+    "sounds": [
+      {
+        "name": "minecraft:entity.horse.saddle",
+        "type": "event"
+      }
+    ]
+  },
+  "journey.arrive": {
+    "subtitle": "subtitles.stagecoach.journey.arrive",
+    "sounds": [
+      {
+        "name": "minecraft:block.bell.use",
+        "type": "event"
+      }
+    ]
+  },
+  "journey.depart": {
+    "subtitle": "subtitles.stagecoach.journey.depart",
+    "sounds": [
+      {
+        "name": "minecraft:entity.horse.gallop",
+        "type": "event"
+      }
+    ]
+  },
+  "journey.loop": {
+    "subtitle": "subtitles.stagecoach.journey.loop",
+    "sounds": []
+  },
+  "stop.discover": {
+    "subtitle": "subtitles.stagecoach.stop.discover",
+    "sounds": [
+      {
+        "name": "minecraft:item.goat_horn.sound.0",
+        "type": "event",
+        "volume": 0.6
+      }
+    ]
+  }
+}

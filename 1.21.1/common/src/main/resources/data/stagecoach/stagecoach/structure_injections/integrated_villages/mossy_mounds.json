@@ -1,0 +1,26 @@
+{
+  "requires_mods": [
+    "integrated_villages"
+  ],
+  "target_pools": [
+    "integrated_villages:mossy_mounds/house/armorer",
+    "integrated_villages:mossy_mounds/house/farmhouse",
+    "integrated_villages:mossy_mounds/house/house",
+    "integrated_villages:mossy_mounds/house/house1",
+    "integrated_villages:mossy_mounds/house/house2",
+    "integrated_villages:mossy_mounds/house/house_large",
+    "integrated_villages:mossy_mounds/house/house_small",
+    "integrated_villages:mossy_mounds/house/house_small1",
+    "integrated_villages:mossy_mounds/house/house_small2",
+    "integrated_villages:mossy_mounds/house/tavern"
+  ],
+  "piece": [
+    "stagecoach:village/coach_stop_integrated",
+    "stagecoach:village/coach_stop_integrated_roadside",
+    "stagecoach:village/coach_stop_integrated_compact"
+  ],
+  "guaranteed": true,
+  "theme": "stagecoach:plains",
+  "wood": "spruce",
+  "projection": "rigid"
+}

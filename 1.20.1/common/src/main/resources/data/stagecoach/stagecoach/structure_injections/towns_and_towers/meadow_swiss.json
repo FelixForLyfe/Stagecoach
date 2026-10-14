@@ -1,0 +1,17 @@
+{
+  "requires_mods": [
+    "t_and_t"
+  ],
+  "target_pools": [
+    "kaisyn:village/meadow_swiss/houses"
+  ],
+  "piece": [
+    "stagecoach:village/coach_stop_small",
+    "stagecoach:village/coach_stop_small_roadside",
+    "stagecoach:village/coach_stop_small_compact"
+  ],
+  "guaranteed": true,
+  "theme": "stagecoach:taiga",
+  "wood": "dark_oak",
+  "projection": "rigid"
+}

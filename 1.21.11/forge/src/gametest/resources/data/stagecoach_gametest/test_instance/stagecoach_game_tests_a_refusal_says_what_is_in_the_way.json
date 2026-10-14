@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:function",
+  "function": "stagecoach_gametest:stagecoach_game_tests_a_refusal_says_what_is_in_the_way",
+  "environment": "minecraft:default",
+  "structure": "stagecoach:gametest/empty",
+  "max_ticks": 20,
+  "padding": 1
+}

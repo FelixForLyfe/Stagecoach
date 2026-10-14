@@ -1,0 +1,42 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "stagecoach:builtin_advancements"
+    }
+  ],
+  "neoforge:conditions": [
+    {
+      "type": "stagecoach:builtin_advancements"
+    }
+  ],
+  "forge:condition": {
+    "type": "stagecoach:builtin_advancements"
+  },
+  "display": {
+    "icon": {
+      "id": "stagecoach:oak_stagecoach"
+    },
+    "title": {
+      "translate": "advancements.stagecoach.root.title"
+    },
+    "description": {
+      "translate": "advancements.stagecoach.root.description"
+    },
+    "frame": "task",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false,
+    "background": "minecraft:textures/block/spruce_planks.png"
+  },
+  "criteria": {
+    "root": {
+      "trigger": "stagecoach:coach_placed",
+      "conditions": {}
+    }
+  },
+  "requirements": [
+    [
+      "root"
+    ]
+  ]
+}

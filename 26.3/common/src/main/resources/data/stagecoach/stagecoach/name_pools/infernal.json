@@ -1,0 +1,45 @@
+{
+  "patterns": [
+    "{prefix}{suffix}",
+    "{prefix}{suffix} Crossing",
+    "{prefix}{suffix} Stop"
+  ],
+  "prefix": [
+    "Ash",
+    "Cinder",
+    "Ember",
+    "Soot",
+    "Slag",
+    "Char",
+    "Brand",
+    "Scorch",
+    "Blaze",
+    "Basalt",
+    "Magma",
+    "Smoke",
+    "Pyre",
+    "Flint",
+    "Sulfur",
+    "Crimson",
+    "Quartz",
+    "Kiln",
+    "Tinder",
+    "Clinker"
+  ],
+  "suffix": [
+    "gate",
+    "hollow",
+    "pit",
+    "forge",
+    "reach",
+    "deep",
+    "spire",
+    "crag",
+    "rift",
+    "vault",
+    "maw",
+    "scar",
+    "keep",
+    "hearth"
+  ]
+}

@@ -1,0 +1,9 @@
+{
+  "model": {
+    "type": "minecraft:special",
+    "base": "stagecoach:item/cherry_stagecoach",
+    "model": {
+      "type": "geckolib:geckolib"
+    }
+  }
+}

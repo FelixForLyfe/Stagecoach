@@ -1,0 +1,35 @@
+{
+  "conditions": [
+    {
+      "type": "stagecoach:tfc_recipes"
+    }
+  ],
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": [
+    "PCP",
+    "LDL",
+    "DGD"
+  ],
+  "key": {
+    "P": {
+      "item": "tfc:wood/lumber/blackwood"
+    },
+    "C": {
+      "tag": "forge:chests/wooden"
+    },
+    "L": {
+      "item": "minecraft:lead"
+    },
+    "D": {
+      "item": "tfc:metal/double_sheet/steel"
+    },
+    "G": {
+      "item": "tfc:metal/sheet/gold"
+    }
+  },
+  "result": {
+    "item": "stagecoach:dark_oak_stagecoach",
+    "count": 1
+  }
+}
