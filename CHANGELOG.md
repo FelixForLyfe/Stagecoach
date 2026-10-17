@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.1 — coach stops in Luki's Grand Capitals
+
+- **Luki's Grand Capitals** villages now get their coach stop, like every other village: its rebuilt plains, desert,
+  savanna, snowy and taiga villages, each in its own wood (spruce, and dark oak in the taiga). Luki's Grand Capitals
+  replaces the vanilla villages, so until now a world with it installed had no village stops at all. The mod and the
+  datapack version both work.
+- For Minecraft 1.20.1, 1.21.1 and 1.21.11, the versions Luki's Grand Capitals is out for. Nothing else changes, and
+  1.2.0 and 1.2.1 can play together.
+
 ## 1.2.0 — a coach stop in every village, and a toolkit for pack makers
 
 **Villages now come with a coach stop.** With natural generation on (the default), every village gets exactly one

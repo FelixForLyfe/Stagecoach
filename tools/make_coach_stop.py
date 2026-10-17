@@ -4,7 +4,8 @@ Three shapes, tried in this order: the coach facing the street (7 x 8), parked a
 tightest plots the coach alone beside the road with its sign and lantern (6 x 4). Each is a dirt-path pad with one
 jigsaw at the street edge. Jigsaws match by name before any processor runs, so each connector needs its own copy:
 vanilla's building_entrance (vanilla, Repurposed Structures, CTOV, Towns and Towers), Integrated Villages' house, each
-Dungeons and Taverns village's house, and a Dungeons and Taverns event slot per tavern wood. The coach's block entity
+Dungeons and Taverns village's house, each Luki's Grand Capitals village's house, and a Dungeons and Taverns event slot
+per tavern wood. The coach's block entity
 carries no id: it registers as a new stop when its chunk generates, and the injection's processor adds the theme.
 Hand-built pieces can replace these: save one with a structure block around a placed coach, with the same jigsaw.
 """
@@ -39,12 +40,14 @@ TAVERN_WOODS = ["acacia", "birch", "cherry", "dappled", "dark_oak", "desert", "j
 DT_HOUSES = {"dt_birch": "nova_structures:birch_house", "dt_dappled": "nova_structures:dappled_house",
              "dt_jungle": "minecraft:jungle_house", "dt_swamp": "minecraft:swamp_house",
              "dt_remnant": "nova_structures:remnant_village_house"}
+# Luki's Grand Capitals replaces the five vanilla villages; its streets join houses by one name per village
+LUKI_HOUSES = {f"luki_{kind}": f"revampedvillages:{kind}/house" for kind in ("plains", "desert", "savanna", "snowy", "taiga")}
 # file name -> (jigsaw name, jigsaw target, joint, shape)
 VARIANTS = {}
 for _shape in SHAPES:
     VARIANTS[f"coach_stop_small{_shape}"] = ("minecraft:building_entrance", "minecraft:building_entrance", "aligned", _shape)
     VARIANTS[f"coach_stop_integrated{_shape}"] = ("integrated_villages:house", "integrated_villages:house", "aligned", _shape)
-    for _key, _name in DT_HOUSES.items():
+    for _key, _name in (DT_HOUSES | LUKI_HOUSES).items():
         VARIANTS[f"coach_stop_{_key}{_shape}"] = (_name, "minecraft:empty", "aligned", _shape)
 for _wood in TAVERN_WOODS:
     VARIANTS[f"coach_stop_tavern_{_wood}"] = (f"nova_structures:tavern_event_{_wood}", f"nova_structures:tavern_middle_{_wood}",

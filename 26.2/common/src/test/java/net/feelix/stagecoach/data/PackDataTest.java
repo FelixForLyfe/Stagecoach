@@ -150,4 +150,22 @@ class PackDataTest {
             assertEquals(!tavern, i.guaranteed(), file + ": villages are guaranteed, taverns are a chance");
         }
     }
+
+    @Test
+    void everyPieceAnInjectionNamesIsShipped() throws IOException {
+        Path dir = Path.of("common/src/main/resources/data/stagecoach/stagecoach/structure_injections");
+        Path pieces = Path.of("common/src/main/resources/data/stagecoach/structure");
+        List<Path> files;
+        try (Stream<Path> walk = Files.walk(dir)) {
+            files = walk.filter(p -> p.toString().endsWith(".json")).toList();
+        }
+        for (Path file : files) {
+            Injection i = Injection.parse(JsonParser.parseString(Files.readString(file)).getAsJsonObject());
+            for (String piece : i.pieces()) {
+                assertTrue(piece.startsWith("stagecoach:"), file + " names " + piece);
+                Path nbt = pieces.resolve(piece.substring("stagecoach:".length()) + ".nbt");
+                assertTrue(Files.isRegularFile(nbt), file + " names " + piece + ", which isn't shipped");
+            }
+        }
+    }
 }

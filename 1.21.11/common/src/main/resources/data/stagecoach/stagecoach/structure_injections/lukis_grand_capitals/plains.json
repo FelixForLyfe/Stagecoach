@@ -1,0 +1,16 @@
+{
+  "requires_mods": [],
+  "target_pools": [
+    "revampedvillages:pool",
+    "revampedvillages:end"
+  ],
+  "piece": [
+    "stagecoach:village/coach_stop_luki_plains",
+    "stagecoach:village/coach_stop_luki_plains_roadside",
+    "stagecoach:village/coach_stop_luki_plains_compact"
+  ],
+  "guaranteed": true,
+  "theme": "stagecoach:plains",
+  "wood": "spruce",
+  "projection": "rigid"
+}

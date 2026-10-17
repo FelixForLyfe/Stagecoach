@@ -1,0 +1,16 @@
+{
+  "requires_mods": [],
+  "target_pools": [
+    "revampedvillages:desert/pool",
+    "revampedvillages:desert/end"
+  ],
+  "piece": [
+    "stagecoach:village/coach_stop_luki_desert",
+    "stagecoach:village/coach_stop_luki_desert_roadside",
+    "stagecoach:village/coach_stop_luki_desert_compact"
+  ],
+  "guaranteed": true,
+  "theme": "stagecoach:desert",
+  "wood": "spruce",
+  "projection": "rigid"
+}

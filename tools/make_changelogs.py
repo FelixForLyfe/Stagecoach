@@ -6,7 +6,7 @@ integrations that build has. Earlier versions' files stay as they were uploaded.
 import os
 import re
 
-VERSION = '1.2.0'
+VERSION = '1.2.1'
 ROOT = os.path.join(os.path.dirname(__file__), '..')
 OUT = os.path.join(ROOT, 'release', 'changelogs', VERSION)
 
@@ -38,7 +38,12 @@ def section():
 
 def for_build(loader, minecraft, integrations):
     s = section()
-    s = s[:s.index('### What exists on which build')].rstrip() + '\n'
+    if '### What exists on which build' in s:
+        s = s[:s.index('### What exists on which build')].rstrip() + '\n'
+    if VERSION == '1.2.1' and minecraft.startswith('26.'):
+        title = s.splitlines()[0]
+        return (f"{title}\n\nNothing changes on this build: Luki's Grand Capitals, the reason for 1.2.1, isn't out for Minecraft\n"
+                f"{minecraft}. This file keeps every build on the same version. 1.2.0 and 1.2.1 can play together.\n")
     if 'KubeJS' not in integrations:
         s = re.sub(r"- \*\*KubeJS\*\*:[^\n]*\n", '', s)
         s = s.replace('a Java API with events, KubeJS support,', 'a Java API with events,')

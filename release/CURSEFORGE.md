@@ -8,7 +8,15 @@ names; uploads go Fabric, then Forge, then NeoForge, oldest Minecraft first; tag
 loader, Java 17/21/25 and Client + Server; only GeckoLib (and Fabric API on Fabric) are listed, as required
 dependencies.
 
-## 1. Upload the fourteen 1.2.0 files
+## 1.2.1 (built 2026-10-18)
+
+Luki's Grand Capitals support, nothing else. Same fourteen files as 1.2.0 with `1.2.1` in the name, the same tags and
+the same required dependencies, uploaded in the same order; each file's changelog is `changelogs/1.2.1/<loader>-<mc>.md`.
+The six 26.x changelogs say plainly that nothing changes on those builds (Luki's isn't out for 26.x).
+
+## The 1.2.0 upload (for reference)
+
+### 1. Upload the fourteen 1.2.0 files
 
 On the project's **Files** tab, upload each jar as its own file (**never** the `-sources` jars). For every one:
 Release type **Release**, Environment **Client and Server**, Changelog type **Markdown**, and paste that file's own

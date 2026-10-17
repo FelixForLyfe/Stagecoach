@@ -3,7 +3,8 @@
 Every village gets one guaranteed coach stop, in the wood its houses are built from (counted from the mods' own templates
 with tools/count_village_woods.py). Taverns get theirs by chance. Pool ids were read from the mods' jars (2026-10-13):
 Repurposed Structures 7.1.25-7.8.4, CTOV 3.4.14-4.1.0, Towns and Towers 1.12-1.13.12, Integrated Villages 1.3.2-1.3.3,
-Dungeons and Taverns 3.0.3-6.0.2. A pool a version doesn't have is skipped at runtime, so every folder ships the same files.
+Dungeons and Taverns 3.0.3-6.0.2, Luki's Grand Capitals 1.1.3. A pool a version doesn't have is skipped at runtime, so every
+folder ships the same files.
 """
 import json
 from pathlib import Path
@@ -28,6 +29,8 @@ WOOD = {
     "minecraft:village/plains/houses": "oak", "minecraft:village/desert/houses": "jungle",
     "minecraft:village/savanna/houses": "acacia", "minecraft:village/snowy/houses": "spruce",
     "minecraft:village/taiga/houses": "spruce",
+    "revampedvillages:pool": "spruce", "revampedvillages:desert/pool": "spruce", "revampedvillages:savanna/pool": "spruce",
+    "revampedvillages:snowy/pool": "spruce", "revampedvillages:taiga/pool": "dark_oak",
     "repurposed_structures:villages/badlands/houses": "dark_oak", "repurposed_structures:villages/bamboo/houses": "bamboo",
     "repurposed_structures:villages/birch/houses": "birch", "repurposed_structures:villages/cherry/houses": "cherry",
     "repurposed_structures:villages/crimson/houses": "crimson", "repurposed_structures:villages/dappled/houses": "oak",
@@ -104,6 +107,13 @@ DT = {"village_birch": ("nova_structures:birch_village/birch_house", "dt_birch",
 for name, (pool, piece, theme) in DT.items():
     POOLS.append((f"dungeons_and_taverns/{name}", None, [pool], theme,
                   [f"stagecoach:village/coach_stop_{piece}{shape}" for shape in ("", "_roadside", "_compact")]))
+# Luki's Grand Capitals (a mod and a datapack) replaces the five vanilla villages: houses and streets share one pool,
+# and the fallback pool at the end of a street is houses only. Plains has no folder of its own.
+LUKI = {kind: [f"revampedvillages:{'' if kind == 'plains' else kind + '/'}{pool}" for pool in ("pool", "end")]
+        for kind in ("plains", "desert", "savanna", "snowy", "taiga")}
+for kind, pools in LUKI.items():
+    POOLS.append((f"lukis_grand_capitals/{kind}", None, pools, kind,
+                  [f"stagecoach:village/coach_stop_luki_{kind}{shape}" for shape in ("", "_roadside", "_compact")]))
 # Integrated Villages: every house pool its streets use, in 1.20.1 and 1.21.1. The airship village is ships in the sky
 # (no road), and the sunken village is the swamp village's pools.
 IV = {"cabin_village": ("taiga", ["house/farmer", "house/house"]),

@@ -1,0 +1,16 @@
+{
+  "requires_mods": [],
+  "target_pools": [
+    "revampedvillages:savanna/pool",
+    "revampedvillages:savanna/end"
+  ],
+  "piece": [
+    "stagecoach:village/coach_stop_luki_savanna",
+    "stagecoach:village/coach_stop_luki_savanna_roadside",
+    "stagecoach:village/coach_stop_luki_savanna_compact"
+  ],
+  "guaranteed": true,
+  "theme": "stagecoach:savanna",
+  "wood": "spruce",
+  "projection": "rigid"
+}

@@ -49,8 +49,8 @@ of, and named from a name pool that suits the village ("Frostholm Crossing" in t
 desert).
 
 Out of the box this covers the vanilla villages (and zombie villages), Repurposed Structures, ChoiceTheorem's
-Overhauled Village, Towns and Towers, Integrated Villages and Dungeons and Taverns' villages. Dungeons and Taverns'
-taverns get a stop by chance instead.
+Overhauled Village, Towns and Towers, Integrated Villages, Dungeons and Taverns' villages and Luki's Grand Capitals
+(since 1.2.1; the mod or the datapack). Dungeons and Taverns' taverns get a stop by chance instead.
 
 The pieces come in three shapes, tried in order: the coach facing the street (7 × 8), parked alongside it (8 × 5), and
 the coach alone beside the road (6 × 4) for the tightest plots.
@@ -101,6 +101,7 @@ A piece joins a house slot by its jigsaw. The pieces Stagecoach ships:
 | `stagecoach:village/coach_stop_small` (+ `_roadside`, `_compact`) | `minecraft:building_entrance` | Vanilla, Repurposed Structures, CTOV, Towns and Towers, and most village mods |
 | `stagecoach:village/coach_stop_integrated` (+ `_roadside`, `_compact`) | `integrated_villages:house` | Integrated Villages |
 | `stagecoach:village/coach_stop_dt_birch`, `_dt_dappled`, `_dt_jungle`, `_dt_swamp`, `_dt_remnant` (+ `_roadside`, `_compact`) | Dungeons and Taverns' own house connectors | Dungeons and Taverns villages |
+| `stagecoach:village/coach_stop_luki_plains`, `_luki_desert`, `_luki_savanna`, `_luki_snowy`, `_luki_taiga` (+ `_roadside`, `_compact`) | `revampedvillages:<village>/house` | Luki's Grand Capitals |
 
 If your town's streets use another connector name, build your own piece: a dirt path pad with a coach on it and a
 jigsaw block at the street edge whose name matches the street's target, saved with a structure block. Put its id in

@@ -1,0 +1,16 @@
+{
+  "requires_mods": [],
+  "target_pools": [
+    "revampedvillages:snowy/pool",
+    "revampedvillages:snowy/end"
+  ],
+  "piece": [
+    "stagecoach:village/coach_stop_luki_snowy",
+    "stagecoach:village/coach_stop_luki_snowy_roadside",
+    "stagecoach:village/coach_stop_luki_snowy_compact"
+  ],
+  "guaranteed": true,
+  "theme": "stagecoach:snowy",
+  "wood": "spruce",
+  "projection": "rigid"
+}

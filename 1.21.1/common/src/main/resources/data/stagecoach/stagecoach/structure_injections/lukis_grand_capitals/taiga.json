@@ -1,0 +1,16 @@
+{
+  "requires_mods": [],
+  "target_pools": [
+    "revampedvillages:taiga/pool",
+    "revampedvillages:taiga/end"
+  ],
+  "piece": [
+    "stagecoach:village/coach_stop_luki_taiga",
+    "stagecoach:village/coach_stop_luki_taiga_roadside",
+    "stagecoach:village/coach_stop_luki_taiga_compact"
+  ],
+  "guaranteed": true,
+  "theme": "stagecoach:taiga",
+  "wood": "dark_oak",
+  "projection": "rigid"
+}

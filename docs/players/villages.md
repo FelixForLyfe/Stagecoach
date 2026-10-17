@@ -27,6 +27,7 @@ Villages from these mods get a stop too, in their own wood:
 - Towns and Towers
 - Integrated Villages
 - Dungeons and Taverns (its villages; its taverns get one now and then, named like an inn: "The Lucky Badger Inn")
+- Luki's Grand Capitals (its rebuilt plains, desert, savanna, snowy and taiga villages, on Minecraft 1.20.1 to 1.21.11)
 
 A handful of tiny Towns and Towers settlements, a single building with no street, have no room for one.
 
