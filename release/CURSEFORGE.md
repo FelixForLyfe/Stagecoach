@@ -8,7 +8,7 @@ names; uploads go Fabric, then Forge, then NeoForge, oldest Minecraft first; tag
 loader, Java 17/21/25 and Client + Server; only GeckoLib (and Fabric API on Fabric) are listed, as required
 dependencies.
 
-## 1.2.1 (built 2026-10-18)
+## 1.2.1 (built and uploaded 2026-10-18, file ids 9234359–9234373)
 
 Luki's Grand Capitals support, nothing else. Same fourteen files as 1.2.0 with `1.2.1` in the name, the same tags and
 the same required dependencies, uploaded in the same order; each file's changelog is `changelogs/1.2.1/<loader>-<mc>.md`.
