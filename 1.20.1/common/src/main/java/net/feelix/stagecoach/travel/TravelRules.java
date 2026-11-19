@@ -71,6 +71,7 @@ public final class TravelRules {
     }
 
     /** Anywhere in the inventory, armour and off hand included; nothing is taken. */
+    @SuppressWarnings("deprecation")
     private static boolean carries(ServerPlayerEntity player, String id) {
         TagKey<Item> tag = null;
         Item item = null;

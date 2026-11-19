@@ -33,6 +33,7 @@ import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 
 /** No block entity: PART, FACING and WOOD say everything; WOOD only feeds pick-block and particles. */
+@SuppressWarnings("deprecation")
 public class StagecoachPartBlock extends Block {
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;
     public static final EnumProperty<StagecoachWood> WOOD = EnumProperty.of("wood", StagecoachWood.class);

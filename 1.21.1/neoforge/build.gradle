@@ -74,6 +74,7 @@ dependencies {
     modCompileOnly("maven.modrinth:kubejs:${rootProject.kubejs_neoforge_version}") { transitive = false }
     modCompileOnly("maven.modrinth:rhino:${rootProject.rhino_neoforge_version}") { transitive = false }
     modCompileOnly compatJar(rootProject.journeymap_neoforge_url, rootProject.journeymap_neoforge_sha1, 'META-INF/jarjar/journeymap-api-')
+    modCompileOnly("dev.ftb.mods:ftb-ranks-neoforge:${rootProject.ftbranks_version}") { transitive = false }
 }
 
 processResources {

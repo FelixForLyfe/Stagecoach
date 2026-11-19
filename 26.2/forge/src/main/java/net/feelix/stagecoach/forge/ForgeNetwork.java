@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 final class ForgeNetwork {
     private ForgeNetwork() {}
 
-    private static final int PROTOCOL = 3;
+    private static final int PROTOCOL = 4;
     /** The destination list is the only large packet, far below this. */
     private static final int MAX_BYTES = 1 << 20;
 
@@ -47,6 +47,7 @@ final class ForgeNetwork {
         }
     }
 
+    @SuppressWarnings("deprecation")
     static void init() {
         channel = ChannelBuilder.named(Stagecoach.id("main")).networkProtocolVersion(PROTOCOL).simpleChannel();
         channel.messageBuilder(Envelope.class)

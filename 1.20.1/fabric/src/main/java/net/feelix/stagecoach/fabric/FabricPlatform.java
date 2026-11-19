@@ -4,11 +4,11 @@ import com.mojang.authlib.GameProfile;
 import net.fabricmc.fabric.api.entity.FakePlayer;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
-import net.fabricmc.fabric.api.object.builder.v1.advancement.CriterionRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.feelix.stagecoach.StagecoachItem;
 import net.feelix.stagecoach.block.StagecoachBlock;
 import net.feelix.stagecoach.platform.Platform;
+import net.minecraft.advancement.criterion.Criteria;
 import net.minecraft.advancement.criterion.Criterion;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
@@ -16,6 +16,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
 
@@ -69,7 +70,12 @@ final class FabricPlatform implements Platform {
     }
 
     @Override
+    public @Nullable String option(ServerPlayerEntity player, String key) {
+        return isModLoaded(PERMISSIONS_API) ? FabricPermissions.option(player, key) : null;
+    }
+
+    @Override
     public void registerCriterion(Criterion<?> criterion) {
-        CriterionRegistry.register(criterion);
+        Criteria.register(criterion);
     }
 }

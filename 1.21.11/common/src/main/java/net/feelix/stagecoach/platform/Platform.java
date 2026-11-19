@@ -13,6 +13,7 @@ import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -51,6 +52,9 @@ public interface Platform {
 
     /** Asks the loader's permission system; {@code fallback} is the answer without one. */
     boolean hasPermission(ServerPlayer player, String node, boolean fallback);
+
+    /** A permission option's value (LuckPerms meta), or null when it isn't set or there's no permission system. */
+    @Nullable String option(ServerPlayer player, String key);
 
     /** Only called while GameStages is loaded. */
     default boolean hasGameStage(ServerPlayer player, String stage) {

@@ -24,11 +24,13 @@ public class StagecoachModel extends GeoModel<StagecoachBlockEntity> {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public Identifier getModelResource(StagecoachBlockEntity animatable) {
         return MODEL;
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public Identifier getTextureResource(StagecoachBlockEntity animatable) {
         return animatable.getCachedState().getBlock() instanceof StagecoachBlock block
                 ? TEXTURES.get(block.wood())

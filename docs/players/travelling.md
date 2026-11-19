@@ -12,8 +12,11 @@ You can only travel to stops you know. To learn a stop, **right-click its coach*
 embers rise from the lanterns, the coachman sounds his horn, and a road-sign card says *Stop discovered* with the
 stop's name. It's yours to travel to from then on.
 
-You know your own coaches from the moment you place them. Some servers mark a few stops as public: everyone knows
-those without finding them. With **Jade**, an undiscovered coach says *Not discovered - right-click to add it*.
+You know your own coaches from the moment you place them. Some stops are **global stops**: everyone can travel to
+them from any stagecoach without finding them first (there's nothing to discover: right-clicking one just opens the
+list), and the destination list marks them with an eye of ender. An
+operator turns a stop global with the button at the top left of its destination list; on some servers owners may do
+it for their own stops too. With **Jade**, an undiscovered coach says *Not discovered - right-click to add it*.
 
 ## The destination list
 

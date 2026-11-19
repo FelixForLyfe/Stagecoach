@@ -9,6 +9,7 @@ base { archivesName = "Stagecoach-fabric-${rootProject.minecraft_version}" }
 
 repositories {
     mavenCentral()
+    maven { name = 'FTB'; url = 'https://maven.ftb.dev/releases/' }
     exclusiveContent {
         forRepository { maven { name = 'Modrinth'; url = 'https://api.modrinth.com/maven' } }
         filter { includeGroup 'maven.modrinth' }
@@ -48,6 +49,7 @@ dependencies {
     compileOnly("maven.modrinth:xaeros-minimap:${rootProject.xaero_fabric}") { transitive = false }
     compileOnly("maven.modrinth:fabric-permissions-api:${rootProject.permissions_fabric}") { transitive = false }
     compileOnly compatJar(rootProject.journeymap_fabric_url, rootProject.journeymap_fabric_sha1, 'META-INF/jars/journeymap-api-')
+    compileOnly("dev.ftb.mods:ftb-ranks-fabric:${rootProject.ftbranks_version}") { transitive = false }
 
     testImplementation platform('org.junit:junit-bom:5.10.2')
     testImplementation 'org.junit.jupiter:junit-jupiter'

@@ -32,6 +32,8 @@ public class DestinationScreen extends Screen {
     private static final ItemStack COMPASS = new ItemStack(Items.COMPASS);
     private static final ItemStack NAME_TAG = new ItemStack(Items.NAME_TAG);
     private static final ItemStack SPYGLASS = new ItemStack(Items.SPYGLASS);
+    private static final ItemStack ENDER_EYE = new ItemStack(Items.ENDER_EYE);
+    private static final ItemStack ENDER_PEARL = new ItemStack(Items.ENDER_PEARL);
     private static final int ROW_H = 24;
 
     /** Text worked out once, so drawing a frame allocates nothing. */
@@ -44,7 +46,7 @@ public class DestinationScreen extends Screen {
     private final List<Row> rows = new ArrayList<>();
     private final List<Row> shown = new ArrayList<>();
     private TextFieldWidget search;
-    private ButtonWidget travel, rename;
+    private ButtonWidget travel, rename, global;
     private long selected = -1;
     private double scroll;
     private boolean draggingBar;
@@ -52,6 +54,7 @@ public class DestinationScreen extends Screen {
     private int px, py, pw, ph, listX, listY, listW, listH, barX;
     private List<OrderedText> emptyHint = List.of();
 
+    @SuppressWarnings("deprecation")
     public DestinationScreen(Packets.DestinationList data) {
         super(Text.literal(data.name()));
         this.data = data;
@@ -88,6 +91,11 @@ public class DestinationScreen extends Screen {
                             new NamingScreen(new Packets.OpenNaming(data.coachId(), data.name(), true, data.maxNameLength()), this)))
                     .dimensions(px + pw - 32, py + 9, 20, 20)
                     .tooltip(Tooltip.of(Stagecoach.text("tooltip.rename"))).build());
+        }
+        if (data.canSetGlobal()) {
+            global = addDrawableChild(ButtonWidget.builder(Text.empty(), b -> ClientNet.setGlobal(data.coachId(), !data.global()))
+                    .dimensions(px + 12, py + 9, 20, 20)
+                    .tooltip(Tooltip.of(Stagecoach.text(data.global() ? "tooltip.global_on" : "tooltip.global_off"))).build());
         }
         addDrawableChild(ButtonWidget.builder(Stagecoach.text("screen.close"), b -> close())
                 .dimensions(px + pw - 136, py + ph - 29, 56, 20).build());
@@ -245,6 +253,8 @@ public class DestinationScreen extends Screen {
 
         super.render(ctx, mouseX, mouseY, delta);
         if (rename != null) WoodUi.icon(ctx, NAME_TAG, rename.getX() + 2, rename.getY() + 2, 16);
+        if (global != null) WoodUi.icon(ctx, data.global() ? ENDER_EYE : ENDER_PEARL, global.getX() + 2, global.getY() + 2, 16);
+        if (global != null) WoodUi.icon(ctx, data.global() ? ENDER_EYE : ENDER_PEARL, global.getX() + 2, global.getY() + 2, 16);
         if (hovered != null) ctx.drawTooltip(textRenderer, hovered.tooltip(), mouseX, mouseY);
     }
 
@@ -258,7 +268,7 @@ public class DestinationScreen extends Screen {
             ctx.fill(x, y, x + listW, y + ROW_H, 0x22FFF0D0);
         }
         ctx.fill(x + 2, y + ROW_H - 1, x + listW - 2, y + ROW_H, 0x30000000); // a seam between boards
-        WoodUi.icon(ctx, e.owned() ? SADDLE : COMPASS, x + 3, y + 4, 16);
+        WoodUi.icon(ctx, e.owned() ? SADDLE : e.global() ? ENDER_EYE : COMPASS, x + 3, y + 4, 16);
         ctx.drawTextWithShadow(textRenderer, r.name(), x + 22, y + 3, ok ? WoodUi.TEXT : WoodUi.TEXT_MUTED);
 
         int lx = x + 22, ly = y + 13;
@@ -295,7 +305,8 @@ public class DestinationScreen extends Screen {
         lines.add(Text.literal(e.name()).formatted(Formatting.GOLD));
         lines.add(Stagecoach.text("tooltip.coords", e.pos().getX(), e.pos().getY(), e.pos().getZ()).formatted(Formatting.GRAY));
         lines.add(Stagecoach.text("tooltip.distance", e.distance()).formatted(Formatting.GRAY));
-        lines.add(Stagecoach.text(e.owned() ? "tooltip.yours" : "tooltip.discovered").formatted(Formatting.DARK_GRAY));
+        if (e.owned() || !e.global()) lines.add(Stagecoach.text(e.owned() ? "tooltip.yours" : "tooltip.discovered").formatted(Formatting.DARK_GRAY));
+        if (e.global()) lines.add(Stagecoach.text("tooltip.global").formatted(Formatting.AQUA));
         if (e.status() == Packets.STATUS_CANT_AFFORD) {
             Text price = data.itemFare() ? Stagecoach.text("tooltip.price_items", e.cost(), fareIcon.getName()) : Stagecoach.text("tooltip.price_levels", e.cost());
             lines.add(Stagecoach.text("tooltip.cant_afford", price).formatted(Formatting.RED));

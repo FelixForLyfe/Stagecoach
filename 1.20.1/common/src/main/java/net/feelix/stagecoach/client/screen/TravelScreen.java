@@ -32,6 +32,7 @@ import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.lwjgl.glfw.GLFW;
 
+@SuppressWarnings("removal")
 public class TravelScreen extends Screen {
     private static final Identifier MAP = new Identifier("textures/map/map_background.png");
     private static final Identifier ICONS = new Identifier("textures/map/map_icons.png");

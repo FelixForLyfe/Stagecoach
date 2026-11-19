@@ -25,6 +25,7 @@ public class StagecoachItem extends BlockItem implements GeoItem {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> tooltip,
                                 TooltipFlag flag) {
         tooltip.accept(Stagecoach.text("item.place").withStyle(ChatFormatting.GRAY));

@@ -32,7 +32,7 @@ Every stop has a numeric id that never changes and is never reused. `/stagecoach
 | `stop info <stop>` | Name, id, position and facing, owner, how it was made (player, admin or structure), wood, flags, cost multiplier, scene, and for a generated stop its settlement |
 | `stop rename <stop> <new name>` | Renames it (the rest of the line is the name) |
 | `stop setowner <stop> <player>` / `stop setowner <stop> none` | Gives the stop to a player (online or known to the server), or to the server |
-| `stop flag public\|hidden\|locked\|free <stop> <true\|false>` | Sets a flag (see below) |
+| `stop flag public\|global\|hidden\|locked\|free <stop> <true\|false>` | Sets a flag (see below; `global` is another name for `public`) |
 | `stop cost <stop> <multiplier>` | Multiplies this stop's fare (0–1000; 0 is free) |
 | `stop scene <stop> <scene id>` / `stop scene <stop> none` | Gives the stop its own [travel scene](theming.md) |
 | `stop remove <stop> [keepCoach]` | Removes the stop and its coach. With `keepCoach` the coach stays as an out-of-service decoration that never becomes a stop again |
@@ -42,7 +42,7 @@ Every stop has a numeric id that never changes and is never reused. `/stagecoach
 
 | Flag | Effect |
 |---|---|
-| `public` | Everyone knows the stop without discovering it; right-clicking it opens the list straight away |
+| `public` (or `global`) | A **global stop**: every player can travel to it from any stagecoach without discovering it, and right-clicking it opens the list straight away. It can't be discovered: it never joins anyone's discovered stops, so turning it back into a normal stop leaves it known only to the players who had discovered it before (`discover` skips it too). Players with permission can also switch it with the button at the top left of the destination list |
 | `hidden` | Left out of every destination list, the owner's too; players can still set off from it |
 | `locked` | Nobody can break it, operators in creative included, and explosions don't touch it. `stop remove` still works, and so do `/setblock` and `/fill` |
 | `free` | Journeys to it cost nothing |
@@ -72,6 +72,9 @@ players placed do.
 | `export <name>` | Writes every stop to `config/stagecoach/exports/<name>.json` ([format](export-import.md)) |
 | `import <name> [replace]` | Builds the stops in that file. Without `replace`, a stop whose name or position is taken is skipped; with it, the old stop is removed first |
 | `reload` | Reads `config/stagecoach.json` again and applies the structure injections again. Datapack files reload with `/reload`, resource-pack scenes with F3+T |
+| `config` | Lists every setting with its value; click one to see it |
+| `config <setting>` | Shows one setting and the permission option that overrides it per player |
+| `config <setting> <value>` | Changes a setting, saves it to `config/stagecoach.json` and applies it at once. Lists are written as JSON, e.g. `/stagecoach config blockedDimensions ["minecraft:the_end"]` |
 
 ## Examples
 

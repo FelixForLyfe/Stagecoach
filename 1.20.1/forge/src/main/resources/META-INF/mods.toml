@@ -78,6 +78,13 @@ ordering = "NONE"
 side = "SERVER"
 
 [[dependencies.stagecoach]]
+modId = "ftbranks"
+mandatory = false
+versionRange = "*"
+ordering = "NONE"
+side = "SERVER"
+
+[[dependencies.stagecoach]]
 modId = "kubejs"
 mandatory = false
 versionRange = "*"

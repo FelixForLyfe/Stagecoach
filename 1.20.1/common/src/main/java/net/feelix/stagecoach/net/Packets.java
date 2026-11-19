@@ -26,6 +26,7 @@ public final class Packets {
     public static final Identifier TRAVEL = Stagecoach.id("travel");
     public static final Identifier CANCEL = Stagecoach.id("cancel");
     public static final Identifier WANT_STOPS = Stagecoach.id("want_stops");
+    public static final Identifier SET_GLOBAL = Stagecoach.id("set_global");
 
     /** A 64 code point name is at most 128 UTF-16 chars. */
     private static final int MAX_STRING = 256;
@@ -75,9 +76,21 @@ public final class Packets {
         }
     }
 
+    /** Turns the coach the list was opened at into a global stop, or back; the server checks who may. */
+    public record SetGlobal(long coachId, boolean global) {
+        public void write(PacketByteBuf buf) {
+            buf.writeLong(coachId);
+            buf.writeBoolean(global);
+        }
+
+        public static SetGlobal read(PacketByteBuf buf) {
+            return new SetGlobal(buf.readLong(), buf.readBoolean());
+        }
+    }
+
     /** {@code cost} is levels, or items when {@code itemFare} is set; {@code lockMessage} goes with STATUS_LOCKED. */
     public record Entry(long id, String name, BlockPos pos, Identifier dimension, int distance, int cost, int seconds,
-                        boolean owned, byte status, @Nullable Text lockMessage) {
+                        boolean owned, boolean global, byte status, @Nullable Text lockMessage) {
         void write(PacketByteBuf buf) {
             buf.writeLong(id);
             buf.writeString(name, MAX_STRING);
@@ -87,6 +100,7 @@ public final class Packets {
             buf.writeVarInt(cost);
             buf.writeVarInt(seconds);
             buf.writeBoolean(owned);
+            buf.writeBoolean(global);
             buf.writeByte(status);
             buf.writeBoolean(lockMessage != null);
             if (lockMessage != null) buf.writeText(lockMessage);
@@ -98,10 +112,10 @@ public final class Packets {
             BlockPos pos = buf.readBlockPos();
             Identifier dimension = buf.readIdentifier();
             int distance = buf.readVarInt(), cost = buf.readVarInt(), seconds = buf.readVarInt();
-            boolean owned = buf.readBoolean();
+            boolean owned = buf.readBoolean(), global = buf.readBoolean();
             byte status = buf.readByte();
             Text lock = buf.readBoolean() ? buf.readText() : null;
-            return new Entry(id, name, pos, dimension, distance, cost, seconds, owned, status, lock);
+            return new Entry(id, name, pos, dimension, distance, cost, seconds, owned, global, status, lock);
         }
 
         static List<Entry> readList(PacketByteBuf buf) {
@@ -118,12 +132,14 @@ public final class Packets {
     }
 
     /** {@code balance} is levels, or the fare items carried; {@code entries} may be only the first page of {@code total}. */
-    public record DestinationList(long coachId, String name, boolean canRename, boolean free, boolean itemFare,
+    public record DestinationList(long coachId, String name, boolean canRename, boolean canSetGlobal, boolean global, boolean free, boolean itemFare,
                                   Identifier fareItem, int balance, int maxDistance, int maxNameLength, int total, List<Entry> entries) {
         public void write(PacketByteBuf buf) {
             buf.writeLong(coachId);
             buf.writeString(name, MAX_STRING);
             buf.writeBoolean(canRename);
+            buf.writeBoolean(canSetGlobal);
+            buf.writeBoolean(global);
             buf.writeBoolean(free);
             buf.writeBoolean(itemFare);
             buf.writeIdentifier(fareItem);
@@ -137,16 +153,16 @@ public final class Packets {
         public static DestinationList read(PacketByteBuf buf) {
             long id = buf.readLong();
             String name = buf.readString(MAX_STRING);
-            boolean canRename = buf.readBoolean(), free = buf.readBoolean(), itemFare = buf.readBoolean();
+            boolean canRename = buf.readBoolean(), canSetGlobal = buf.readBoolean(), global = buf.readBoolean(), free = buf.readBoolean(), itemFare = buf.readBoolean();
             Identifier icon = buf.readIdentifier();
             int balance = buf.readVarInt(), maxDistance = buf.readVarInt(), maxNameLength = buf.readVarInt();
             int total = Math.min(buf.readVarInt(), MAX_ENTRIES);
-            return new DestinationList(id, name, canRename, free, itemFare, icon, balance, maxDistance, maxNameLength, total,
+            return new DestinationList(id, name, canRename, canSetGlobal, global, free, itemFare, icon, balance, maxDistance, maxNameLength, total,
                     Entry.readList(buf));
         }
 
         public DestinationList firstPage() {
-            return new DestinationList(coachId, name, canRename, free, itemFare, fareItem, balance, maxDistance, maxNameLength, total,
+            return new DestinationList(coachId, name, canRename, canSetGlobal, global, free, itemFare, fareItem, balance, maxDistance, maxNameLength, total,
                     entries.subList(0, Math.min(entries.size(), PAGE)));
         }
     }

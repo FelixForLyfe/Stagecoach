@@ -16,6 +16,7 @@ import net.minecraft.network.PacketByteBuf;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
 
@@ -73,6 +74,11 @@ final class FabricPlatform implements Platform {
     @Override
     public boolean hasPermission(ServerPlayerEntity player, String node, boolean fallback) {
         return isModLoaded(PERMISSIONS_API) ? FabricPermissions.check(player, node, fallback) : fallback;
+    }
+
+    @Override
+    public @Nullable String option(ServerPlayerEntity player, String key) {
+        return isModLoaded(PERMISSIONS_API) ? FabricPermissions.option(player, key) : null;
     }
 
 }

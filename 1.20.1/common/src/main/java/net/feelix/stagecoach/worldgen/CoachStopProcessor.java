@@ -40,6 +40,7 @@ public final class CoachStopProcessor extends StructureProcessor {
     }
 
     @Override
+    @SuppressWarnings({"deprecation", "removal"})
     public @Nullable StructureTemplate.StructureBlockInfo process(WorldView world, BlockPos pos, BlockPos pivot,
                                                                 StructureTemplate.StructureBlockInfo original,
                                                                 StructureTemplate.StructureBlockInfo current, StructurePlacementData data) {

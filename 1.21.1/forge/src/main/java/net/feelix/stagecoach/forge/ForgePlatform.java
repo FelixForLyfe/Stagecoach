@@ -18,6 +18,7 @@ import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fml.loading.FMLPaths;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -78,5 +79,10 @@ final class ForgePlatform implements Platform {
     @Override
     public boolean hasPermission(ServerPlayerEntity player, String node, boolean fallback) {
         return ForgePermissions.check(player, node, fallback);
+    }
+
+    @Override
+    public @Nullable String option(ServerPlayerEntity player, String key) {
+        return ForgePermissions.option(player, key);
     }
 }

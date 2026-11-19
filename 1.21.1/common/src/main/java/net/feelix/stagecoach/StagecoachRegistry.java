@@ -75,6 +75,7 @@ public final class StagecoachRegistry {
     }
 
     /** Forced solid: vanilla lets fluids wash away a block with a small shape. */
+    @SuppressWarnings("deprecation")
     private static AbstractBlock.Settings settings(StagecoachWood wood) {
         Block planks = wood.planks();
         return AbstractBlock.Settings.create()

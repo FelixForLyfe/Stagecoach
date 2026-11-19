@@ -100,6 +100,36 @@ public class TravelGameTests {
     }
 
     @GameTest(templateName = ROAD)
+    public void globalStopsNeedPermissionAndEveryoneKnowsThem(TestContext ctx) {
+        ServerPlayerEntity owner = connect(ctx, "owner"), visitor = connect(ctx, "visitor");
+        CoachRecord a = place(ctx, owner, A, StagecoachWood.OAK), b = place(ctx, owner, B, StagecoachWood.BIRCH);
+        standAt(ctx, owner, B.south(3));
+        standAt(ctx, visitor, B.south(3));
+        check(ctx, !StagecoachService.buildList(owner, b).canSetGlobal(), "by default only operators may make a stop global");
+        StagecoachService.setGlobal(owner, new Packets.SetGlobal(b.id, true));
+        check(ctx, !b.isPublic, "a plain owner was refused");
+        check(ctx, StagecoachService.destinations(visitor, a).stream().noneMatch(d -> d.stop().id() == b.id), "the visitor doesn't know the stop yet");
+
+        withConfig("{\"anyoneCanMakeGlobal\": true}", () -> {
+            check(ctx, StagecoachService.buildList(owner, b).canSetGlobal(), "with anyoneCanMakeGlobal the owner gets the toggle");
+            StagecoachService.setGlobal(visitor, new Packets.SetGlobal(b.id, true));
+            check(ctx, !b.isPublic, "but only on their own stop");
+            StagecoachService.setGlobal(owner, new Packets.SetGlobal(b.id, true));
+            check(ctx, b.isPublic, "the owner made it global");
+            Packets.Entry e = StagecoachService.buildList(visitor, a).entries().stream().filter(x -> x.id() == b.id).findFirst().orElse(null);
+            check(ctx, e != null && e.global(), "a global stop is in everyone's list without being discovered: " + e);
+            StagecoachService.onUse(ctx.getWorld(), ctx.getAbsolutePos(B), visitor);
+            check(ctx, !state(ctx).hasDiscovered(visitor.getUuid(), b.id), "right-clicking a global stop doesn't discover it");
+            StagecoachService.setGlobal(owner, new Packets.SetGlobal(b.id, false));
+            check(ctx, !b.isPublic && StagecoachService.destinations(visitor, a).stream().noneMatch(d -> d.stop().id() == b.id),
+                    "and turned back into a normal stop");
+        });
+        disconnect(owner);
+        disconnect(visitor);
+        ctx.complete();
+    }
+
+    @GameTest(templateName = ROAD)
     public void theListShowsCostTimeAndAffordability(TestContext ctx) {
         ServerPlayerEntity owner = connect(ctx, "owner");
         CoachRecord a = place(ctx, owner, A, StagecoachWood.OAK), b = place(ctx, owner, B, StagecoachWood.OAK);

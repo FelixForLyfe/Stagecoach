@@ -67,6 +67,7 @@ dependencies {
     modCompileOnly("maven.modrinth:architectury-api:${rootProject.architectury_fabric_version}") { transitive = false }
     modCompileOnly compatJar(rootProject.xaero_fabric_url, rootProject.xaero_fabric_sha1)
     modCompileOnly compatJar(rootProject.journeymap_fabric_url, rootProject.journeymap_fabric_sha1, 'META-INF/jars/journeymap-api-')
+    modCompileOnly("dev.ftb.mods:ftb-ranks-fabric:${rootProject.ftbranks_version}") { transitive = false }
 
     // JUnit 5 for the plain-Java rules (no Minecraft imports), per this repo's test-writing rules.
     testImplementation platform('org.junit:junit-bom:5.10.2')

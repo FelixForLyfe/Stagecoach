@@ -5,6 +5,7 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.Identifier;
 
+@SuppressWarnings("removal")
 public final class WoodUi {
     private WoodUi() {}
 

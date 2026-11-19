@@ -53,6 +53,7 @@
     "journeymap": "*",
     "xaerominimap": "*",
     "openpartiesandclaims": "*",
+    "ftbranks": "*",
     "kubejs": "*",
     "fabric-permissions-api-v0": "*"
   }

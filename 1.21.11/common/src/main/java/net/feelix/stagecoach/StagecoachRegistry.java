@@ -82,6 +82,7 @@ public final class StagecoachRegistry {
     }
 
     /** Forced solid: vanilla lets fluids wash away a block with a small shape. */
+    @SuppressWarnings("deprecation")
     private static BlockBehaviour.Properties properties(StagecoachWood wood) {
         Block planks = wood.planks();
         return BlockBehaviour.Properties.of()

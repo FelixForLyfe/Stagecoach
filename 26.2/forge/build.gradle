@@ -16,7 +16,8 @@ def common = "${rootDir}/common/src"
 // Jade and JEI have no Forge build for 26.x: their plugins stay out of this jar.
 def notOnForge = { element ->
     def path = element.file.path.replace('\\', '/')
-    path.contains('/common/src/main/java/net/feelix/stagecoach/compat/') && (path.contains('/compat/jade/') || path.contains('/compat/jei/'))
+    path.contains('/common/src/main/java/net/feelix/stagecoach/compat/') && (path.contains('/compat/jade/') || path.contains('/compat/jei/')
+            || element.name == 'FtbRanksBridge.java')
 }
 
 sourceSets {

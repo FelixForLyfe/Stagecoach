@@ -11,10 +11,10 @@ import net.feelix.stagecoach.api.StopView;
 import net.feelix.stagecoach.api.event.JourneyCompletedEvent;
 import net.feelix.stagecoach.api.event.JourneyEndedEvent;
 import net.feelix.stagecoach.api.event.JourneyStartedEvent;
-import net.feelix.stagecoach.config.StagecoachConfig;
 import net.feelix.stagecoach.mixin.PlayerManagerAccessor;
 import net.feelix.stagecoach.net.Packets;
 import net.feelix.stagecoach.net.ServerNet;
+import net.feelix.stagecoach.permission.Permissions;
 import net.feelix.stagecoach.platform.EventHooks;
 import net.feelix.stagecoach.platform.Platform;
 import net.minecraft.ChatFormatting;
@@ -120,11 +120,11 @@ public final class JourneyManager {
     }
 
     public static int combatLockSecondsLeft(ServerPlayer player) {
-        return secondsLeft(player, LAST_HURT, StagecoachConfig.get().combatLockSeconds);
+        return secondsLeft(player, LAST_HURT, Permissions.config(player).combatLockSeconds);
     }
 
     public static int cooldownSecondsLeft(ServerPlayer player) {
-        return secondsLeft(player, LAST_ARRIVAL, StagecoachConfig.get().travelCooldownSeconds);
+        return secondsLeft(player, LAST_ARRIVAL, Permissions.config(player).travelCooldownSeconds);
     }
 
     private static int secondsLeft(ServerPlayer player, Object2IntOpenHashMap<UUID> since, int seconds) {
@@ -269,7 +269,7 @@ public final class JourneyManager {
         Vec3 spot = returnSpot(origin, journey);
         player.teleportTo(origin, spot.x, spot.y, spot.z, Set.of(), journey.originFacing.getOpposite().toYRot(), 0, true);
         if (why != EndReason.GAME_MODE_CHANGED) restoreMode(player, journey);
-        int percent = why == EndReason.CANCELLED ? StagecoachConfig.get().cancelRefundPercent : 100;
+        int percent = why == EndReason.CANCELLED ? Permissions.config(player).cancelRefundPercent : 100;
         refund(player, journey, percent, true);
         finish(player, journey);
         if (why != EndReason.DISCONNECTED && why != EndReason.SERVER_STOPPED) {
@@ -293,6 +293,7 @@ public final class JourneyManager {
         ServerNet.onLeft(player);
         Journey journey = StagecoachState.get(player.level().getServer()).journey(player.getUUID());
         if (journey != null && isTravelling(player.getUUID())) endEarly(player, journey, EndReason.DISCONNECTED);
+        Permissions.forget(player.getUUID());
     }
 
     /** Died on the road: stay at the respawn point, get the mode and the fare back. */
@@ -366,6 +367,7 @@ public final class JourneyManager {
         return view == null ? "" : view.name();
     }
 
+    @SuppressWarnings("deprecation")
     private static void restoreMode(ServerPlayer player, Journey journey) {
         GameType mode = journey.savedMode == GameType.SPECTATOR ? GameType.SURVIVAL : journey.savedMode;
         player.setGameMode(mode);                     // sets that mode's abilities (flight allowed, invulnerable, ...)

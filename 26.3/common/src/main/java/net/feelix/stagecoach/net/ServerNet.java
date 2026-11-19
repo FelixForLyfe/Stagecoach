@@ -3,6 +3,7 @@ package net.feelix.stagecoach.net;
 import io.netty.buffer.Unpooled;
 import net.feelix.stagecoach.api.Destination;
 import net.feelix.stagecoach.config.StagecoachConfig;
+import net.feelix.stagecoach.permission.Permissions;
 import net.feelix.stagecoach.platform.Platform;
 import net.feelix.stagecoach.travel.CoachRecord;
 import net.feelix.stagecoach.travel.Journey;
@@ -45,6 +46,10 @@ public final class ServerNet {
             Packets.Travel request = Packets.Travel.read(buf);
             server.execute(() -> StagecoachService.travel(player, request));
         });
+        net.registerServerReceiver(Packets.SET_GLOBAL, (server, player, buf) -> {
+            Packets.SetGlobal request = Packets.SetGlobal.read(buf);
+            server.execute(() -> StagecoachService.setGlobal(player, request));
+        });
         net.registerServerReceiver(Packets.CANCEL, (server, player, buf) -> server.execute(() -> JourneyManager.cancel(player)));
         net.registerServerReceiver(Packets.WANT_STOPS, (server, player, buf) -> server.execute(() -> {
             WANT_STOPS.add(player.getUUID());
@@ -71,7 +76,7 @@ public final class ServerNet {
 
     public static void openNaming(ServerPlayer player, CoachRecord record, boolean rename) {
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-        new Packets.OpenNaming(record.id, record.name, rename, StagecoachConfig.get().maxNameLength).write(buf);
+        new Packets.OpenNaming(record.id, record.name, rename, Permissions.config(player).maxNameLength).write(buf);
         Platform.get().sendToPlayer(player, Packets.OPEN_NAMING, buf);
     }
 
@@ -89,7 +94,7 @@ public final class ServerNet {
     }
 
     public static void journeyStart(ServerPlayer player, Journey journey, int[] stops, CoachRecord dest) {
-        StagecoachConfig cfg = StagecoachConfig.get();
+        StagecoachConfig cfg = Permissions.config(player);
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         new Packets.JourneyStart(journey.originName, journey.destName, journey.originPos.getX(), journey.originPos.getZ(),
                 journey.destPos.getX(), journey.destPos.getZ(), stops, journey.startTime, journey.durationTicks, journey.id,

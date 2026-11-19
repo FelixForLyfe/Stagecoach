@@ -11,6 +11,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
 
@@ -41,6 +42,9 @@ public interface Platform {
 
     /** Asks the loader's permission system; {@code fallback} is the answer without one. */
     boolean hasPermission(ServerPlayerEntity player, String node, boolean fallback);
+
+    /** A permission option's value (LuckPerms meta), or null when it isn't set or there's no permission system. */
+    @Nullable String option(ServerPlayerEntity player, String key);
 
     void registerCriterion(Criterion<?> criterion);
 

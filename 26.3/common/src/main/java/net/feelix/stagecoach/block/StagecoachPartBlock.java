@@ -78,6 +78,7 @@ public class StagecoachPartBlock extends Block {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public float getExplosionResistance() {
         return StagecoachConfig.get().onlyOwnerCanBreak ? 3_600_000f : super.getExplosionResistance();
     }
@@ -86,12 +87,13 @@ public class StagecoachPartBlock extends Block {
     @Override
     protected void randomTick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
         BlockPos controller = StagecoachStructure.controllerPos(pos, state);
-        if (level.hasChunkAt(controller) && !StagecoachStructure.hasController(level, pos, state)) {
+        if (level.isLoaded(controller) && !StagecoachStructure.hasController(level, pos, state)) {
             level.removeBlock(pos, false);
         }
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     protected ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData) {
         return new ItemStack(StagecoachRegistry.BLOCKS.get(state.getValue(WOOD)));
     }
@@ -133,6 +135,7 @@ public class StagecoachPartBlock extends Block {
 
     /** Index and facing no longer line up after a mirror; the controller lays its parts again when it registers. */
     @Override
+    @SuppressWarnings("deprecation")
     public BlockState mirror(BlockState state, Mirror mirror) {
         return state.rotate(mirror.getRotation(state.getValue(FACING)));
     }

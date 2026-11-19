@@ -121,6 +121,7 @@ public class StagecoachBlock extends BlockWithEntity {
 
     /** Blast-proof while only owners may break coaches. */
     @Override
+    @SuppressWarnings("deprecation")
     public float getBlastResistance() {
         return StagecoachConfig.get().onlyOwnerCanBreak ? 3_600_000f : super.getBlastResistance();
     }
@@ -167,6 +168,7 @@ public class StagecoachBlock extends BlockWithEntity {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public BlockState mirror(BlockState state, BlockMirror mirror) {
         return state.rotate(mirror.getRotation(state.get(FACING)));
     }

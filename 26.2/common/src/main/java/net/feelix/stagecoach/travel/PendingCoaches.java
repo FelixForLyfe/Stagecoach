@@ -60,7 +60,7 @@ public final class PendingCoaches {
         Pending p;
         while ((p = QUEUE.poll()) != null) {
             ServerLevel level = server.getLevel(p.dimension);
-            if (level != null && level.hasChunkAt(p.pos)) check(level, p.pos);
+            if (level != null && level.isLoaded(p.pos)) check(level, p.pos);
         }
     }
 

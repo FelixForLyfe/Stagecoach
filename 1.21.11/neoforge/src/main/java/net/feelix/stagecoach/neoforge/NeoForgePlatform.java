@@ -21,6 +21,7 @@ import net.neoforged.neoforge.common.util.FakePlayerFactory;
 import net.neoforged.neoforge.network.PacketDistributor;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.network.registration.PayloadRegistrar;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -29,7 +30,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 final class NeoForgePlatform implements Platform {
-    private static final String PROTOCOL = "3";
+    private static final String PROTOCOL = "4";
     private static List<Identifier> toClient = List.of();
     private static List<Identifier> toServer = List.of();
     private static final Map<Identifier, ServerReceiver> SERVER_RECEIVERS = new ConcurrentHashMap<>();
@@ -108,5 +109,10 @@ final class NeoForgePlatform implements Platform {
     @Override
     public boolean hasPermission(ServerPlayer player, String node, boolean fallback) {
         return NeoForgePermissions.check(player, node, fallback);
+    }
+
+    @Override
+    public @Nullable String option(ServerPlayer player, String key) {
+        return NeoForgePermissions.option(player, key);
     }
 }

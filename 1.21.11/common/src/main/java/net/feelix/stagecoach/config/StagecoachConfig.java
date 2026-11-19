@@ -8,7 +8,11 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.feelix.stagecoach.Stagecoach;
 
+import com.google.gson.JsonPrimitive;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,12 +20,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
+import java.util.function.Function;
 
 /** Each field falls back on its own, so a broken file never stops the server. */
 public final class StagecoachConfig {
     public static final List<String> TRAVEL_STYLES = List.of("none", "road", "map", "minimal");
     public static final StagecoachConfig DEFAULTS = new StagecoachConfig(new JsonObject(), new ArrayList<>());
+
+    /** Every option name, in file order. */
+    public static final Set<String> KEYS = Collections.unmodifiableSet(DEFAULTS.toJsonObject().keySet());
 
     private static volatile StagecoachConfig current = DEFAULTS;
 
@@ -50,6 +60,7 @@ public final class StagecoachConfig {
     public final boolean discoveryRequired;
     public final boolean onlyOwnerCanBreak;
     public final boolean opsCanManageAnyCoach;
+    public final boolean anyoneCanMakeGlobal;
     public final int maxCoachesPerPlayer;
     public final int maxNameLength;
     public final List<String> blockedDimensions;
@@ -104,6 +115,7 @@ public final class StagecoachConfig {
         discoveryRequired = boolField(o, "discoveryRequired", true, warnings);
         onlyOwnerCanBreak = boolField(o, "onlyOwnerCanBreak", true, warnings);
         opsCanManageAnyCoach = boolField(o, "opsCanManageAnyCoach", true, warnings);
+        anyoneCanMakeGlobal = boolField(o, "anyoneCanMakeGlobal", false, warnings);
         maxCoachesPerPlayer = intField(o, "maxCoachesPerPlayer", 0, 0, 100_000, warnings);
         maxNameLength = intField(o, "maxNameLength", 24, 1, 64, warnings);
         blockedDimensions = stringList(o, "blockedDimensions", warnings);
@@ -129,6 +141,77 @@ public final class StagecoachConfig {
     public double dimensionCostMultiplier(String dimension) {
         Double m = dimensionCostMultipliers.get(dimension);
         return m == null ? 1.0 : m;
+    }
+
+    /** The permission option (LuckPerms meta) that overrides {@code key} for one player: maxCoachesPerPlayer -> stagecoach.max_coaches_per_player. */
+    public static String optionKey(String key) {
+        return Stagecoach.MOD_ID + "." + key.replaceAll("([a-z0-9])([A-Z])", "$1_$2").toLowerCase(Locale.ROOT);
+    }
+
+    /** This config with every option {@code lookup} has a value for laid over it; itself when there are none. */
+    public StagecoachConfig withOverrides(Function<String, String> lookup, List<String> warnings) {
+        JsonObject o = null;
+        for (String key : KEYS) {
+            String raw = lookup.apply(key);
+            if (raw == null || raw.isBlank()) continue;
+            if (o == null) o = toJsonObject();
+            o.add(key, parseValue(raw));
+        }
+        return o == null ? this : new StagecoachConfig(o, warnings);
+    }
+
+    /** Text from a command or a permission option as JSON: true/false, a number, a list or object, else a string. */
+    static JsonElement parseValue(String raw) {
+        String v = raw.trim();
+        if (v.equals("true") || v.equals("false")) return new JsonPrimitive(Boolean.parseBoolean(v));
+        if (v.startsWith("[") || v.startsWith("{")) {
+            try {
+                return JsonParser.parseString(v);
+            } catch (RuntimeException ignored) {
+                return new JsonPrimitive(v);
+            }
+        }
+        try {
+            return new JsonPrimitive(new BigDecimal(v));
+        } catch (NumberFormatException e) {
+            return new JsonPrimitive(v);
+        }
+    }
+
+    /** The option as it would be written to the file. */
+    public String valueOf(String key) {
+        JsonElement e = toJsonObject().get(key);
+        return e == null ? "" : e.toString();
+    }
+
+    /** Sets one option in the file and loads it; null (with the reason in warnings) leaves the file alone. */
+    public static @Nullable StagecoachConfig setOption(Path file, String key, String raw, List<String> warnings) {
+        if (!KEYS.contains(key)) {
+            warnings.add("there is no option called " + key);
+            return null;
+        }
+        JsonElement value = parseValue(raw);
+        JsonObject single = new JsonObject();
+        single.add(key, value);
+        List<String> problems = new ArrayList<>();
+        new StagecoachConfig(single, problems);
+        if (!problems.isEmpty()) {
+            warnings.addAll(problems);
+            return null;
+        }
+        JsonObject root = null;
+        if (Files.exists(file)) {
+            try {
+                JsonElement parsed = JsonParser.parseString(Files.readString(file, StandardCharsets.UTF_8));
+                if (parsed.isJsonObject()) root = parsed.getAsJsonObject();
+            } catch (Exception ignored) {
+                // an unreadable file is replaced by the running settings plus this one
+            }
+        }
+        if (root == null) root = get().toJsonObject();
+        root.add(key, value);
+        write(file, new GsonBuilder().setPrettyPrinting().create().toJson(root) + "\n", warnings);
+        return load(file, warnings);
     }
 
     public static StagecoachConfig get() {
@@ -217,6 +300,7 @@ public final class StagecoachConfig {
         o.addProperty("discoveryRequired", discoveryRequired);
         o.addProperty("onlyOwnerCanBreak", onlyOwnerCanBreak);
         o.addProperty("opsCanManageAnyCoach", opsCanManageAnyCoach);
+        o.addProperty("anyoneCanMakeGlobal", anyoneCanMakeGlobal);
         o.addProperty("maxCoachesPerPlayer", maxCoachesPerPlayer);
         o.addProperty("maxNameLength", maxNameLength);
         JsonArray dims = new JsonArray();

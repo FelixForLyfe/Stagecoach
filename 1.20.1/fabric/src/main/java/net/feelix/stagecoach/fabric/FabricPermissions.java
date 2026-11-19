@@ -1,5 +1,6 @@
 package net.feelix.stagecoach.fabric;
 
+import me.lucko.fabric.api.permissions.v0.Options;
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.minecraft.server.network.ServerPlayerEntity;
 
@@ -9,5 +10,9 @@ final class FabricPermissions {
 
     static boolean check(ServerPlayerEntity player, String node, boolean fallback) {
         return Permissions.check(player, node, fallback);
+    }
+
+    static String option(ServerPlayerEntity player, String key) {
+        return Options.get(player, key).orElse(null);
     }
 }

@@ -23,12 +23,12 @@ apply from: "${rootDir}/gradle/compat.gradle"
 
 def common = "${rootDir}/common/src"
 
-// Jade and FTB Chunks have no Forge build for 1.21.1: their bridges stay out of this jar, and the claim check is the
-// stub in forge/src (no claim mod to ask).
+// Jade, FTB Chunks and FTB Ranks have no Forge build for 1.21.1: their bridges stay out of this jar, and the claim check
+// and the FTB Ranks bridge are stubs in forge/src (nothing to ask).
 def notOnForge = { element ->
     def path = element.file.path.replace('\\', '/')
     path.contains('/common/src/main/java/net/feelix/stagecoach/compat/')
-            && (path.contains('/compat/jade/') || element.name == 'FtbChunksBridge.java' || element.name == 'ClaimCompat.java')
+            && (path.contains('/compat/jade/') || element.name == 'FtbChunksBridge.java' || element.name == 'FtbRanksBridge.java' || element.name == 'ClaimCompat.java')
 }
 
 sourceSets {

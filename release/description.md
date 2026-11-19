@@ -16,7 +16,7 @@
 
 <div style="display:flex;flex-wrap:wrap;gap:10px"><div style="flex:1;min-width:180px;text-align:center;border:1px solid #444;border-radius:6px;background-color:#151515"><strong style="font-size:18px">11 Wood Types</strong><br>Build coaches to match your world</div><div style="flex:1;min-width:180px;text-align:center;border:1px solid #444;border-radius:6px;background-color:#151515"><strong style="font-size:18px">A Stop in Every Village</strong><br>Built in the village's own wood, waiting to be found</div><div style="flex:1;min-width:180px;text-align:center;border:1px solid #444;border-radius:6px;background-color:#151515"><strong style="font-size:18px">Real-Time Travel</strong><br>Ride the journey instead of teleporting</div><div style="flex:1;min-width:180px;text-align:center;border:1px solid #444;border-radius:6px;background-color:#151515"><strong style="font-size:18px">Vanilla-Friendly</strong><br>Designed to fit naturally into survival</div></div>
 
-<div style="text-align:center;margin-left:8%;margin-right:8%;border:1px solid #f16422;border-radius:6px;background-color:#151515"><strong style="font-size:18px">New in 1.2.0</strong><br>A coach stop in every village, in the village's own wood • a discovery moment with road dust, lantern embers and the coachman's horn • admin commands, coaches in your own structures, travel rules, advancements and statistics • Open Parties and Claims, JourneyMap, Xaero's Minimap, KubeJS and permission mods • and Stagecoach is now open source</div>
+<div style="text-align:center;margin-left:8%;margin-right:8%;border:1px solid #f16422;border-radius:6px;background-color:#151515"><strong style="font-size:18px">New in 1.3.0</strong><br>Global stops: one button makes a stop reachable from every stagecoach, for every player, like a global waystone • change any setting in game with <code>/stagecoach config</code> • every setting per rank or player through LuckPerms or FTB Ranks</div>
 
 ***
 
@@ -63,7 +63,8 @@
 | <strong>Open Parties and Claims</strong> |The same claim check as FTB Chunks. (Every build.)                                                                                                                                   |
 | <strong>JourneyMap</strong>, <strong>Xaero's Minimap</strong> |The stops you know show up as a "Stagecoach" waypoint set. (Every build.)                                                                                                |
 | <strong>Village mods</strong> |Repurposed Structures, ChoiceTheorem's Overhauled Village, Towns and Towers, Integrated Villages, Dungeons and Taverns and Luki's Grand Capitals villages get a coach stop too, in their own wood.          |
-| <strong>LuckPerms</strong> (or any permissions mod) |A permission node for every action, from placing a coach to using the admin commands.                                                                                        |
+| <strong>LuckPerms</strong> (or any permissions mod) |A permission node for every action, from placing a coach to making a stop global, and every setting per group or player as a meta value (<code>stagecoach.max_cost</code>, ...). |
+| <strong>FTB Ranks</strong> |The same nodes and per-player settings, straight from <code>ranks.snbt</code>. (Fabric and NeoForge, and Forge 1.20.1: FTB Ranks isn't out for Forge after 1.20.1.)     |
 | <strong>KubeJS</strong> |Script events and the API from KubeJS. (1.20.1, and NeoForge 1.21.1: KubeJS isn't out for the others.)                                                                                     |
 | <strong>TerraFirmaCraft</strong> |TFC recipes: lumber, steel double sheets, a gold sheet and a wooden chest. (Forge 1.20.1 and NeoForge 1.21.1, the versions TFC is out for.)                                                   |
 | <strong>Sodium + Iris</strong> |Checked with both installed on Fabric 1.20.1 (no shader pack active).                                                                                                                         |
@@ -136,6 +137,7 @@ On a server, install the same files on the server. Every player who joins needs 
 | <code>discoveryRequired</code> |true                |Stops have to be discovered (right-clicked) before you can travel to them                            |
 | <code>onlyOwnerCanBreak</code> |true                |Only the owner or an operator can break a coach, and explosions can't                                |
 | <code>opsCanManageAnyCoach</code> |true                |Operators can rename and break anyone's coach                                                        |
+| <code>anyoneCanMakeGlobal</code> |false               |Owners can make their own stops global (operators always can)                                        |
 | <code>maxCoachesPerPlayer</code> |0                   |How many coaches one player can own (0 = no limit, operators are never limited)                      |
 | <code>maxNameLength</code> |24                  |The longest name a stop can have (up to 64)                                                          |
 | <code>blockedDimensions</code> |<code>[]</code>     |Dimensions where coaches can't be placed, like <code>["minecraft:the_nether"]</code>                 |
@@ -169,7 +171,9 @@ Each player also has `config/stagecoach-client.json`, which you can change from 
 
 ## For pack makers and server owners
 
-*   **Admin commands:** create, list, rename, move ownership of, flag (public, hidden, locked, free), price and remove stops; send players on journeys; export a whole network to a file and import it on another server.
+*   **Global stops:** an operator makes any stop global with the button on its destination list (or `/stagecoach stop flag global`): every player can then travel there from any stagecoach without discovering it. With `anyoneCanMakeGlobal` or the `stagecoach.global` node, owners can do it for their own stops.
+*   **Admin commands:** create, list, rename, move ownership of, flag (global, hidden, locked, free), price and remove stops; send players on journeys; export a whole network to a file and import it on another server; change any setting in game with `/stagecoach config <setting> <value>`.
+*   **Per-player settings:** any setting can be set per group or player, as LuckPerms meta or in FTB Ranks' `ranks.snbt` (`stagecoach.max_coaches_per_player`, `stagecoach.max_cost`, ...).
 *   **Coaches in your own structures:** save a coach into a structure template and it becomes a stop wherever the template generates, with the name, flags, theme and wood you set.
 *   **Datapacks:** travel rules that lock destinations behind an advancement, a level, an item or a permission; themes, name pools and structure injections for your own villages and towns.
 *   **Resource packs:** your own travel scenes (layers or a single image), chosen by biome or dimension, and sounds.

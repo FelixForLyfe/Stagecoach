@@ -7,8 +7,11 @@ nav_order: 1
 # Configuration
 
 `config/stagecoach.json` is written with every setting the first time the server starts. Edit it and run
-`/stagecoach reload`. A missing setting takes its default; a setting with a wrong type or outside its range also
+`/stagecoach reload`, or change one setting in game with `/stagecoach config <setting> <value>` (it is saved to the
+file and applies at once). A missing setting takes its default; a setting with a wrong type or outside its range also
 takes its default, with a warning. If a minimum is larger than its maximum, both are reset.
+
+Any setting can also be different for some players: see [per-player settings](permissions.md#per-player-settings).
 
 ## Fares
 
@@ -62,6 +65,7 @@ server charges.
 |---|---|---|---|
 | `onlyOwnerCanBreak` | true | | Only the owner or an operator can take a coach down, and explosions can't |
 | `opsCanManageAnyCoach` | true | | Operators may rename and take down anyone's coach |
+| `anyoneCanMakeGlobal` | false | | Owners may make their own stops global (the globe button on the destination list). Operators always can. Same as granting `stagecoach.global` |
 | `maxCoachesPerPlayer` | 0 | 0–100,000 | How many coaches one player may own; 0 = no limit. Operators and `stagecoach.bypass.limit` aren't limited |
 | `blockedDimensions` | `[]` | | Dimensions where coaches can't be placed, e.g. `["minecraft:the_end"]` |
 | `adminCommandLevel` | 2 | 0–4 | The operator level the [admin commands](commands.md) need (or the `stagecoach.admin.commands` node) |

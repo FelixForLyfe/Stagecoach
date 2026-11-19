@@ -39,6 +39,7 @@ public final class CoachStopProcessor implements StructureProcessor {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public @Nullable StructureTemplate.StructureBlockInfo processBlock(LevelReader level, BlockPos pos, BlockPos pivot, BlockPos local,
                                                                 StructureTemplate.StructureBlockInfo current, StructurePlaceSettings data) {
         BlockState state = current.state();

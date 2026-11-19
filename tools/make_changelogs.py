@@ -6,25 +6,25 @@ integrations that build has. Earlier versions' files stay as they were uploaded.
 import os
 import re
 
-VERSION = '1.2.1'
+VERSION = '1.3.0'
 ROOT = os.path.join(os.path.dirname(__file__), '..')
 OUT = os.path.join(ROOT, 'release', 'changelogs', VERSION)
 
 # (loader, minecraft, integrations)
 BUILDS = [
-    ('Fabric', '1.20.1', ['Jade', 'JEI', 'FTB Chunks', 'Open Parties and Claims', 'JourneyMap', "Xaero's Minimap", 'KubeJS', 'Mod Menu']),
-    ('Forge', '1.20.1', ['Jade', 'JEI', 'FTB Chunks', 'Open Parties and Claims', 'JourneyMap', "Xaero's Minimap", 'KubeJS', 'GameStages', 'TerraFirmaCraft']),
-    ('Fabric', '1.21.1', ['Jade', 'JEI', 'FTB Chunks', 'Open Parties and Claims', 'JourneyMap', "Xaero's Minimap", 'Mod Menu']),
-    ('NeoForge', '1.21.1', ['Jade', 'JEI', 'FTB Chunks', 'Open Parties and Claims', 'JourneyMap', "Xaero's Minimap", 'KubeJS', 'TerraFirmaCraft']),
+    ('Fabric', '1.20.1', ['Jade', 'JEI', 'FTB Chunks', 'Open Parties and Claims', 'FTB Ranks', 'JourneyMap', "Xaero's Minimap", 'KubeJS', 'Mod Menu']),
+    ('Forge', '1.20.1', ['Jade', 'JEI', 'FTB Chunks', 'Open Parties and Claims', 'FTB Ranks', 'JourneyMap', "Xaero's Minimap", 'KubeJS', 'GameStages', 'TerraFirmaCraft']),
+    ('Fabric', '1.21.1', ['Jade', 'JEI', 'FTB Chunks', 'Open Parties and Claims', 'FTB Ranks', 'JourneyMap', "Xaero's Minimap", 'Mod Menu']),
+    ('NeoForge', '1.21.1', ['Jade', 'JEI', 'FTB Chunks', 'Open Parties and Claims', 'FTB Ranks', 'JourneyMap', "Xaero's Minimap", 'KubeJS', 'TerraFirmaCraft']),
     ('Forge', '1.21.1', ['JEI', 'Open Parties and Claims', 'JourneyMap', "Xaero's Minimap"]),
-    ('Fabric', '1.21.11', ['Jade', 'JEI', 'Open Parties and Claims', 'JourneyMap', "Xaero's Minimap", 'Mod Menu']),
-    ('NeoForge', '1.21.11', ['Jade', 'JEI', 'Open Parties and Claims', 'JourneyMap', "Xaero's Minimap"]),
+    ('Fabric', '1.21.11', ['Jade', 'JEI', 'Open Parties and Claims', 'FTB Ranks', 'JourneyMap', "Xaero's Minimap", 'Mod Menu']),
+    ('NeoForge', '1.21.11', ['Jade', 'JEI', 'Open Parties and Claims', 'FTB Ranks', 'JourneyMap', "Xaero's Minimap"]),
     ('Forge', '1.21.11', ['Open Parties and Claims', 'JourneyMap', "Xaero's Minimap"]),
-    ('Fabric', '26.2', ['Jade', 'JEI', 'Open Parties and Claims', 'JourneyMap', "Xaero's Minimap", 'Mod Menu']),
-    ('NeoForge', '26.2', ['Jade', 'JEI', 'Open Parties and Claims', 'JourneyMap', "Xaero's Minimap"]),
+    ('Fabric', '26.2', ['Jade', 'JEI', 'Open Parties and Claims', 'FTB Ranks', 'JourneyMap', "Xaero's Minimap", 'Mod Menu']),
+    ('NeoForge', '26.2', ['Jade', 'JEI', 'Open Parties and Claims', 'FTB Ranks', 'JourneyMap', "Xaero's Minimap"]),
     ('Forge', '26.2', ['Open Parties and Claims', 'JourneyMap', "Xaero's Minimap"]),
-    ('Fabric', '26.3', ['Jade', 'JEI', 'Open Parties and Claims', 'JourneyMap', "Xaero's Minimap", 'Mod Menu']),
-    ('NeoForge', '26.3', ['Jade', 'JEI', 'Open Parties and Claims', 'JourneyMap', "Xaero's Minimap"]),
+    ('Fabric', '26.3', ['Jade', 'JEI', 'Open Parties and Claims', 'FTB Ranks', 'JourneyMap', "Xaero's Minimap", 'Mod Menu']),
+    ('NeoForge', '26.3', ['Jade', 'JEI', 'Open Parties and Claims', 'FTB Ranks', 'JourneyMap', "Xaero's Minimap"]),
     ('Forge', '26.3', ['Open Parties and Claims', 'JourneyMap', "Xaero's Minimap"]),
 ]
 
@@ -49,6 +49,8 @@ def for_build(loader, minecraft, integrations):
         s = s.replace('a Java API with events, KubeJS support,', 'a Java API with events,')
     if 'GameStages' not in integrations:
         s = s.replace(', a\n  permission or a GameStages stage, or change their fare', ' or a\n  permission, or change their fare')
+    if 'FTB Ranks' not in integrations:
+        s = re.sub(r"- \*\*FTB Ranks\*\*[^\n]*\n(  [^\n]*\n)*", '', s)
     if 'FTB Chunks' not in integrations:
         s = s.replace(" a claim you couldn't build in, like FTB Chunks.", " a claim you couldn't build in.")
     if loader == 'Fabric':

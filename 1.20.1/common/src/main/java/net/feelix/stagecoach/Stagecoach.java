@@ -29,6 +29,7 @@ public final class Stagecoach {
     public static final String CONFIG_FILE = MOD_ID + ".json";
     public static final String CLIENT_CONFIG_FILE = MOD_ID + "-client.json";
 
+    @SuppressWarnings("removal")
     public static Identifier id(String path) {
         return new Identifier(MOD_ID, path);
     }

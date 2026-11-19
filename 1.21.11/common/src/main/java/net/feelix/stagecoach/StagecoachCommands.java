@@ -20,6 +20,7 @@ import net.feelix.stagecoach.block.StagecoachStructure;
 import net.feelix.stagecoach.config.StagecoachConfig;
 import net.feelix.stagecoach.net.ServerNet;
 import net.feelix.stagecoach.permission.Permissions;
+import net.feelix.stagecoach.platform.Platform;
 import net.feelix.stagecoach.travel.CoachNames;
 import net.feelix.stagecoach.travel.CoachRecord;
 import net.feelix.stagecoach.travel.Journey;
@@ -74,6 +75,7 @@ public final class StagecoachCommands {
     private static final DynamicCommandExceptionType BAD_WOOD = new DynamicCommandExceptionType(s -> Stagecoach.text("command.bad_wood", s));
     private static final DynamicCommandExceptionType BAD_NAME = new DynamicCommandExceptionType(n -> Stagecoach.text("error.bad_name", n));
     private static final DynamicCommandExceptionType REFUSED = new DynamicCommandExceptionType(t -> (Component) t);
+    private static final DynamicCommandExceptionType NO_OPTION = new DynamicCommandExceptionType(s -> Stagecoach.text("command.config.unknown", s));
     private static final SimpleCommandExceptionType ONE_PLAYER = new SimpleCommandExceptionType(Stagecoach.text("command.one_player"));
 
     private static final SuggestionProvider<CommandSourceStack> STOPS = (c, b) -> {
@@ -81,6 +83,7 @@ public final class StagecoachCommands {
         for (CoachRecord r : StagecoachState.get(c.getSource().getServer()).coaches()) names.add(StringArgumentType.escapeIfRequired(r.name));
         return SharedSuggestionProvider.suggest(names, b);
     };
+    private static final SuggestionProvider<CommandSourceStack> OPTIONS = (c, b) -> SharedSuggestionProvider.suggest(StagecoachConfig.KEYS, b);
     private static final SuggestionProvider<CommandSourceStack> WOODS = (c, b) -> {
         List<String> woods = new ArrayList<>();
         for (StagecoachWood w : StagecoachWood.values()) woods.add(w.getSerializedName());
@@ -91,6 +94,11 @@ public final class StagecoachCommands {
         dispatcher.register(Commands.literal(Stagecoach.MOD_ID)
                 .requires(StagecoachCommands::isAdmin)
                 .then(Commands.literal("reload").executes(StagecoachCommands::reload))
+                .then(Commands.literal("config")
+                        .executes(StagecoachCommands::config)
+                        .then(Commands.argument("option", StringArgumentType.word()).suggests(OPTIONS)
+                                .executes(StagecoachCommands::configGet)
+                                .then(Commands.argument("value", StringArgumentType.greedyString()).executes(StagecoachCommands::configSet))))
                 .then(Commands.literal("stop")
                         .then(Commands.literal("create").then(Commands.argument("name", StringArgumentType.string())
                                 .executes(c -> create(c, false, false, false, false))
@@ -117,7 +125,7 @@ public final class StagecoachCommands {
                         .then(Commands.literal("setowner").then(stopArgument()
                                 .then(Commands.literal("none").executes(c -> setOwner(c, false)))
                                 .then(Commands.argument("player", GameProfileArgument.gameProfile()).executes(c -> setOwner(c, true)))))
-                        .then(Commands.literal("flag").then(flag("public")).then(flag("hidden")).then(flag("locked")).then(flag("free")))
+                        .then(Commands.literal("flag").then(flag("public")).then(flag("global")).then(flag("hidden")).then(flag("locked")).then(flag("free")))
                         .then(Commands.literal("cost").then(stopArgument()
                                 .then(Commands.argument("multiplier", DoubleArgumentType.doubleArg(0, 1000)).executes(StagecoachCommands::cost))))
                         .then(Commands.literal("scene").then(stopArgument()
@@ -191,9 +199,7 @@ public final class StagecoachCommands {
 
     private static int reload(CommandContext<CommandSourceStack> c) {
         List<String> warnings = Stagecoach.reloadConfig();
-        MinecraftServer server = c.getSource().getServer();
-        StructureInjections.apply(server);
-        for (ServerPlayer p : server.getPlayerList().getPlayers()) ServerNet.serverSettings(p);
+        configChanged(c.getSource().getServer());
         if (warnings.isEmpty()) {
             c.getSource().sendSuccess(() -> Stagecoach.text("command.reloaded"), true);
         } else {
@@ -202,6 +208,48 @@ public final class StagecoachCommands {
         }
         c.getSource().sendSuccess(() -> Stagecoach.text("command.reloaded_data").withStyle(ChatFormatting.GRAY), false);
         return 1;
+    }
+
+    private static void configChanged(MinecraftServer server) {
+        StructureInjections.apply(server);
+        for (ServerPlayer p : server.getPlayerList().getPlayers()) ServerNet.serverSettings(p);
+    }
+
+    private static int config(CommandContext<CommandSourceStack> c) {
+        StagecoachConfig cfg = StagecoachConfig.get();
+        c.getSource().sendSuccess(() -> Stagecoach.text("command.config.header").withStyle(ChatFormatting.GOLD), false);
+        for (String key : StagecoachConfig.KEYS) {
+            Component line = Stagecoach.text("command.config.value", key, cfg.valueOf(key));
+            c.getSource().sendSuccess(() -> button(line, "/" + Stagecoach.MOD_ID + " config " + key), false);
+        }
+        return StagecoachConfig.KEYS.size();
+    }
+
+    private static int configGet(CommandContext<CommandSourceStack> c) throws CommandSyntaxException {
+        String key = option(c);
+        c.getSource().sendSuccess(() -> Stagecoach.text("command.config.value", key, StagecoachConfig.get().valueOf(key)), false);
+        c.getSource().sendSuccess(() -> Stagecoach.text("command.config.option", StagecoachConfig.optionKey(key)).withStyle(ChatFormatting.GRAY), false);
+        return 1;
+    }
+
+    /** Writes the file and applies it at once, like editing it and running reload. */
+    private static int configSet(CommandContext<CommandSourceStack> c) throws CommandSyntaxException {
+        String key = option(c);
+        List<String> warnings = new ArrayList<>();
+        StagecoachConfig cfg = StagecoachConfig.setOption(Platform.get().configDir().resolve(Stagecoach.CONFIG_FILE), key,
+                StringArgumentType.getString(c, "value"), warnings);
+        if (cfg == null) throw REFUSED.create(Stagecoach.text("command.config.refused", key, String.join("; ", warnings)));
+        StagecoachConfig.set(cfg);
+        for (String w : warnings) Stagecoach.LOGGER.warn("config/{}: {}", Stagecoach.CONFIG_FILE, w);
+        configChanged(c.getSource().getServer());
+        c.getSource().sendSuccess(() -> Stagecoach.text("command.config.set", key, cfg.valueOf(key)), true);
+        return 1;
+    }
+
+    private static String option(CommandContext<CommandSourceStack> c) throws CommandSyntaxException {
+        String key = StringArgumentType.getString(c, "option");
+        if (!StagecoachConfig.KEYS.contains(key)) throw NO_OPTION.create(key);
+        return key;
     }
 
     private static int create(CommandContext<CommandSourceStack> c, boolean hasPos, boolean hasFacing, boolean hasWood, boolean force)
@@ -334,7 +382,7 @@ public final class StagecoachCommands {
     private static int setFlag(CommandContext<CommandSourceStack> c, String flag, boolean value) throws CommandSyntaxException {
         CoachRecord r = resolve(c);
         switch (flag) {
-            case "public" -> r.isPublic = value;
+            case "public", "global" -> r.isPublic = value;
             case "hidden" -> r.hidden = value;
             case "locked" -> r.locked = value;
             default -> r.free = value;

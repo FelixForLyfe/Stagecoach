@@ -128,6 +128,12 @@ public final class ClientNet {
         ClientPlatform.get().sendToServer(Packets.TRAVEL, buf);
     }
 
+    public static void setGlobal(long coachId, boolean global) {
+        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+        new Packets.SetGlobal(coachId, global).write(buf);
+        ClientPlatform.get().sendToServer(Packets.SET_GLOBAL, buf);
+    }
+
     public static void cancel() {
         ClientPlatform.get().sendToServer(Packets.CANCEL, new FriendlyByteBuf(Unpooled.buffer()));
     }

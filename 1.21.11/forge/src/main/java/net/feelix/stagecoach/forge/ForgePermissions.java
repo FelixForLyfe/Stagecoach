@@ -1,6 +1,7 @@
 package net.feelix.stagecoach.forge;
 
 import net.feelix.stagecoach.Stagecoach;
+import net.feelix.stagecoach.config.StagecoachConfig;
 import net.feelix.stagecoach.data.StagecoachData;
 import net.feelix.stagecoach.data.TravelRule;
 import net.feelix.stagecoach.permission.Permissions;
@@ -18,9 +19,19 @@ final class ForgePermissions {
     private ForgePermissions() {}
 
     private static final Map<String, PermissionNode<Boolean>> NODES = new ConcurrentHashMap<>();
+    /** One text node per config option; LuckPerms answers them from meta, the default handler with "". */
+    private static final Map<String, PermissionNode<String>> OPTIONS = new ConcurrentHashMap<>();
 
     static void onGather(PermissionGatherEvent.Nodes event) {
         NODES.clear();
+        OPTIONS.clear();
+        for (String key : StagecoachConfig.KEYS) {
+            String name = StagecoachConfig.optionKey(key);
+            PermissionNode<String> node = new PermissionNode<>(Stagecoach.MOD_ID, name.substring(Stagecoach.MOD_ID.length() + 1),
+                    PermissionTypes.STRING, (player, uuid, context) -> "");
+            event.addNodes(node);
+            OPTIONS.put(name, node);
+        }
         for (Permissions.Node node : Permissions.Node.values()) {
             add(event, new PermissionNode<>(Stagecoach.MOD_ID, node.path, PermissionTypes.BOOLEAN,
                     (player, uuid, context) -> player != null && node.byDefault(player)));
@@ -46,5 +57,10 @@ final class ForgePermissions {
     static boolean check(ServerPlayer player, String node, boolean fallback) {
         PermissionNode<Boolean> registered = NODES.get(node);
         return registered == null ? fallback : PermissionAPI.getPermission(player, registered);
+    }
+
+    static String option(ServerPlayer player, String key) {
+        PermissionNode<String> registered = OPTIONS.get(key);
+        return registered == null ? null : PermissionAPI.getPermission(player, registered);
     }
 }

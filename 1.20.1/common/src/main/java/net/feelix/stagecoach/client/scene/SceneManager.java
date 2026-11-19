@@ -56,6 +56,7 @@ public final class SceneManager {
         }
     };
 
+    @SuppressWarnings("removal")
     static Loaded load(ResourceManager manager) {
         Map<Identifier, Scene> scenes = new HashMap<>();
         Map<String, Texture> textures = new HashMap<>();

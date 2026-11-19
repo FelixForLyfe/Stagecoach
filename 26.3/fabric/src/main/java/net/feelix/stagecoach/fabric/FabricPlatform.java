@@ -16,6 +16,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
+import org.jetbrains.annotations.Nullable;
 
 import java.nio.file.Path;
 
@@ -73,6 +74,11 @@ final class FabricPlatform implements Platform {
     @Override
     public boolean hasPermission(ServerPlayer player, String node, boolean fallback) {
         return isModLoaded(PERMISSIONS_API) ? FabricPermissions.check(player, node, fallback) : fallback;
+    }
+
+    @Override
+    public @Nullable String option(ServerPlayer player, String key) {
+        return isModLoaded(PERMISSIONS_API) ? FabricPermissions.option(player, key) : null;
     }
 
 }

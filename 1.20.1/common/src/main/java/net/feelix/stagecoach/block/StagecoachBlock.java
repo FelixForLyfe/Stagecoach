@@ -39,6 +39,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
+@SuppressWarnings("deprecation")
 public class StagecoachBlock extends BlockWithEntity {
     /** The way the coach's front points: away from the player who placed it. */
     public static final DirectionProperty FACING = Properties.HORIZONTAL_FACING;

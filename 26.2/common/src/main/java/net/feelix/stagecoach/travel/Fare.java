@@ -27,13 +27,12 @@ import java.util.Optional;
 public final class Fare {
     private Fare() {}
 
-    private static StagecoachConfig resolvedFor;
+    private static @Nullable String resolvedFor;
     private static @Nullable Item item;
     private static @Nullable TagKey<Item> tag;
 
-    /** Enabled, and the configured item or tag exists. */
-    public static boolean itemMode() {
-        StagecoachConfig cfg = StagecoachConfig.get();
+    /** Enabled, and the configured item or tag exists; icon, matches and count then use that item. */
+    public static boolean itemMode(StagecoachConfig cfg) {
         if (!cfg.itemCostEnabled) return false;
         resolve(cfg);
         if (item != null) return true;
@@ -131,12 +130,13 @@ public final class Fare {
         return n;
     }
 
+    /** Players may each have their own costItem (permission options), so this is keyed by the id, not the config. */
     private static void resolve(StagecoachConfig cfg) {
-        if (resolvedFor == cfg) return;
-        resolvedFor = cfg;
+        String raw = cfg.costItem;
+        if (raw.equals(resolvedFor)) return;
+        resolvedFor = raw;
         item = null;
         tag = null;
-        String raw = cfg.costItem;
         if (raw.startsWith("#")) {
             Identifier id = Identifier.tryParse(raw.substring(1));
             if (id != null) tag = TagKey.create(Registries.ITEM, id);

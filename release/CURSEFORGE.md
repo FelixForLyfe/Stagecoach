@@ -8,6 +8,12 @@ names; uploads go Fabric, then Forge, then NeoForge, oldest Minecraft first; tag
 loader, Java 17/21/25 and Client + Server; only GeckoLib (and Fabric API on Fabric) are listed, as required
 dependencies.
 
+## 1.3.0 (built and uploaded 2026-11-19, file ids 9706337, 9706339–9706351)
+
+Global stops, `/stagecoach config`, per-player settings (LuckPerms meta, FTB Ranks), the deprecation clean-up. Same
+fourteen files, tags, required dependencies and order as 1.2.1, uploaded with `tools/cf_upload.py`; each file's
+changelog is `changelogs/1.3.0/<loader>-<mc>.md` (the Forge 1.21.1+ ones leave out FTB Ranks). 9706338 is not ours.
+
 ## 1.2.1 (built and uploaded 2026-10-18, file ids 9234359–9234373)
 
 Luki's Grand Capitals support, nothing else. Same fourteen files as 1.2.0 with `1.2.1` in the name, the same tags and

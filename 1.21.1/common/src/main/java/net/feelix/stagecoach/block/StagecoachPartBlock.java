@@ -78,12 +78,14 @@ public class StagecoachPartBlock extends Block {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public float getBlastResistance() {
         return StagecoachConfig.get().onlyOwnerCanBreak ? 3_600_000f : super.getBlastResistance();
     }
 
     /** A part whose controller is gone (an external edit) removes itself. */
     @Override
+    @SuppressWarnings("deprecation")
     public void randomTick(BlockState state, ServerWorld world, BlockPos pos, Random random) {
         BlockPos controller = StagecoachStructure.controllerPos(pos, state);
         if (world.isChunkLoaded(controller) && !StagecoachStructure.hasController(world, pos, state)) {
@@ -92,6 +94,7 @@ public class StagecoachPartBlock extends Block {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public ItemStack getPickStack(WorldView world, BlockPos pos, BlockState state) {
         return new ItemStack(StagecoachRegistry.BLOCKS.get(state.get(WOOD)));
     }
@@ -133,6 +136,7 @@ public class StagecoachPartBlock extends Block {
 
     /** Index and facing no longer line up after a mirror; the controller lays its parts again when it registers. */
     @Override
+    @SuppressWarnings("deprecation")
     public BlockState mirror(BlockState state, BlockMirror mirror) {
         return state.rotate(mirror.getRotation(state.get(FACING)));
     }

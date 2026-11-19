@@ -58,9 +58,9 @@ public final class StagecoachService {
 
     /** Rules only the server knows; null lets the placement go ahead. */
     public static @Nullable Text placementRefusal(ServerWorld world, @Nullable PlayerEntity player, BlockPos pos, BlockState controller) {
-        StagecoachConfig cfg = StagecoachConfig.get();
-        if (cfg.blockedDimensions.contains(world.getRegistryKey().getValue().toString())) return Stagecoach.text("place.dimension");
         ServerPlayerEntity sp = player instanceof ServerPlayerEntity p ? p : null;
+        StagecoachConfig cfg = sp == null ? StagecoachConfig.get() : Permissions.config(sp);
+        if (cfg.blockedDimensions.contains(world.getRegistryKey().getValue().toString())) return Stagecoach.text("place.dimension");
         if (sp != null) {
             if (!Permissions.check(sp, Permissions.Node.PLACE)) return Stagecoach.text("place.no_permission");
             if (cfg.maxCoachesPerPlayer > 0 && !Permissions.check(sp, Permissions.Node.BYPASS_LIMIT)
@@ -106,7 +106,7 @@ public final class StagecoachService {
         boolean allowed;
         if (record.owner == null) allowed = canManage(sp) || Permissions.check(sp, Permissions.Node.BREAK_ANY);
         else if (record.isOwner(sp.getUuid())) allowed = Permissions.check(sp, Permissions.Node.BREAK_OWN);
-        else allowed = !StagecoachConfig.get().onlyOwnerCanBreak || Permissions.check(sp, Permissions.Node.BREAK_ANY) || canManage(sp);
+        else allowed = !Permissions.config(sp).onlyOwnerCanBreak || Permissions.check(sp, Permissions.Node.BREAK_ANY) || canManage(sp);
         if (!allowed) return Stagecoach.text("error.not_owner_break");
         CoachBreakEvent event = new CoachBreakEvent(sp, record.view(), null);
         if (EventHooks.post(event)) return event.getFailMessage() != null ? event.getFailMessage() : Stagecoach.text("error.break_cancelled");
@@ -121,11 +121,12 @@ public final class StagecoachService {
         CoachRecord record = PendingCoaches.check(world, controllerPos);
         if (record == null) return;
         StagecoachState network = StagecoachState.get(world.getServer());
-        if (StagecoachConfig.get().discoveryRequired && !knows(network, player, record)) {
+        if (Permissions.config(player).discoveryRequired && !knows(network, player, record)) {
             discoverByHand(player, record, network);
             return;
         }
-        network.discover(player.getUuid(), record.id);
+        // everyone knows a global stop, so it never joins anyone's discovered list
+        if (!record.isPublic) network.discover(player.getUuid(), record.id);
         ServerNet.openList(player, record, destinations(player, record));
     }
 
@@ -146,7 +147,7 @@ public final class StagecoachService {
     /** {@code /stagecoach discover}: listeners may still refuse; no discovery effect. True if it was new. */
     public static boolean discoverByCommand(ServerPlayerEntity player, CoachRecord record) {
         StagecoachState network = StagecoachState.get(player.getServer());
-        if (network.hasDiscovered(player.getUuid(), record.id)) return false;
+        if (record.isPublic || network.hasDiscovered(player.getUuid(), record.id)) return false;
         if (EventHooks.post(new StopDiscoverEvent(player, record.view()))) return false;
         network.discover(player.getUuid(), record.id);
         StagecoachTriggers.stopDiscovered(player, record.name, record.id, network.discoveredCount(player.getUuid()),
@@ -163,7 +164,7 @@ public final class StagecoachService {
             player.sendMessage(Stagecoach.text("error.not_owner").formatted(Formatting.RED), true);
             return;
         }
-        int max = StagecoachConfig.get().maxNameLength;
+        int max = Permissions.config(player).maxNameLength;
         String name = CoachNames.clean(request.name(), max);
         if (name == null) {
             player.sendMessage(Stagecoach.text("error.bad_name", max).formatted(Formatting.RED), true);
@@ -176,6 +177,28 @@ public final class StagecoachService {
 
     private static boolean mayRename(ServerPlayerEntity player, CoachRecord record) {
         return record.isOwner(player.getUuid()) ? Permissions.check(player, Permissions.Node.RENAME_OWN) : canManage(player);
+    }
+
+    /** Admins on any stop; owners on their own with anyoneCanMakeGlobal or the global node. */
+    public static boolean mayMakeGlobal(ServerPlayerEntity player, CoachRecord record) {
+        return canManage(player) || record.isOwner(player.getUuid()) && Permissions.check(player, Permissions.Node.GLOBAL);
+    }
+
+    /** A global stop is known to everyone, so it shows in every coach's list without being discovered. */
+    public static void setGlobal(ServerPlayerEntity player, Packets.SetGlobal request) {
+        StagecoachState network = StagecoachState.get(player.getServer());
+        CoachRecord record = network.coach(request.coachId());
+        if (record == null || !exists(player.getServer().getWorld(record.dimension), record) || !near(player, record)) return;
+        if (JourneyManager.isTravelling(player.getUuid())) return;
+        if (!mayMakeGlobal(player, record)) {
+            deny(player, Stagecoach.text("error.no_permission_global"));
+            return;
+        }
+        record.isPublic = request.global();
+        network.changed();
+        ServerNet.knownStopsChanged();
+        player.sendMessage(Stagecoach.text(record.isPublic ? "global.on" : "global.off", record.name).formatted(Formatting.GOLD), true);
+        ServerNet.openList(player, record, destinations(player, record));
     }
 
     /** A request from the destination list: only an OK entry of the list the server builds now can be travelled to. */
@@ -195,7 +218,7 @@ public final class StagecoachService {
         CoachRecord dest = network.coach(request.destId());
         if (entry == null || dest == null) return;
         // affordability is checked again after JourneyPreStart, which may change the fare
-        Text refusal = entry.status() == Destination.Status.CANT_AFFORD ? null : statusRefusal(entry);
+        Text refusal = entry.status() == Destination.Status.CANT_AFFORD ? null : statusRefusal(player, entry);
         if (refusal != null) {
             deny(player, refusal);
             return;
@@ -222,11 +245,12 @@ public final class StagecoachService {
         if (!options.ignoreDiscovery() && !knows(network, player, dest)) {
             return new Outcome(JourneyResult.NOT_DISCOVERED, Stagecoach.text("error.not_discovered", dest.name));
         }
-        Destination entry = quote(player, from, dest, options.free(), Fare.itemMode(), balance(player));
+        StagecoachConfig cfg = Permissions.config(player);
+        Destination entry = quote(player, from, dest, options.free(), Fare.itemMode(cfg), balance(player, cfg));
         return switch (entry.status()) {
-            case OTHER_DIMENSION -> new Outcome(JourneyResult.CROSS_DIMENSION_DISABLED, statusRefusal(entry));
-            case TOO_FAR -> new Outcome(JourneyResult.TOO_FAR, statusRefusal(entry));
-            case LOCKED -> new Outcome(JourneyResult.LOCKED_BY_RULE, statusRefusal(entry));
+            case OTHER_DIMENSION -> new Outcome(JourneyResult.CROSS_DIMENSION_DISABLED, statusRefusal(player, entry));
+            case TOO_FAR -> new Outcome(JourneyResult.TOO_FAR, statusRefusal(player, entry));
+            case LOCKED -> new Outcome(JourneyResult.LOCKED_BY_RULE, statusRefusal(player, entry));
             default -> begin(player, from, originCoach, dest, entry, options);
         };
     }
@@ -234,7 +258,7 @@ public final class StagecoachService {
     /** The checks the list can't make (they change from tick to tick), then the event, then payment. */
     private static Outcome begin(ServerPlayerEntity player, Journey.Origin from, @Nullable CoachRecord originCoach, CoachRecord dest,
                                  Destination entry, JourneyOptions options) {
-        StagecoachConfig cfg = StagecoachConfig.get();
+        StagecoachConfig cfg = Permissions.config(player);
         if (!Permissions.check(player, Permissions.Node.TRAVEL)) {
             return new Outcome(JourneyResult.NO_PERMISSION, Stagecoach.text("error.no_permission_travel"));
         }
@@ -243,7 +267,7 @@ public final class StagecoachService {
         int lock = options.ignoreCombatLock() ? 0 : JourneyManager.combatLockSecondsLeft(player);
         if (lock > 0) return new Outcome(JourneyResult.COMBAT_LOCKED, Stagecoach.text("error.combat", lock));
 
-        boolean itemFare = Fare.itemMode();
+        boolean itemFare = Fare.itemMode(cfg);
         boolean instant = options.instant() || cfg.instantTravel;
         JourneyPreStartEvent event = new JourneyPreStartEvent(player, originCoach == null ? null : originCoach.view(), dest.view(),
                 entry.cost(), itemFare, entry.seconds(), instant, null);
@@ -265,20 +289,21 @@ public final class StagecoachService {
         return Outcome.STARTED;
     }
 
-    private static @Nullable Text statusRefusal(Destination d) {
+    private static @Nullable Text statusRefusal(ServerPlayerEntity player, Destination d) {
+        StagecoachConfig cfg = Permissions.config(player);
         return switch (d.status()) {
             case OK -> null;
             case OTHER_DIMENSION -> Stagecoach.text("error.other_dimension");
-            case TOO_FAR -> Stagecoach.text("error.too_far", StagecoachConfig.get().maxDistance);
+            case TOO_FAR -> Stagecoach.text("error.too_far", cfg.maxDistance);
             case LOCKED -> d.lockMessage() != null ? d.lockMessage() : Stagecoach.text("error.locked");
-            case CANT_AFFORD -> Fare.itemMode() ? Stagecoach.text("error.no_items", d.cost(), Fare.icon().getName())
+            case CANT_AFFORD -> Fare.itemMode(cfg) ? Stagecoach.text("error.no_items", d.cost(), Fare.icon().getName())
                     : Stagecoach.text("error.no_xp", d.cost());
         };
     }
 
     /** Free when the option or the stop says so, in creative while creativeTravelsFree is on, or with bypass.cost. */
     public static boolean travelsFree(ServerPlayerEntity player) {
-        return StagecoachConfig.get().creativeTravelsFree && player.isCreative() || Permissions.check(player, Permissions.Node.BYPASS_COST);
+        return Permissions.config(player).creativeTravelsFree && player.isCreative() || Permissions.check(player, Permissions.Node.BYPASS_COST);
     }
 
     private static void deny(ServerPlayerEntity player, Text why) {
@@ -286,14 +311,14 @@ public final class StagecoachService {
         player.playSound(SoundEvents.ENTITY_HORSE_ANGRY, SoundCategory.NEUTRAL, 0.6f, 1.0f);
     }
 
-    private static int balance(ServerPlayerEntity player) {
-        return Fare.itemMode() ? Fare.count(player) : player.experienceLevel;
+    private static int balance(ServerPlayerEntity player, StagecoachConfig cfg) {
+        return Fare.itemMode(cfg) ? Fare.count(player) : player.experienceLevel;
     }
 
     /** One price for the list and the charge: base, then each multiplier, rounded up once, then capped. */
     public static Destination quote(ServerPlayerEntity player, Journey.Origin from, CoachRecord to, boolean freeOption, boolean itemFare,
                                     int balance) {
-        StagecoachConfig cfg = StagecoachConfig.get();
+        StagecoachConfig cfg = Permissions.config(player);
         boolean cross = from.dimension() != to.dimension;
         double distance = distance(from, to, cfg);
         TravelRules.Verdict verdict = TravelRules.evaluate(player, from, to);
@@ -314,8 +339,9 @@ public final class StagecoachService {
     /** Every stop this player may see from {@code here}, nearest first, after listeners have had their say. */
     public static List<Destination> destinations(ServerPlayerEntity player, CoachRecord here) {
         StagecoachState network = StagecoachState.get(player.getServer());
-        boolean itemFare = Fare.itemMode();
-        int balance = balance(player);
+        StagecoachConfig cfg = Permissions.config(player);
+        boolean itemFare = Fare.itemMode(cfg);
+        int balance = balance(player, cfg);
         Journey.Origin from = Journey.Origin.of(here);
         List<Destination> list = new ArrayList<>();
         for (CoachRecord c : network.coaches()) {
@@ -337,18 +363,19 @@ public final class StagecoachService {
         return listPacket(player, here, destinations(player, here));
     }
 
+    @SuppressWarnings("deprecation")
     public static Packets.DestinationList listPacket(ServerPlayerEntity player, CoachRecord here, List<Destination> destinations) {
-        StagecoachConfig cfg = StagecoachConfig.get();
-        boolean itemFare = Fare.itemMode();
+        StagecoachConfig cfg = Permissions.config(player);
+        boolean itemFare = Fare.itemMode(cfg);
         List<Packets.Entry> entries = new ArrayList<>(destinations.size());
         for (Destination d : destinations) {
             entries.add(new Packets.Entry(d.stop().id(), d.stop().name(), d.stop().pos(), d.stop().dimension().getValue(), d.distance(),
-                    d.cost(), d.seconds(), d.stop().owner().map(player.getUuid()::equals).orElse(false), status(d.status()),
-                    d.lockMessage()));
+                    d.cost(), d.seconds(), d.stop().owner().map(player.getUuid()::equals).orElse(false), d.stop().isPublic(),
+                    status(d.status()), d.lockMessage()));
         }
         Identifier icon = Registries.ITEM.getId(itemFare ? Fare.icon().getItem() : Items.EXPERIENCE_BOTTLE);
-        return new Packets.DestinationList(here.id, here.name, mayRename(player, here), travelsFree(player), itemFare, icon,
-                balance(player), cfg.maxDistance, cfg.maxNameLength, entries.size(), entries);
+        return new Packets.DestinationList(here.id, here.name, mayRename(player, here), mayMakeGlobal(player, here), here.isPublic,
+                travelsFree(player), itemFare, icon, balance(player, cfg), cfg.maxDistance, cfg.maxNameLength, entries.size(), entries);
     }
 
     private static byte status(Destination.Status s) {
@@ -385,14 +412,14 @@ public final class StagecoachService {
 
     /** Placed, discovered, public, or every coach when discoveryRequired is off. */
     public static boolean knows(StagecoachState network, ServerPlayerEntity player, CoachRecord c) {
-        return !StagecoachConfig.get().discoveryRequired || c.isPublic || c.isOwner(player.getUuid())
+        return !Permissions.config(player).discoveryRequired || c.isPublic || c.isOwner(player.getUuid())
                 || network.hasDiscovered(player.getUuid(), c.id);
     }
 
     private static @Nullable CoachRecord nearestKnown(ServerPlayerEntity player, StagecoachState network, boolean ignoreDiscovery) {
         CoachRecord best = null;
         double bestSq = Double.MAX_VALUE;
-        double range = StagecoachConfig.get().useRange;
+        double range = Permissions.config(player).useRange;
         for (CoachRecord c : network.coaches(player.getWorld().getRegistryKey())) {
             if (!ignoreDiscovery && !knows(network, player, c)) continue;
             double sq = player.getPos().squaredDistanceTo(Vec3d.ofCenter(c.pos));
@@ -405,7 +432,7 @@ public final class StagecoachService {
     }
 
     private static boolean near(ServerPlayerEntity player, CoachRecord c) {
-        double range = StagecoachConfig.get().useRange;
+        double range = Permissions.config(player).useRange;
         return player.getWorld().getRegistryKey() == c.dimension && player.getPos().squaredDistanceTo(Vec3d.ofCenter(c.pos)) <= range * range;
     }
 

@@ -9,6 +9,7 @@ base { archivesName = "Stagecoach-neoforge-${rootProject.minecraft_version}" }
 
 repositories {
     mavenCentral()
+    maven { name = 'FTB'; url = 'https://maven.ftb.dev/releases/' }
     exclusiveContent {
         forRepository { maven { name = 'Modrinth'; url = 'https://api.modrinth.com/maven' } }
         filter { includeGroup 'maven.modrinth' }
@@ -71,6 +72,7 @@ dependencies {
     compileOnly("maven.modrinth:open-parties-and-claims:${rootProject.opac_neoforge}") { transitive = false }
     compileOnly("maven.modrinth:xaeros-minimap:${rootProject.xaero_neoforge}") { transitive = false }
     compileOnly compatJar(rootProject.journeymap_neoforge_url, rootProject.journeymap_neoforge_sha1, 'META-INF/jarjar/journeymap-api-')
+    compileOnly("dev.ftb.mods:ftb-ranks-neoforge:${rootProject.ftbranks_version}") { transitive = false }
 }
 
 processResources {

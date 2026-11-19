@@ -56,6 +56,7 @@ public final class PendingCoaches {
         QUEUE.add(new Pending(world.getRegistryKey(), pos.toImmutable()));
     }
 
+    @SuppressWarnings("deprecation")
     public static void onServerTick(MinecraftServer server) {
         Pending p;
         while ((p = QUEUE.poll()) != null) {

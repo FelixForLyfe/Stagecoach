@@ -9,6 +9,7 @@ import net.minecraft.client.texture.Sprite;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
+@SuppressWarnings("removal")
 public final class RoadScene {
     private RoadScene() {}
 
