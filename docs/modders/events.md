@@ -116,6 +116,7 @@ then the completed and ended events, in the same tick.
 | `GAME_MODE_CHANGED` | Something else changed the player's game mode |
 | `DIED` | The player died on the road |
 | `RECOVERED` | The server had crashed; the journey was settled when the player came back |
+| `AMBUSHED` | Bandits stopped the coach part-way (`ambushChancePercent`); the player was set down on the road with the unridden share of the fare |
 
 ### StopDiscoverEvent
 

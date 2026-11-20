@@ -5,8 +5,10 @@ import net.feelix.stagecoach.compat.journeymap.StagecoachJourneyMap;
 import net.feelix.stagecoach.compat.xaero.XaeroWaypoints;
 import net.feelix.stagecoach.net.Packets;
 import net.feelix.stagecoach.platform.Platform;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 /** The client's known stops as a "Stagecoach" waypoint set on whichever map mods are installed. */
 public final class Waypoints {
@@ -18,13 +20,17 @@ public final class Waypoints {
     private static final boolean XAERO = Platform.get().isModLoaded("xaerominimap") || Platform.get().isModLoaded("xaerominimapfair");
     private static final int XAERO_CHECK_TICKS = 40;
 
+    /** A loader's own map integration (Antique Atlas on Fabric), set by its client entrypoint. */
+    public static @Nullable Consumer<List<Packets.KnownStop>> extraMap;
+
     private static List<Packets.KnownStop> known = List.of();
+    private static boolean extraMapFailed;
     private static boolean journeyMapFailed;
     private static boolean xaeroFailed;
     private static int ticks;
 
     public static boolean available() {
-        return JOURNEYMAP || XAERO;
+        return JOURNEYMAP || XAERO || extraMap != null;
     }
 
     public static void update(List<Packets.KnownStop> stops) {
@@ -38,6 +44,14 @@ public final class Waypoints {
             }
         }
         showOnXaero(true);
+        if (extraMap != null && !extraMapFailed) {
+            try {
+                extraMap.accept(stops);
+            } catch (LinkageError | RuntimeException e) {
+                extraMapFailed = true;
+                Stagecoach.LOGGER.warn("Map markers switched off: {}", e.toString());
+            }
+        }
     }
 
     /** Xaero keeps one waypoint world per dimension and server, so the set is laid again when that world changes. */

@@ -8,6 +8,12 @@ names; uploads go Fabric, then Forge, then NeoForge, oldest Minecraft first; tag
 loader, Java 17/21/25 and Client + Server; only GeckoLib (and Fabric API on Fabric) are listed, as required
 dependencies.
 
+## 1.4.0 (built and uploaded 2026-11-20, file ids 9710655–9710660, 9710662–9710665, 9710668–9710671)
+
+The CurseForge-comment fixes, hitching, companions, roads, bandits, Antique Atlas and Create. Same fourteen files,
+tags, required dependencies and order as 1.3.0, uploaded with `tools/cf_upload.py`; each file's changelog is
+`changelogs/1.4.0/<loader>-<mc>.md`. 9710661, 9710666 and 9710667 are not ours.
+
 ## 1.3.0 (built and uploaded 2026-11-19, file ids 9706337, 9706339–9706351)
 
 Global stops, `/stagecoach config`, per-player settings (LuckPerms meta, FTB Ranks), the deprecation clean-up. Same

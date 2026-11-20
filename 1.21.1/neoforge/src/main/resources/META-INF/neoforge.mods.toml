@@ -60,6 +60,13 @@ ordering = "NONE"
 side = "SERVER"
 
 [[dependencies.stagecoach]]
+modId = "create"
+type = "optional"
+versionRange = "*"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.stagecoach]]
 modId = "journeymap"
 type = "optional"
 versionRange = "*"

@@ -332,8 +332,18 @@ public final class StagecoachService {
         else if (!verdict.allowed()) status = Destination.Status.LOCKED;
         else if (cost > 0 && balance < cost) status = Destination.Status.CANT_AFFORD;
         else status = Destination.Status.OK;
+        Text lockMessage = verdict.message();
+        if (status != Destination.Status.OTHER_DIMENSION && status != Destination.Status.TOO_FAR && verdict.allowed() && cfg.requireRoad
+                && from.isCoach()) {
+            CoachRecord origin = StagecoachState.get(player.getServer()).coach(from.id());
+            RoadNetwork.Link link = origin == null ? RoadNetwork.Link.CONNECTED : RoadNetwork.link(player.getServer(), origin, to);
+            if (link != RoadNetwork.Link.CONNECTED) {
+                status = Destination.Status.LOCKED;
+                lockMessage = Stagecoach.text(link == RoadNetwork.Link.SURVEYING ? "error.road_surveying" : "error.no_road");
+            }
+        }
         return new Destination(to.view(), (int) Math.round(distance), cost, (int) Math.ceil(TravelMath.seconds(distance, cfg)), status,
-                verdict.message());
+                lockMessage);
     }
 
     /** Every stop this player may see from {@code here}, nearest first, after listeners have had their say. */

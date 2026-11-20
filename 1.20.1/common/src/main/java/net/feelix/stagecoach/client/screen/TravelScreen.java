@@ -127,7 +127,8 @@ public class TravelScreen extends Screen {
         if (cfg.roadScene()) {
             SceneRenderer.draw(ctx, width, height, scene, journey.seed(), (float) elapsed, world.getSkyAngle(delta), world.getMoonPhase());
         } else {
-            renderBackground(ctx);
+            // opaque: the traveller is a spectator at the origin, and the world showed through vanilla's tint
+            WoodUi.inset(ctx, 0, 0, width, height);
             if (cfg.mapScreen()) drawMap(ctx, progress);
         }
 

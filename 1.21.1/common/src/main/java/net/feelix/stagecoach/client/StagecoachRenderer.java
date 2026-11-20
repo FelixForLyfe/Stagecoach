@@ -5,6 +5,7 @@ import net.feelix.stagecoach.footprint.Footprint;
 import net.feelix.stagecoach.footprint.StagecoachFootprintData;
 import net.feelix.stagecoach.footprint.StagecoachShapes;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.RotationAxis;
 import software.bernie.geckolib.renderer.GeoBlockRenderer;
@@ -25,5 +26,10 @@ public class StagecoachRenderer extends GeoBlockRenderer<StagecoachBlockEntity> 
     @Override
     public boolean rendersOutsideBoundingBox(StagecoachBlockEntity blockEntity) {
         return true;
+    }
+
+    /** NeoForge 21.1's frustum hook (IBlockEntityRendererExtension#getRenderBoundingBox); unused on the other loaders. */
+    public Box getRenderBoundingBox(StagecoachBlockEntity blockEntity) {
+        return blockEntity.getRenderBoundingBox();
     }
 }

@@ -4,6 +4,7 @@ import net.feelix.stagecoach.StagecoachWood;
 import net.feelix.stagecoach.config.StagecoachConfig;
 import net.feelix.stagecoach.footprint.Footprint;
 import net.feelix.stagecoach.footprint.StagecoachShapes;
+import net.feelix.stagecoach.travel.Hitching;
 import net.feelix.stagecoach.travel.StagecoachService;
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
@@ -85,7 +86,9 @@ public class StagecoachBlock extends BaseEntityBlock {
 
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
-        if (level instanceof ServerLevel serverWorld && player instanceof ServerPlayer p) StagecoachService.onUse(serverWorld, pos, p);
+        if (level instanceof ServerLevel serverWorld && player instanceof ServerPlayer p && !Hitching.onUse(serverWorld, pos, pos, p)) {
+            StagecoachService.onUse(serverWorld, pos, p);
+        }
         return InteractionResult.SUCCESS;
     }
 

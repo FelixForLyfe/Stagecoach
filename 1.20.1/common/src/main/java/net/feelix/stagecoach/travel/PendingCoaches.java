@@ -13,7 +13,9 @@ import net.feelix.stagecoach.data.StagecoachData;
 import net.feelix.stagecoach.data.Theme;
 import net.feelix.stagecoach.data.TravelRule;
 import net.feelix.stagecoach.net.ServerNet;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.registry.RegistryKey;
@@ -25,6 +27,7 @@ import net.minecraft.structure.StructureStart;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.Language;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.ChunkSectionPos;
 import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.gen.StructureAccessor;
@@ -51,6 +54,9 @@ public final class PendingCoaches {
     public static final String TEMPLATE_SCENE = StagecoachBlockEntity.TEMPLATE_PREFIX + "scene";
     public static final String TEMPLATE_THEME = StagecoachBlockEntity.TEMPLATE_PREFIX + "theme";
     public static final String TEMPLATE_WOOD = StagecoachBlockEntity.TEMPLATE_PREFIX + "wood";
+
+    private static final int PAD_REACH = 6;
+    private static final int MAX_UNDERPIN = 16;
 
     public static void queue(World world, BlockPos pos) {
         QUEUE.add(new Pending(world.getRegistryKey(), pos.toImmutable()));
@@ -137,10 +143,27 @@ public final class PendingCoaches {
         target.setCoachId(record.id);
         target.setDropsNothing(true);
         target.clearTemplate();
+        if (generated) underpin(world, pos);
         network.changed();
         ServerNet.knownStopsChanged();
         Stagecoach.LOGGER.debug("Registered stop #{} '{}' at {} in {}", record.id, record.name, pos, world.getRegistryKey().getValue());
         return record;
+    }
+
+    /** Villages without terrain adaptation left the dirt-path pad hanging over slopes: dirt under it, down to the ground. */
+    private static void underpin(ServerWorld world, BlockPos coach) {
+        BlockPos.Mutable at = new BlockPos.Mutable();
+        int padY = coach.getY() - 1;
+        for (int x = coach.getX() - PAD_REACH; x <= coach.getX() + PAD_REACH; x++) {
+            for (int z = coach.getZ() - PAD_REACH; z <= coach.getZ() + PAD_REACH; z++) {
+                if (!world.isChunkLoaded(ChunkSectionPos.getSectionCoord(x), ChunkSectionPos.getSectionCoord(z))) continue;
+                if (!world.getBlockState(at.set(x, padY, z)).isOf(Blocks.DIRT_PATH)) continue;
+                for (int y = padY - 1; y >= padY - MAX_UNDERPIN && !world.isOutOfHeightLimit(y); y--) {
+                    if (!world.getBlockState(at.set(x, y, z)).isReplaceable()) break;
+                    world.setBlockState(at, Blocks.DIRT.getDefaultState(), Block.NOTIFY_LISTENERS);
+                }
+            }
+        }
     }
 
     private static @Nullable String poolName(String poolId, long seed, int maxLength) {

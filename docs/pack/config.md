@@ -59,6 +59,24 @@ server charges.
 | `maxNameLength` | 24 | 1–64 | The longest stop name |
 | `autoNameFormat` | `"{biome} Stop"` | | The name of a coach nothing else names; `{biome}` is the biome's English name |
 
+## Companions, roads and bandits
+
+| Setting | Default | Range | Meaning |
+|---|---|---|---|
+| `companionsTravel` | true | | Mobs on the traveller's lead, their own pets that aren't sitting, and any animal standing on the coach arrive with them (within one dimension) |
+| `companionRange` | 10 | 1–64 | How far from the traveller those mobs may be |
+| `requireRoad` | false | | Only stops joined by a road can be travelled between. A road is any unbroken line of the `stagecoach:road_blocks` block tag (dirt paths, gravel, cobblestone, stone bricks, planks and more) that starts within 8 blocks of both coaches; diagonal steps and one block up or down count. The server surveys the road from a stop when its list opens and keeps the answer for a minute; while it is still surveying, the stop shows "Surveying the road…" |
+| `ambushChancePercent` | 0 | 0–100 | The chance a journey is stopped by bandits part-way (35–65% of the way). 0 = never. Never in peaceful, in creative or between dimensions |
+| `ambushMinDistance` | 1000 | 0–100,000,000 | Shorter trips are never ambushed |
+| `ambushMobs` | `["minecraft:pillager", "minecraft:vindicator"]` | | The bandits: any mob ids, modded ones too, picked at random |
+| `ambushMobCount` | 3 | 1–32 | How many bandits attack |
+
+An ambushed traveller is set down on the straight line between the stops (where there is safe ground; over open water
+the coach drives on), with the share of the fare for the road not ridden returned, and the bandits come for them.
+
+Players can also tie horses (or anything on a lead) to a coach: right-click it with mobs on a lead, as on a fence. A
+sneaking right-click with an empty hand takes the leads back.
+
 ## Protection and ownership
 
 | Setting | Default | Range | Meaning |
@@ -87,6 +105,10 @@ server charges.
 | `forceClientTravelStyle` | `"none"` | `"road"`, `"map"` or `"minimal"` shows every player that screen; `"none"` lets each player choose |
 | `builtinAdvancements` | true | The Stagecoach advancement tab (the [triggers](advancements.md) work either way) |
 | `tfcRecipes` | true | TerraFirmaCraft recipes when TFC is installed (Forge 1.20.1, NeoForge 1.21.1) |
+
+With **Create** installed (Forge and Fabric 1.20.1, NeoForge 1.21.1) every coach can also be built on a Mechanical
+Crafter from leads, a compass, leather, the wood's fences and planks, Create shafts and cogwheels, without the diamond
+and gold blocks (`stagecoach:create/<wood>_stagecoach`; replace or remove it with a data pack).
 
 ## Each player's settings
 

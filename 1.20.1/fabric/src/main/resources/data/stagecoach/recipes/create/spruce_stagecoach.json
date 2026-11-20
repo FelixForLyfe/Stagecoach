@@ -1,0 +1,46 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "create"
+      ]
+    }
+  ],
+  "type": "create:mechanical_crafting",
+  "acceptMirrored": true,
+  "pattern": [
+    "  LFFFL  ",
+    "WCPPPPPPP",
+    "W PPPPPPP",
+    "SPPPPPPPS",
+    " G     G "
+  ],
+  "key": {
+    "W": {
+      "item": "minecraft:lead"
+    },
+    "C": {
+      "item": "minecraft:compass"
+    },
+    "L": {
+      "item": "minecraft:leather"
+    },
+    "F": {
+      "item": "minecraft:spruce_fence"
+    },
+    "P": {
+      "item": "minecraft:spruce_planks"
+    },
+    "S": {
+      "item": "create:shaft"
+    },
+    "G": {
+      "item": "create:cogwheel"
+    }
+  },
+  "result": {
+    "item": "stagecoach:spruce_stagecoach",
+    "count": 1
+  }
+}

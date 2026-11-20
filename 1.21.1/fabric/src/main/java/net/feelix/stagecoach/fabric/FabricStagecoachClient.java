@@ -1,6 +1,8 @@
 package net.feelix.stagecoach.fabric;
 
 import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.loader.api.FabricLoader;
+import net.feelix.stagecoach.compat.Waypoints;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -46,6 +48,9 @@ public class FabricStagecoachClient implements ClientModInitializer {
             }
         });
         StagecoachClient.init();
+        if (FabricLoader.getInstance().isModLoaded("antique_atlas") && FabricLoader.getInstance().isModLoaded("surveyor")) {
+            Waypoints.extraMap = AntiqueAtlasStops::show;
+        }
 
         ResourceManagerHelper.get(ResourceType.CLIENT_RESOURCES).registerReloadListener(new IdentifiableResourceReloadListener() {
             @Override

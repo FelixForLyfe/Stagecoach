@@ -5,6 +5,7 @@ import net.feelix.stagecoach.StagecoachWood;
 import net.feelix.stagecoach.config.StagecoachConfig;
 import net.feelix.stagecoach.footprint.Footprint;
 import net.feelix.stagecoach.footprint.StagecoachShapes;
+import net.feelix.stagecoach.travel.Hitching;
 import net.feelix.stagecoach.travel.StagecoachService;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -72,7 +73,8 @@ public class StagecoachPartBlock extends Block {
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
         if (level instanceof ServerLevel serverWorld && player instanceof ServerPlayer p
                 && StagecoachStructure.hasController(level, pos, state)) {
-            StagecoachService.onUse(serverWorld, StagecoachStructure.controllerPos(pos, state), p);
+            BlockPos controller = StagecoachStructure.controllerPos(pos, state);
+            if (!Hitching.onUse(serverWorld, pos, controller, p)) StagecoachService.onUse(serverWorld, controller, p);
         }
         return InteractionResult.SUCCESS;
     }

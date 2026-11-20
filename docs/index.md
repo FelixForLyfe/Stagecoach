@@ -39,7 +39,7 @@ This site is for players and for the people who build on it:
 | 26.3 | Forge 66+ | GeckoLib 5.5+ |
 
 Stagecoach runs on both sides: install the same file on the server and on every client. A server and its players
-must run the same Stagecoach version (1.1.0 and 1.2.0 can't play together).
+should run the same Stagecoach version (1.1.0 and 1.2.0 can't play together; a 1.3.0 player can join a 1.4.0 server, but sees the new road and bandit messages untranslated).
 
 ## What works with what
 
@@ -54,6 +54,8 @@ Every feature exists on all fourteen builds, except where the other mod doesn't 
 | Jade | Fabric and NeoForge everywhere, Forge 1.20.1 |
 | JEI | everywhere except Forge 1.21.11, 26.2 and 26.3 |
 | TerraFirmaCraft recipes | Forge 1.20.1, NeoForge 1.21.1 |
+| Create (Mechanical Crafter recipes) | Forge 1.20.1, Fabric 1.20.1, NeoForge 1.21.1 |
+| Antique Atlas (stop markers) | Fabric 1.20.1, Fabric 1.21.1 |
 | Mod Menu | Fabric |
 
 None of them is required.

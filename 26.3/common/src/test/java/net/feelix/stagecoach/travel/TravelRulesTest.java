@@ -69,6 +69,39 @@ class TravelRulesTest {
     }
 
     @Test
+    void ambushesAreOffByDefaultAndNeverOnShortTrips() {
+        assertFalse(TravelMath.ambushes(50_000, D, 0.0));
+        StagecoachConfig c = config("{\"ambushChancePercent\": 25, \"ambushMinDistance\": 1000}");
+        assertTrue(TravelMath.ambushes(1000, c, 0.0));
+        assertTrue(TravelMath.ambushes(5000, c, 0.249));
+        assertFalse(TravelMath.ambushes(5000, c, 0.25));
+        assertFalse(TravelMath.ambushes(999, c, 0.0));
+        assertEquals(List.of("minecraft:pillager", "minecraft:vindicator"), D.ambushMobs);
+    }
+
+    @Test
+    void ambushesStrikeInTheMiddleOfTheRoadAndRefundTheRest() {
+        assertEquals(1035, TravelMath.ambushTick(1000, 100, 0.0));
+        assertEquals(1065, TravelMath.ambushTick(1000, 100, 1.0));
+        assertEquals(60, TravelMath.unriddenPercent(1000, 100, 1040));
+        assertEquals(0, TravelMath.unriddenPercent(1000, 100, 1200));
+        assertEquals(100, TravelMath.unriddenPercent(1000, 100, 900));
+        assertEquals(33, TravelMath.unriddenPercent(0, 3, 2));
+    }
+
+    @Test
+    void companionsTravelAndRoadsAreOptionalSettings() {
+        assertTrue(D.companionsTravel);
+        assertEquals(10, D.companionRange);
+        assertFalse(D.requireRoad);
+        List<String> warnings = new ArrayList<>();
+        StagecoachConfig c = StagecoachConfig.parse("{\"ambushMobs\": \"minecraft:zombie\", \"companionRange\": 0}", warnings);
+        assertEquals(2, warnings.size(), warnings.toString());
+        assertEquals(D.ambushMobs, c.ambushMobs);
+        assertEquals(10, c.companionRange);
+    }
+
+    @Test
     void travelTimeIsDistanceOver75ClampedTo5And600() {
         assertEquals(5.0, TravelMath.seconds(10, D));
         assertEquals(5.0, TravelMath.seconds(375, D));

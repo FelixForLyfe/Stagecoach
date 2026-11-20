@@ -23,7 +23,10 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.core.SectionPos;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.StructureManager;
 import net.minecraft.world.level.biome.Biome;
 import net.minecraft.world.level.block.state.BlockState;
@@ -51,6 +54,9 @@ public final class PendingCoaches {
     public static final String TEMPLATE_SCENE = StagecoachBlockEntity.TEMPLATE_PREFIX + "scene";
     public static final String TEMPLATE_THEME = StagecoachBlockEntity.TEMPLATE_PREFIX + "theme";
     public static final String TEMPLATE_WOOD = StagecoachBlockEntity.TEMPLATE_PREFIX + "wood";
+
+    private static final int PAD_REACH = 6;
+    private static final int MAX_UNDERPIN = 16;
 
     public static void queue(Level level, BlockPos pos) {
         QUEUE.add(new Pending(level.dimension(), pos.immutable()));
@@ -137,10 +143,27 @@ public final class PendingCoaches {
         target.setCoachId(record.id);
         target.setDropsNothing(true);
         target.clearTemplate();
+        if (generated) underpin(level, pos);
         network.changed();
         ServerNet.knownStopsChanged();
         Stagecoach.LOGGER.debug("Registered stop #{} '{}' at {} in {}", record.id, record.name, pos, level.dimension().identifier());
         return record;
+    }
+
+    /** Villages without terrain adaptation left the dirt-path pad hanging over slopes: dirt under it, down to the ground. */
+    private static void underpin(ServerLevel level, BlockPos coach) {
+        BlockPos.MutableBlockPos at = new BlockPos.MutableBlockPos();
+        int padY = coach.getY() - 1;
+        for (int x = coach.getX() - PAD_REACH; x <= coach.getX() + PAD_REACH; x++) {
+            for (int z = coach.getZ() - PAD_REACH; z <= coach.getZ() + PAD_REACH; z++) {
+                if (!level.hasChunk(SectionPos.blockToSectionCoord(x), SectionPos.blockToSectionCoord(z))) continue;
+                if (!level.getBlockState(at.set(x, padY, z)).is(Blocks.DIRT_PATH)) continue;
+                for (int y = padY - 1; y >= padY - MAX_UNDERPIN && !level.isOutsideBuildHeight(y); y--) {
+                    if (!level.getBlockState(at.set(x, y, z)).canBeReplaced()) break;
+                    level.setBlock(at, Blocks.DIRT.defaultBlockState(), Block.UPDATE_CLIENTS);
+                }
+            }
+        }
     }
 
     private static @Nullable String poolName(String poolId, long seed, int maxLength) {

@@ -1,0 +1,44 @@
+{
+  "conditions": [
+    {
+      "type": "forge:mod_loaded",
+      "modid": "create"
+    }
+  ],
+  "type": "create:mechanical_crafting",
+  "acceptMirrored": true,
+  "pattern": [
+    "  LFFFL  ",
+    "WCPPPPPPP",
+    "W PPPPPPP",
+    "SPPPPPPPS",
+    " G     G "
+  ],
+  "key": {
+    "W": {
+      "item": "minecraft:lead"
+    },
+    "C": {
+      "item": "minecraft:compass"
+    },
+    "L": {
+      "item": "minecraft:leather"
+    },
+    "F": {
+      "item": "minecraft:bamboo_fence"
+    },
+    "P": {
+      "item": "minecraft:bamboo_planks"
+    },
+    "S": {
+      "item": "create:shaft"
+    },
+    "G": {
+      "item": "create:cogwheel"
+    }
+  },
+  "result": {
+    "item": "stagecoach:bamboo_stagecoach",
+    "count": 1
+  }
+}

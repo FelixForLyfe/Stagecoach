@@ -1,0 +1,46 @@
+{
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "create"
+      ]
+    }
+  ],
+  "type": "create:mechanical_crafting",
+  "acceptMirrored": true,
+  "pattern": [
+    "  LFFFL  ",
+    "WCPPPPPPP",
+    "W PPPPPPP",
+    "SPPPPPPPS",
+    " G     G "
+  ],
+  "key": {
+    "W": {
+      "item": "minecraft:lead"
+    },
+    "C": {
+      "item": "minecraft:compass"
+    },
+    "L": {
+      "item": "minecraft:leather"
+    },
+    "F": {
+      "item": "minecraft:crimson_fence"
+    },
+    "P": {
+      "item": "minecraft:crimson_planks"
+    },
+    "S": {
+      "item": "create:shaft"
+    },
+    "G": {
+      "item": "create:cogwheel"
+    }
+  },
+  "result": {
+    "item": "stagecoach:crimson_stagecoach",
+    "count": 1
+  }
+}

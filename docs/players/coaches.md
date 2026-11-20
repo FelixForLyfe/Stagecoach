@@ -20,6 +20,10 @@ and warped. The recipe, with the planks of the wood you want:
 That's 27 diamonds and 9 gold ingots per coach: a road network is something you build up over time. The recipe book
 shows it the first time you hold a block of diamond. All eleven are on the **Stagecoaches** creative tab.
 
+With **Create** installed (Forge and Fabric 1.20.1, NeoForge 1.21.1) you can also build one on a Mechanical Crafter from
+leads, a compass, leather, the wood's fences and planks, shafts and cogwheels, without any diamond or gold. JEI shows
+the layout.
+
 ## Placing
 
 A coach needs a clear space **3 wide, 3 tall and 6 long**, and it faces away from you.
@@ -56,6 +60,11 @@ can break them.
 
 Taking a coach down removes the stop from everyone's list. Anyone travelling to it is put back where they set off,
 with their fare returned.
+
+## Tying up your horse
+
+Right-click a coach while you have a horse (or any other mob) on a lead, and it's tied to the coach, just like tying it
+to a fence. Sneak and right-click the coach with an empty hand to take the leads back.
 
 ## Looking at a coach
 

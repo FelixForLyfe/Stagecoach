@@ -43,6 +43,13 @@ ordering = "NONE"
 side = "BOTH"
 
 [[dependencies.stagecoach]]
+modId = "create"
+mandatory = false
+versionRange = "*"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.stagecoach]]
 modId = "journeymap"
 mandatory = false
 versionRange = "*"

@@ -119,7 +119,7 @@ public class TravelScreen extends Screen {
         return super.keyPressed(keyCode, scanCode, modifiers);
     }
 
-    /** The road replaces the vanilla blur; the map and minimal screens keep it. */
+    /** The road replaces the vanilla blur; the map and minimal screens draw an opaque panel. */
     @Override
     public void renderBackground(DrawContext ctx, int mouseX, int mouseY, float delta) {
         ClientWorld world = client.world;
@@ -131,7 +131,8 @@ public class TravelScreen extends Screen {
             SceneRenderer.draw(ctx, width, height, scene, journey.seed(), (float) elapsed, world.getSkyAngle(delta), world.getMoonPhase());
             return;
         }
-        super.renderBackground(ctx, mouseX, mouseY, delta);
+        // opaque: the traveller is a spectator at the origin, and the world showed through vanilla's tint
+        WoodUi.inset(ctx, 0, 0, width, height);
         if (cfg.mapScreen()) drawMap(ctx, progress);
     }
 

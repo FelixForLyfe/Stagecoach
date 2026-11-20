@@ -9,6 +9,7 @@ import net.feelix.stagecoach.footprint.StagecoachFootprintData;
 import net.feelix.stagecoach.footprint.StagecoachShapes;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
+import net.minecraft.world.phys.AABB;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.renderer.GeoBlockRenderer;
 import software.bernie.geckolib.renderer.base.RenderPassInfo;
@@ -35,6 +36,11 @@ public class StagecoachRenderer extends GeoBlockRenderer<StagecoachBlockEntity, 
         Direction facing = info.getOrDefaultGeckolibData(DataTickets.BLOCK_FACING, Direction.NORTH);
         poseStack.mulPose(Axis.YP.rotationDegrees(Footprint.renderYawDegrees(StagecoachShapes.turns(facing))));
         poseStack.translate(0, StagecoachFootprintData.Y_OFFSET_PX / 16f, 0);
+    }
+
+    /** NeoForge's IBlockEntityRendererExtension hook: its default is the controller's own block, so the coach vanished at the screen edge. */
+    public AABB getRenderBoundingBox(StagecoachBlockEntity coach) {
+        return coach.getRenderBoundingBox();
     }
 
     /** Otherwise the coach vanishes once the controller's chunk section leaves the view. */

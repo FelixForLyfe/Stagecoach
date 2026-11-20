@@ -41,6 +41,8 @@ public class StagecoachJourneyMap implements IClientPlugin {
     /** The group is not persistent: the server sends the list again on every join. */
     public static void show(List<Packets.KnownStop> stops) {
         if (api == null || !mapping) return;
+        // waypoints live in their own store: dropping the group alone left a copy of every stop per update
+        api.removeAllWaypoints(Stagecoach.MOD_ID);
         api.removeWaypointGroups(Stagecoach.MOD_ID, true);
         if (stops.isEmpty()) return;
 

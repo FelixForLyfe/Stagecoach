@@ -16,7 +16,9 @@
 
 <div style="display:flex;flex-wrap:wrap;gap:10px"><div style="flex:1;min-width:180px;text-align:center;border:1px solid #444;border-radius:6px;background-color:#151515"><strong style="font-size:18px">11 Wood Types</strong><br>Build coaches to match your world</div><div style="flex:1;min-width:180px;text-align:center;border:1px solid #444;border-radius:6px;background-color:#151515"><strong style="font-size:18px">A Stop in Every Village</strong><br>Built in the village's own wood, waiting to be found</div><div style="flex:1;min-width:180px;text-align:center;border:1px solid #444;border-radius:6px;background-color:#151515"><strong style="font-size:18px">Real-Time Travel</strong><br>Ride the journey instead of teleporting</div><div style="flex:1;min-width:180px;text-align:center;border:1px solid #444;border-radius:6px;background-color:#151515"><strong style="font-size:18px">Vanilla-Friendly</strong><br>Designed to fit naturally into survival</div></div>
 
-<div style="text-align:center;margin-left:8%;margin-right:8%;border:1px solid #f16422;border-radius:6px;background-color:#151515"><strong style="font-size:18px">New in 1.3.0</strong><br>Global stops: one button makes a stop reachable from every stagecoach, for every player, like a global waystone • change any setting in game with <code>/stagecoach config</code> • every setting per rank or player through LuckPerms or FTB Ranks</div>
+<div style="text-align:center;margin-left:8%;margin-right:8%;border:1px solid #f16422;border-radius:6px;background-color:#151515"><strong style="font-size:18px">New in 1.4.0</strong><br>Hitch your horse to a coach and take your pets along • bandits on the road • travel only where a road runs • Antique Atlas markers and a Create recipe • fixes for coaches vanishing on Forge/NeoForge and duplicate JourneyMap waypoints</div>
+
+<div style="text-align:center;margin-left:8%;margin-right:8%;border:1px solid #555;border-radius:6px;background-color:#151515"><strong>1.3.0</strong><br>Global stops: one button makes a stop reachable from every stagecoach, for every player, like a global waystone • change any setting in game with <code>/stagecoach config</code> • every setting per rank or player through LuckPerms or FTB Ranks</div>
 
 ***
 
@@ -34,6 +36,8 @@
 *   **While you're on the road, you stay safe** where you set off. **Cancel at any time** to get your fare back.
 *   **You arrive on safe ground** in front of the destination coach, in your own game mode.
 *   **You can't set off within 10 seconds of being hit** (by default).
+*   **Bring your horse:** tie it to the coach with a lead like a fence, and the mobs on your lead and your own pets come along when you travel.
+*   **If the server wants it, the road is dangerous:** bandits can stop a coach part-way, and travel can be limited to stops a real road joins.
 
 ***
 
@@ -66,6 +70,8 @@
 | <strong>LuckPerms</strong> (or any permissions mod) |A permission node for every action, from placing a coach to making a stop global, and every setting per group or player as a meta value (<code>stagecoach.max_cost</code>, ...). |
 | <strong>FTB Ranks</strong> |The same nodes and per-player settings, straight from <code>ranks.snbt</code>. (Fabric and NeoForge, and Forge 1.20.1: FTB Ranks isn't out for Forge after 1.20.1.)     |
 | <strong>KubeJS</strong> |Script events and the API from KubeJS. (1.20.1, and NeoForge 1.21.1: KubeJS isn't out for the others.)                                                                                     |
+| <strong>Antique Atlas</strong> |The stops you know show on your atlas as stagecoach markers. (Fabric 1.20.1 and 1.21.1, the versions Antique Atlas 4 is out for.) |
+| <strong>Create</strong> |Build a coach on a Mechanical Crafter from leads, a compass, leather, fences, planks, shafts and cogwheels, without diamond or gold. (Forge and Fabric 1.20.1, NeoForge 1.21.1.) |
 | <strong>TerraFirmaCraft</strong> |TFC recipes: lumber, steel double sheets, a gold sheet and a wooden chest. (Forge 1.20.1 and NeoForge 1.21.1, the versions TFC is out for.)                                                   |
 | <strong>Sodium + Iris</strong> |Checked with both installed on Fabric 1.20.1 (no shader pack active).                                                                                                                         |
 | <strong>Mod Menu</strong> |Name, description, icon and the client options (Fabric).                                                                                                                                      |
@@ -142,6 +148,13 @@ On a server, install the same files on the server. Every player who joins needs 
 | <code>maxNameLength</code> |24                  |The longest name a stop can have (up to 64)                                                          |
 | <code>blockedDimensions</code> |<code>[]</code>     |Dimensions where coaches can't be placed, like <code>["minecraft:the_nether"]</code>                 |
 | <code>tfcRecipes</code> |true                |Use the TerraFirmaCraft recipes when TFC is installed (Forge 1.20.1 and NeoForge 1.21.1)             |
+| <code>companionsTravel</code> |true                |Mobs on your lead, your own pets that aren't sitting and animals standing on the coach travel with you |
+| <code>companionRange</code> |10                  |How far from you those mobs may be                                                                   |
+| <code>requireRoad</code> |false               |Only stops joined by a road (the <code>stagecoach:road_blocks</code> tag) can be travelled between     |
+| <code>ambushChancePercent</code> |0                   |The chance bandits stop a journey part-way (0 = never; never in peaceful or creative)                |
+| <code>ambushMinDistance</code> |1000                |Shorter trips are never ambushed                                                                     |
+| <code>ambushMobs</code> |<code>["minecraft:pillager", "minecraft:vindicator"]</code> |The bandits: any mob ids, modded ones too |
+| <code>ambushMobCount</code> |3                   |How many bandits attack                                                                              |
 | <code>naturalGeneration</code> |true                |A coach stop in every village (false: no coaches generate)                                           |
 | <code>maxGeneratedStopsPerStructure</code> |1                   |Stops per village                                                                                    |
 | <code>generatedCoachesBreakable</code> |false               |Whether village coaches can be broken                                                                |

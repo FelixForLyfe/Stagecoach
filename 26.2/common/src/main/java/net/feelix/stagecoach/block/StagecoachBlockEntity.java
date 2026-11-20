@@ -18,6 +18,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+import net.minecraft.world.phys.AABB;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -34,6 +35,7 @@ public class StagecoachBlockEntity extends BlockEntity implements GeoBlockEntity
     private boolean decoration;
     private boolean noDrop;
     private @Nullable CompoundTag template;
+    private @Nullable AABB renderBox;
 
     public StagecoachBlockEntity(BlockPos pos, BlockState state) {
         super(StagecoachRegistry.BLOCK_ENTITY, pos, state);
@@ -54,6 +56,12 @@ public class StagecoachBlockEntity extends BlockEntity implements GeoBlockEntity
     public void setLevel(Level level) {
         super.setLevel(level);
         if (!level.isClientSide()) PendingCoaches.queue(level, worldPosition);
+    }
+
+    /** Forge's IForgeBlockEntity hook: its default is the controller's own block, so the coach vanished at the screen edge. */
+    public AABB getRenderBoundingBox() {
+        if (renderBox == null) renderBox = new AABB(worldPosition).inflate(6, 1, 6).expandTowards(0, 3, 0);
+        return renderBox;
     }
 
     public long getCoachId() {

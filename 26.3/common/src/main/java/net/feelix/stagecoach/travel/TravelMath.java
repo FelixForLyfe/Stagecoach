@@ -62,4 +62,21 @@ public final class TravelMath {
         long secs = Math.max(0, (ticks + 19) / 20);
         return (secs / 60) + ":" + (secs % 60 < 10 ? "0" : "") + (secs % 60);
     }
+
+    /** Rolled once at the start; never on a trip shorter than ambushMinDistance. */
+    public static boolean ambushes(double distance, StagecoachConfig c, double roll) {
+        return c.ambushChancePercent > 0 && distance >= c.ambushMinDistance && roll * 100 < c.ambushChancePercent;
+    }
+
+    /** Somewhere in the middle of the road: 35% to 65% of the way. */
+    public static long ambushTick(long start, int ticks, double roll) {
+        return start + Math.round(ticks * (0.35 + 0.3 * roll));
+    }
+
+    /** The share of the fare for the road not ridden, rounded down. */
+    public static int unriddenPercent(long start, int ticks, long now) {
+        if (ticks <= 0) return 0;
+        long left = Math.max(0, start + ticks - now);
+        return (int) Math.min(100, left * 100 / ticks);
+    }
 }

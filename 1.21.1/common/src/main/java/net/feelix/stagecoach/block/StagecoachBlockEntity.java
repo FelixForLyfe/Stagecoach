@@ -8,6 +8,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.registry.RegistryWrapper;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoBlockEntity;
@@ -25,6 +26,7 @@ public class StagecoachBlockEntity extends BlockEntity implements GeoBlockEntity
     private boolean decoration;
     private boolean noDrop;
     private @Nullable NbtCompound template;
+    private @Nullable Box renderBox;
 
     public StagecoachBlockEntity(BlockPos pos, BlockState state) {
         super(StagecoachRegistry.BLOCK_ENTITY, pos, state);
@@ -45,6 +47,12 @@ public class StagecoachBlockEntity extends BlockEntity implements GeoBlockEntity
     public void setWorld(World world) {
         super.setWorld(world);
         if (!world.isClient) PendingCoaches.queue(world, pos);
+    }
+
+    /** Forge 52's frustum hook (BlockEntity#getRenderBoundingBox): its default is the controller's own block, so the coach vanished at the screen edge. */
+    public Box getRenderBoundingBox() {
+        if (renderBox == null) renderBox = new Box(pos).expand(6, 1, 6).stretch(0, 3, 0);
+        return renderBox;
     }
 
     public long getCoachId() {

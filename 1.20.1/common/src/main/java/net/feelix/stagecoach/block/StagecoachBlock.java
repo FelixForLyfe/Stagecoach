@@ -4,6 +4,7 @@ import net.feelix.stagecoach.StagecoachWood;
 import net.feelix.stagecoach.config.StagecoachConfig;
 import net.feelix.stagecoach.footprint.Footprint;
 import net.feelix.stagecoach.footprint.StagecoachShapes;
+import net.feelix.stagecoach.travel.Hitching;
 import net.feelix.stagecoach.travel.StagecoachService;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockRenderType;
@@ -87,7 +88,9 @@ public class StagecoachBlock extends BlockWithEntity {
 
     @Override
     public ActionResult onUse(BlockState state, World world, BlockPos pos, PlayerEntity player, Hand hand, BlockHitResult hit) {
-        if (world instanceof ServerWorld serverWorld && player instanceof ServerPlayerEntity p) StagecoachService.onUse(serverWorld, pos, p);
+        if (world instanceof ServerWorld serverWorld && player instanceof ServerPlayerEntity p && !Hitching.onUse(serverWorld, pos, pos, p)) {
+            StagecoachService.onUse(serverWorld, pos, p);
+        }
         return ActionResult.success(world.isClient);
     }
 

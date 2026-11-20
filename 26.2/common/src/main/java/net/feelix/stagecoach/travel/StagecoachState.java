@@ -102,6 +102,7 @@ public final class StagecoachState extends SavedData {
         CoachRecord record = new CoachRecord(id, name == null ? CoachNames.defaultName(id) : name, pos, dimension, facing,
                 owner, wood, createdBy);
         coaches.put(id, record);
+        RoadNetwork.forget();
         index(record);
         setDirty();
         return record;
@@ -175,6 +176,7 @@ public final class StagecoachState extends SavedData {
         CoachRecord c = coaches.remove(id);
         if (c == null) return;
         unindex(c);
+        RoadNetwork.forget();
         for (LongSet set : discovered.values()) set.remove(id);
         setDirty();
     }

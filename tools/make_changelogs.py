@@ -6,16 +6,16 @@ integrations that build has. Earlier versions' files stay as they were uploaded.
 import os
 import re
 
-VERSION = '1.3.0'
+VERSION = '1.4.0'
 ROOT = os.path.join(os.path.dirname(__file__), '..')
 OUT = os.path.join(ROOT, 'release', 'changelogs', VERSION)
 
 # (loader, minecraft, integrations)
 BUILDS = [
-    ('Fabric', '1.20.1', ['Jade', 'JEI', 'FTB Chunks', 'Open Parties and Claims', 'FTB Ranks', 'JourneyMap', "Xaero's Minimap", 'KubeJS', 'Mod Menu']),
-    ('Forge', '1.20.1', ['Jade', 'JEI', 'FTB Chunks', 'Open Parties and Claims', 'FTB Ranks', 'JourneyMap', "Xaero's Minimap", 'KubeJS', 'GameStages', 'TerraFirmaCraft']),
-    ('Fabric', '1.21.1', ['Jade', 'JEI', 'FTB Chunks', 'Open Parties and Claims', 'FTB Ranks', 'JourneyMap', "Xaero's Minimap", 'Mod Menu']),
-    ('NeoForge', '1.21.1', ['Jade', 'JEI', 'FTB Chunks', 'Open Parties and Claims', 'FTB Ranks', 'JourneyMap', "Xaero's Minimap", 'KubeJS', 'TerraFirmaCraft']),
+    ('Fabric', '1.20.1', ['Jade', 'JEI', 'FTB Chunks', 'Open Parties and Claims', 'FTB Ranks', 'JourneyMap', "Xaero's Minimap", 'Antique Atlas', 'Create', 'KubeJS', 'Mod Menu']),
+    ('Forge', '1.20.1', ['Jade', 'JEI', 'FTB Chunks', 'Open Parties and Claims', 'FTB Ranks', 'JourneyMap', "Xaero's Minimap", 'Create', 'KubeJS', 'GameStages', 'TerraFirmaCraft']),
+    ('Fabric', '1.21.1', ['Jade', 'JEI', 'FTB Chunks', 'Open Parties and Claims', 'FTB Ranks', 'JourneyMap', "Xaero's Minimap", 'Antique Atlas', 'Mod Menu']),
+    ('NeoForge', '1.21.1', ['Jade', 'JEI', 'FTB Chunks', 'Open Parties and Claims', 'FTB Ranks', 'JourneyMap', "Xaero's Minimap", 'Create', 'KubeJS', 'TerraFirmaCraft']),
     ('Forge', '1.21.1', ['JEI', 'Open Parties and Claims', 'JourneyMap', "Xaero's Minimap"]),
     ('Fabric', '1.21.11', ['Jade', 'JEI', 'Open Parties and Claims', 'FTB Ranks', 'JourneyMap', "Xaero's Minimap", 'Mod Menu']),
     ('NeoForge', '1.21.11', ['Jade', 'JEI', 'Open Parties and Claims', 'FTB Ranks', 'JourneyMap', "Xaero's Minimap"]),
@@ -53,7 +53,13 @@ def for_build(loader, minecraft, integrations):
         s = re.sub(r"- \*\*FTB Ranks\*\*[^\n]*\n(  [^\n]*\n)*", '', s)
     if 'FTB Chunks' not in integrations:
         s = s.replace(" a claim you couldn't build in, like FTB Chunks.", " a claim you couldn't build in.")
+    if 'Antique Atlas' not in integrations:
+        s = re.sub(r"\*\*Antique Atlas\*\*.*?\n\n", '', s, flags=re.S)
+    if 'Create' not in integrations:
+        s = re.sub(r"\n\*\*Create\*\*.*?(?=\n\n|\Z)", '', s, flags=re.S)
     if loader == 'Fabric':
+        s = s.replace('only drew a coach while its middle block was on screen.',
+                      'only drew a coach while its middle block was on screen; Fabric\n  was never affected.')
         s = s.replace('through LuckPerms or any other\n  permissions mod;', 'through LuckPerms or any other\n  permissions mod (fabric-permissions-api);')
     on_this = ', '.join(integrations[:-1]) + ' and ' + integrations[-1]
     s += f'\n### On this build ({loader} {minecraft})\nWorks with {on_this} when they are installed; none of them is required.\n'

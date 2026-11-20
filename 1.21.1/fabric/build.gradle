@@ -57,6 +57,7 @@ dependencies {
     modCompileOnly("maven.modrinth:open-parties-and-claims:${rootProject.opac_fabric_version}") { transitive = false }
     modCompileOnly("maven.modrinth:xaeros-minimap:${rootProject.xaero_fabric_version}") { transitive = false }
     modCompileOnly compatJar(rootProject.journeymap_fabric_url, rootProject.journeymap_fabric_sha1, 'META-INF/jars/journeymap-api-')
+    modCompileOnly compatJar(rootProject.surveyor_fabric_url, rootProject.surveyor_fabric_sha1)
     modCompileOnly("dev.ftb.mods:ftb-ranks-fabric:${rootProject.ftbranks_version}") { transitive = false }
 
     testImplementation platform('org.junit:junit-bom:5.10.2')

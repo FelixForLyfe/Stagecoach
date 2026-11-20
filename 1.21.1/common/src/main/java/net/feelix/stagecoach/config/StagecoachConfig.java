@@ -82,6 +82,14 @@ public final class StagecoachConfig {
     public final int maxGeneratedStopsPerStructure;
     public final boolean generatedCoachesBreakable;
 
+    public final boolean companionsTravel;
+    public final int companionRange;
+    public final boolean requireRoad;
+    public final int ambushChancePercent;
+    public final int ambushMinDistance;
+    public final List<String> ambushMobs;
+    public final int ambushMobCount;
+
     private StagecoachConfig(JsonObject o, List<String> warnings) {
         baseCost = intField(o, "baseCost", 1, 0, 1_000, warnings);
         blocksPerLevel = intField(o, "blocksPerLevel", 5000, 1, 10_000_000, warnings);
@@ -118,7 +126,7 @@ public final class StagecoachConfig {
         anyoneCanMakeGlobal = boolField(o, "anyoneCanMakeGlobal", false, warnings);
         maxCoachesPerPlayer = intField(o, "maxCoachesPerPlayer", 0, 0, 100_000, warnings);
         maxNameLength = intField(o, "maxNameLength", 24, 1, 64, warnings);
-        blockedDimensions = stringList(o, "blockedDimensions", warnings);
+        blockedDimensions = stringList(o, "blockedDimensions", List.of(), warnings);
 
         tfcRecipes = boolField(o, "tfcRecipes", true, warnings);
 
@@ -133,9 +141,17 @@ public final class StagecoachConfig {
 
         naturalGeneration = boolField(o, "naturalGeneration", true, warnings);
         generationWeightMultiplier = doubleField(o, "generationWeightMultiplier", 1.0, 0, 100, warnings);
-        disabledInjections = stringList(o, "disabledInjections", warnings);
+        disabledInjections = stringList(o, "disabledInjections", List.of(), warnings);
         maxGeneratedStopsPerStructure = intField(o, "maxGeneratedStopsPerStructure", 1, 0, 1_000, warnings);
         generatedCoachesBreakable = boolField(o, "generatedCoachesBreakable", false, warnings);
+
+        companionsTravel = boolField(o, "companionsTravel", true, warnings);
+        companionRange = intField(o, "companionRange", 10, 1, 64, warnings);
+        requireRoad = boolField(o, "requireRoad", false, warnings);
+        ambushChancePercent = intField(o, "ambushChancePercent", 0, 0, 100, warnings);
+        ambushMinDistance = intField(o, "ambushMinDistance", 1000, 0, 100_000_000, warnings);
+        ambushMobs = stringList(o, "ambushMobs", List.of("minecraft:pillager", "minecraft:vindicator"), warnings);
+        ambushMobCount = intField(o, "ambushMobCount", 3, 1, 32, warnings);
     }
 
     public double dimensionCostMultiplier(String dimension) {
@@ -324,6 +340,15 @@ public final class StagecoachConfig {
         o.add("disabledInjections", disabled);
         o.addProperty("maxGeneratedStopsPerStructure", maxGeneratedStopsPerStructure);
         o.addProperty("generatedCoachesBreakable", generatedCoachesBreakable);
+        o.addProperty("companionsTravel", companionsTravel);
+        o.addProperty("companionRange", companionRange);
+        o.addProperty("requireRoad", requireRoad);
+        o.addProperty("ambushChancePercent", ambushChancePercent);
+        o.addProperty("ambushMinDistance", ambushMinDistance);
+        JsonArray mobs = new JsonArray();
+        for (String m : ambushMobs) mobs.add(m);
+        o.add("ambushMobs", mobs);
+        o.addProperty("ambushMobCount", ambushMobCount);
         return o;
     }
 
@@ -404,12 +429,12 @@ public final class StagecoachConfig {
         return def;
     }
 
-    private static List<String> stringList(JsonObject o, String key, List<String> warnings) {
+    private static List<String> stringList(JsonObject o, String key, List<String> def, List<String> warnings) {
         JsonElement e = o.get(key);
-        if (e == null) return List.of();
+        if (e == null) return def;
         if (!e.isJsonArray()) {
-            warnings.add(key + " must be a list of dimension ids - using an empty list");
-            return List.of();
+            warnings.add(key + " must be a list of ids - using the default");
+            return def;
         }
         List<String> out = new ArrayList<>();
         for (JsonElement item : e.getAsJsonArray()) {

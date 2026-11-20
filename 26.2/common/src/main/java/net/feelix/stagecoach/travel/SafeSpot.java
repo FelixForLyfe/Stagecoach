@@ -11,6 +11,7 @@ import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.world.phys.Vec3;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -43,13 +44,17 @@ public final class SafeSpot {
 
     /** Falls back to the top of the ground there. */
     public static Vec3 around(ServerLevel level, BlockPos centre) {
+        Vec3 spot = tryAround(level, centre);
+        return spot != null ? spot : Vec3.atBottomCenterOf(level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, centre));
+    }
+
+    public static @Nullable Vec3 tryAround(ServerLevel level, BlockPos centre) {
         for (int[] o : OFFSETS) {
             BlockPos feet = centre.offset(o[0], o[1], o[2]);
             double floorTop = standHeight(level, feet);
             if (!Double.isNaN(floorTop)) return new Vec3(feet.getX() + 0.5, floorTop, feet.getZ() + 0.5);
         }
-        BlockPos top = level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, centre);
-        return Vec3.atBottomCenterOf(top);
+        return null;
     }
 
     /** NaN if the spot is not safe. */

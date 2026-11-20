@@ -9,6 +9,17 @@ import net.feelix.stagecoach.config.StagecoachConfig;
 import net.feelix.stagecoach.footprint.Footprint;
 import net.feelix.stagecoach.footprint.StagecoachShapes;
 import net.feelix.stagecoach.net.Packets;
+import net.feelix.stagecoach.api.Destination;
+import net.feelix.stagecoach.travel.Hitching;
+import net.feelix.stagecoach.travel.PendingCoaches;
+import net.feelix.stagecoach.travel.RoadNetwork;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.Difficulty;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.animal.cow.Cow;
+import net.minecraft.world.entity.animal.wolf.Wolf;
+import net.minecraft.world.entity.decoration.LeashFenceKnotEntity;
+import net.minecraft.world.entity.monster.Enemy;
 import net.feelix.stagecoach.travel.CoachRecord;
 import net.feelix.stagecoach.travel.Journey;
 import net.feelix.stagecoach.travel.JourneyManager;
@@ -37,6 +48,7 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class TravelGameTests {
@@ -581,6 +593,133 @@ public class TravelGameTests {
         check(ctx, JourneyManager.journeyOf(back) == null, "the stale record is cleared");
         disconnect(back);
         ctx.succeed();
+    }
+
+    @GameTest(structure = ROAD, maxTicks = 200)
+    public void aLeadTiesAMobToTheCoachAndSneakingTakesItBack(GameTestHelper ctx) {
+        ServerPlayer p = connect(ctx, "driver");
+        CoachRecord a = place(ctx, p, A, StagecoachWood.OAK);
+        standAt(ctx, p, A.south(3));
+        Pig pig = ctx.spawn(EntityTypes.PIG, new BlockPos(6, 2, 13));
+        pig.setLeashedTo(p, true);
+        BlockPos controller = ctx.absolutePos(A), cell = ctx.absolutePos(A.south(2));
+        check(ctx, Hitching.onUse(ctx.getLevel(), cell, controller, p), "right-clicking with a mob on a lead hitches it");
+        check(ctx, pig.getLeashHolder() instanceof LeashFenceKnotEntity knot && knot.getPos().equals(cell),
+                "the pig is tied to a knot on the coach, held by " + pig.getLeashHolder());
+        ctx.runAtTickTime(130, () -> {
+            check(ctx, pig.getLeashHolder() instanceof LeashFenceKnotEntity knot && knot.isAlive(), "the knot outlives its 100-tick check on a coach");
+            p.setShiftKeyDown(true);
+            check(ctx, Hitching.onUse(ctx.getLevel(), cell, controller, p), "a sneaking right-click unhitches");
+            check(ctx, pig.getLeashHolder() == p, "the lead is back in the player's hand");
+            check(ctx, !Hitching.onUse(ctx.getLevel(), cell, controller, p), "nothing left to unhitch, so the list would open");
+            p.setShiftKeyDown(false);
+            pig.discard();
+            disconnect(p);
+            ctx.succeed();
+        });
+    }
+
+    @GameTest(structure = ROAD, maxTicks = 300)
+    public void leashedMobsAndPetsArriveWithTheTraveller(GameTestHelper ctx) {
+        ServerPlayer p = connect(ctx, "shepherd");
+        CoachRecord a = place(ctx, p, A, StagecoachWood.OAK), b = place(ctx, p, B, StagecoachWood.BIRCH);
+        standAt(ctx, p, A.south(3));
+        p.setExperienceLevels(5);
+        Pig pig = ctx.spawn(EntityTypes.PIG, new BlockPos(6, 2, 13));
+        pig.setNoAi(true);
+        pig.setLeashedTo(p, true);
+        Wolf wolf = ctx.spawn(EntityTypes.WOLF, new BlockPos(2, 2, 13));
+        wolf.tame(p);
+        Cow cow = ctx.spawn(EntityTypes.COW, new BlockPos(1, 2, 2));
+        cow.setNoAi(true);
+        Vec3 cowAt = cow.position();
+        StagecoachService.travel(p, new Packets.Travel(a.id, b.id));
+        Journey j = JourneyManager.journeyOf(p);
+        check(ctx, j != null, "the journey started");
+        ctx.runAtTickTime(j.durationTicks + 6, () -> {
+            BlockPos front = ctx.absolutePos(B).north(4);
+            check(ctx, pig.blockPosition().distSqr(front) <= 49, "the leashed pig came along, at " + pig.blockPosition());
+            check(ctx, pig.getLeashHolder() == p, "still on the lead, holder " + pig.getLeashHolder() + " leashed " + pig.isLeashed() + " alive " + pig.isAlive());
+            check(ctx, wolf.blockPosition().distSqr(front) <= 49, "the pet came along, at " + wolf.blockPosition());
+            check(ctx, cow.position().distanceToSqr(cowAt) < 4, "a stranger's cow stays put");
+            pig.discard();
+            wolf.discard();
+            cow.discard();
+            disconnect(p);
+            ctx.succeed();
+        });
+    }
+
+    @GameTest(structure = ROAD, maxTicks = 300)
+    public void banditsStopTheCoachPartWayAndRefundTheUnriddenRoad(GameTestHelper ctx) {
+        if (ctx.getLevel().getDifficulty() == Difficulty.PEACEFUL) ctx.getLevel().getServer().setDifficulty(Difficulty.EASY, true);
+        ServerPlayer p = connect(ctx, "ambushed");
+        CoachRecord a = place(ctx, p, A, StagecoachWood.OAK), b = place(ctx, p, B, StagecoachWood.JUNGLE);
+        standAt(ctx, p, A.south(3));
+        p.setExperienceLevels(5);
+        withConfig("{\"ambushChancePercent\": 100, \"ambushMinDistance\": 0}",
+                () -> StagecoachService.travel(p, new Packets.Travel(a.id, b.id)));
+        Journey j = JourneyManager.journeyOf(p);
+        check(ctx, j != null, "the journey started");
+        // checked the tick they appear: later, any bandit may turn on a nearer player from another test
+        boolean[] ambushed = {false};
+        ctx.onEachTick(() -> {
+            if (ambushed[0] || JourneyManager.journeyOf(p) != null) return;
+            ambushed[0] = true;
+            // illagers only: a natural spider or another test's mob can be close by
+            List<Mob> bandits = ctx.getLevel().getEntitiesOfClass(Mob.class, p.getBoundingBox().inflate(24), e -> e.getType() == EntityTypes.PILLAGER || e.getType() == EntityTypes.VINDICATOR);
+            check(ctx, bandits.size() == 3 && bandits.stream().allMatch(e -> e.getTarget() == p), "three bandits after the player, got " + bandits);
+        });
+        ctx.runAtTickTime(70, () -> {
+            check(ctx, ambushed[0] && !JourneyManager.isTravelling(p.getUUID()), "the coach was stopped before arriving");
+            check(ctx, p.gameMode.getGameModeForPlayer() == GameType.SURVIVAL, "back in survival, got " + p.gameMode.getGameModeForPlayer());
+            check(ctx, p.experienceLevel == 3 || p.experienceLevel == 4, "part of the 2 levels back, has " + p.experienceLevel);
+            int ax = ctx.absolutePos(A).getX(), bx = ctx.absolutePos(B).getX();
+            check(ctx, p.getX() > ax - 6 && p.getX() < bx + 6, "set down on the road between the stops, at " + p.blockPosition());
+            ctx.getLevel().getEntitiesOfClass(Mob.class, p.getBoundingBox().inflate(24), e -> e instanceof Enemy).forEach(e -> e.discard());
+            disconnect(p);
+            ctx.succeed();
+        });
+    }
+
+    @GameTest(structure = ROAD)
+    public void withRequireRoadOnlyStopsJoinedByARoadAreOpen(GameTestHelper ctx) {
+        ServerPlayer p = connect(ctx, "roadie");
+        CoachRecord a = place(ctx, p, A, StagecoachWood.OAK), b = place(ctx, p, B, StagecoachWood.SPRUCE);
+        p.setExperienceLevels(5);
+        withConfig("{\"requireRoad\": true}", () -> {
+            RoadNetwork.forget();
+            Destination d = StagecoachService.destinations(p, a).stream().filter(x -> x.stop().id() == b.id).findFirst().orElseThrow();
+            check(ctx, d.status() == Destination.Status.LOCKED && d.lockMessage() != null, "no road yet: locked, got " + d.status());
+            for (int x = 4; x <= 16; x++) ctx.getLevel().setBlockAndUpdate(ctx.absolutePos(new BlockPos(x, 1, 11)), Blocks.DIRT_PATH.defaultBlockState());
+            RoadNetwork.forget();
+            d = StagecoachService.destinations(p, a).stream().filter(x -> x.stop().id() == b.id).findFirst().orElseThrow();
+            check(ctx, d.status() == Destination.Status.OK, "a dirt path joins them: open, got " + d.status() + " " + d.lockMessage());
+        });
+        Destination off = StagecoachService.destinations(p, a).stream().filter(x -> x.stop().id() == b.id).findFirst().orElseThrow();
+        check(ctx, off.status() == Destination.Status.OK, "without requireRoad roads don't matter");
+        disconnect(p);
+        ctx.succeed();
+    }
+
+    @GameTest(structure = ROAD, maxTicks = 100)
+    public void aGeneratedStopsHangingPadIsFilledDownToTheGround(GameTestHelper ctx) {
+        BlockPos abs = ctx.absolutePos(A);
+        BlockPos pad = ctx.absolutePos(new BlockPos(8, 1, 8));
+        ctx.getLevel().setBlockAndUpdate(pad, Blocks.DIRT_PATH.defaultBlockState());
+        ctx.getLevel().setBlockAndUpdate(pad.below(), Blocks.AIR.defaultBlockState());
+        ctx.getLevel().setBlockAndUpdate(abs, StagecoachRegistry.BLOCKS.get(StagecoachWood.OAK).defaultBlockState());
+        StagecoachBlockEntity be = (StagecoachBlockEntity) ctx.getLevel().getBlockEntity(abs);
+        CompoundTag nbt = be.saveWithoutMetadata(ctx.getLevel().registryAccess());
+        nbt.putString(PendingCoaches.TEMPLATE_THEME, "stagecoach:plains");
+        be.loadWithComponents(net.minecraft.world.level.storage.TagValueInput.create(net.minecraft.util.ProblemReporter.DISCARDING,
+                ctx.getLevel().registryAccess(), nbt));
+        ctx.runAfterDelay(3, () -> {
+            check(ctx, state(ctx).at(ctx.getLevel().dimension(), abs) != null, "the generated coach is a stop");
+            check(ctx, ctx.getLevel().getBlockState(pad.below()).is(Blocks.DIRT), "the air under its pad was filled, got "
+                    + ctx.getLevel().getBlockState(pad.below()));
+            ctx.succeed();
+        });
     }
 
     /** Places A and B, gives {@code levels} and sets off from A to B (cost 2). */

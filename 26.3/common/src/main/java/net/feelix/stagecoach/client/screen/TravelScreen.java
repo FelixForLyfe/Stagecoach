@@ -100,10 +100,9 @@ public class TravelScreen extends Screen {
         }
     }
 
-    /** The road scene fills the whole screen, so no vanilla blur under it. */
+    /** Every style paints its own opaque screen in extractRenderState, so no vanilla blur or tint under it. */
     @Override
     public void extractBackground(GuiGraphicsExtractor ctx, int mouseX, int mouseY, float delta) {
-        if (!ClientConfig.get().roadScene()) super.extractBackground(ctx, mouseX, mouseY, delta);
     }
 
     @Override
@@ -136,8 +135,10 @@ public class TravelScreen extends Screen {
             EnvironmentAttributeProbe sky = minecraft.gameRenderer.mainCamera().attributeProbe();
             float skyAngle = sky.getValue(EnvironmentAttributes.SUN_ANGLE, delta) / 360f; // degrees, 0 = noon
             SceneRenderer.draw(ctx, width, height, scene, journey.seed(), (float) elapsed, skyAngle, sky.getValue(EnvironmentAttributes.MOON_PHASE, delta));
-        } else if (cfg.mapScreen()) {
-            drawMap(ctx, progress);
+        } else {
+            // opaque: the traveller is a spectator at the origin, and the world showed through vanilla's tint
+            WoodUi.inset(ctx, 0, 0, width, height);
+            if (cfg.mapScreen()) drawMap(ctx, progress);
         }
 
         long left = Math.max(0, journey.startTime() + journey.durationTicks() - level.getGameTime());

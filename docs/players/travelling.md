@@ -64,6 +64,22 @@ route or a plain screen: see [Your options](options.md).)
 You can't set off within 10 seconds of being hit. Your server may also make you rest a little after you arrive before
 you travel again.
 
+## Bringing your animals
+
+The mobs on your lead, your own pets that aren't sitting, and any animal standing on the coach come with you, if
+they're within 10 blocks when you set off. They arrive with you, still on the lead. They can't follow you into another
+dimension. (Servers can turn this off.)
+
+## Roads and bandits
+
+Some servers only run coaches where a road does: then a stop is only open if an unbroken road of dirt paths, gravel,
+cobblestone, stone bricks, planks and the like joins it to the coach you stand at. While the server is still surveying
+the road the stop says *Surveying the road…*; try again in a moment.
+
+Some servers also have **bandits**. On a long trip they may stop your coach part-way: you're set down on the road
+between the two stops, the fare for the part you didn't ride comes back, and you have a fight on your hands. Never in
+peaceful or in creative.
+
 ## Cancelling
 
 Press **Esc** or **Cancel journey** at any time. *Abandon journey?* asks to make sure; choose **Abandon** and you're set
@@ -76,7 +92,7 @@ sound of a bell.
 
 ## When a journey ends early
 
-Your fare always comes back and you end up where you set off, except when you die:
+Your fare always comes back and you end up where you set off, except when you die or meet bandits:
 
 | What happened | You get |
 |---|---|
@@ -86,5 +102,6 @@ Your fare always comes back and you end up where you set off, except when you di
 | The server stopped or crashed | Back where you left from when you return, fare and game mode back |
 | You died on the road | You respawn as usual, fare back |
 | Your game mode was changed | The journey is called off, fare back |
+| Bandits stopped the coach | Set down on the road part-way, the fare for the rest back |
 
 Every journey is written to disk before anything about you changes, so nothing is lost even if the server crashes.

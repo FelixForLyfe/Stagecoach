@@ -1,6 +1,7 @@
 package net.feelix.stagecoach.travel;
 
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
+import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.feelix.stagecoach.Stagecoach;
 import net.feelix.stagecoach.StagecoachSounds;
@@ -11,6 +12,7 @@ import net.feelix.stagecoach.api.StopView;
 import net.feelix.stagecoach.api.event.JourneyCompletedEvent;
 import net.feelix.stagecoach.api.event.JourneyEndedEvent;
 import net.feelix.stagecoach.api.event.JourneyStartedEvent;
+import net.feelix.stagecoach.config.StagecoachConfig;
 import net.feelix.stagecoach.mixin.PlayerManagerAccessor;
 import net.feelix.stagecoach.net.Packets;
 import net.feelix.stagecoach.net.ServerNet;
@@ -18,6 +20,21 @@ import net.feelix.stagecoach.permission.Permissions;
 import net.feelix.stagecoach.platform.EventHooks;
 import net.feelix.stagecoach.platform.Platform;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.util.Mth;
+import net.minecraft.world.Difficulty;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntitySpawnReason;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.Mob;
+import net.minecraft.world.entity.TamableAnimal;
+import net.minecraft.world.entity.monster.Enemy;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.levelgen.Heightmap;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
@@ -33,6 +50,9 @@ import net.minecraft.world.level.storage.ValueOutput;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -53,12 +73,23 @@ public final class JourneyManager {
     /** Read from the player's own file at login, used by the join handler. */
     private static final Map<UUID, Journey> LOADED_MIRRORS = new ConcurrentHashMap<>();
 
+    /** Mobs coming along, and the tick bandits strike: runtime only, so after a crash both are simply forgotten. */
+    private static final Map<UUID, List<UUID>> COMPANIONS = new HashMap<>();
+    /** Companions that were on the traveller's own lead: a long road can snap it, so arrival ties it again. */
+    private static final Set<UUID> LEASHED = new HashSet<>();
+    private static final Object2LongOpenHashMap<UUID> AMBUSH_AT = new Object2LongOpenHashMap<>();
+
+    static {
+        AMBUSH_AT.defaultReturnValue(Long.MAX_VALUE);
+    }
+
     public static final String MIRROR_KEY = "StagecoachJourney";
 
     // leaving is PlayerManagerMixin, not a loader event: Fabric also fires DISCONNECT on Netty
 
     public static void onServerTick(MinecraftServer server) {
         PendingCoaches.onServerTick(server);
+        RoadNetwork.onServerTick(server);
         ServerNet.onServerTick(server);
         if (ON_ROAD.isEmpty()) return;
         StagecoachState network = StagecoachState.get(server);
@@ -76,6 +107,8 @@ public final class JourneyManager {
                 endEarly(player, journey, EndReason.DESTINATION_GONE);
             } else if (now >= journey.endTime()) {
                 arrive(player, journey);
+            } else if (now >= AMBUSH_AT.getLong(id)) {
+                ambush(player, journey, now);
             } else {
                 hold(player, journey);
             }
@@ -99,7 +132,11 @@ public final class JourneyManager {
         LAST_HURT.clear();
         LAST_ARRIVAL.clear();
         LOADED_MIRRORS.clear();
+        COMPANIONS.clear();
+        LEASHED.clear();
+        AMBUSH_AT.clear();
         PendingCoaches.onServerStopped();
+        RoadNetwork.forget();
         ServerNet.onServerStopped();
     }
 
@@ -148,6 +185,10 @@ public final class JourneyManager {
         StagecoachState network = StagecoachState.get(server);
         int xp = itemFare ? 0 : cost;
         List<ItemStack> items = itemFare && cost > 0 ? Fare.peek(player, cost) : List.of();
+        StagecoachConfig cfg = Permissions.config(player);
+        List<UUID> companions = companions(player, from, cfg);
+        boolean canBeAmbushed = from.dimension() == dest.dimension && player.level().getDifficulty() != Difficulty.PEACEFUL
+                && !player.isCreative() && TravelMath.ambushes(distance, cfg, player.getRandom().nextDouble());
         Journey journey = new Journey(player.getRandom().nextLong(), player.getUUID(), player.gameMode.getGameModeForPlayer(),
                 player.getAbilities().flying, player.experienceLevel, player.experienceProgress, player.totalExperience, xp,
                 Fare.encode(items, player.registryAccess()), from, dest, server.overworld().getGameTime(), ticks, distance);
@@ -155,6 +196,8 @@ public final class JourneyManager {
         network.putJourney(journey);
         network.flush(server);                        // on disk before the player changes
         setTravelling(player.getUUID(), true);
+        if (!companions.isEmpty()) COMPANIONS.put(player.getUUID(), companions);
+        if (canBeAmbushed) AMBUSH_AT.put(player.getUUID(), TravelMath.ambushTick(journey.startTime, ticks, player.getRandom().nextDouble()));
         if (xp > 0) player.giveExperienceLevels(-xp);
         if (!items.isEmpty()) Fare.take(player, cost);
         player.setGameMode(GameType.SPECTATOR);
@@ -176,10 +219,13 @@ public final class JourneyManager {
                                        int distance) {
         ServerLevel level = player.level().getServer().getLevel(dest.dimension);
         if (level == null) return;
+        List<UUID> companions = companions(player, from, Permissions.config(player));
+        ResourceKey<Level> leftFrom = player.level().dimension();
         if (itemFare && cost > 0) Fare.take(player, cost);
         else if (cost > 0) player.giveExperienceLevels(-cost);
         Vec3 spot = SafeSpot.near(level, dest.pos, dest.facing);
         player.teleportTo(level, spot.x, spot.y, spot.z, Set.of(), dest.facing.toYRot(), 0, true);
+        bring(player, companions, leftFrom, level, spot);
         player.fallDistance = 0;
         arrivalSounds(level, spot);
         LAST_ARRIVAL.put(player.getUUID(), player.level().getServer().getTickCount());
@@ -224,6 +270,7 @@ public final class JourneyManager {
         }
         Vec3 spot = SafeSpot.near(dest, journey.destPos, journey.destFacing);
         player.teleportTo(dest, spot.x, spot.y, spot.z, Set.of(), journey.destFacing.toYRot(), 0, true);
+        bring(player, COMPANIONS.get(player.getUUID()), journey.originDim, dest, spot);
         restoreMode(player, journey);
         arrivalSounds(dest, spot);
         LAST_ARRIVAL.put(player.getUUID(), server.getTickCount());
@@ -281,6 +328,96 @@ public final class JourneyManager {
         Stagecoach.LOGGER.info("{}'s journey to '{}' ended early: {}", player.getName().getString(), journey.destName, why);
         if (why == EndReason.CANCELLED) StagecoachTriggers.journeyCancelled(player, journey.destName);
         EventHooks.post(new JourneyEndedEvent(player, fromView, toView, why));
+    }
+
+    /** Bandits stop the coach part-way: set down there with the unridden share of the fare back, and they attack. */
+    private static void ambush(ServerPlayer player, Journey journey, long now) {
+        AMBUSH_AT.removeLong(player.getUUID());
+        ServerLevel level = player.level().getServer().getLevel(journey.originDim);
+        if (level == null) return;
+        double t = Mth.clamp((double) (now - journey.startTime) / journey.durationTicks, 0, 1);
+        int x = Mth.floor(Mth.lerp(t, journey.originPos.getX(), journey.destPos.getX()));
+        int z = Mth.floor(Mth.lerp(t, journey.originPos.getZ(), journey.destPos.getZ()));
+        int y = Mth.floor(Mth.lerp(t, journey.originPos.getY(), journey.destPos.getY()));
+        // the road runs at the stops' height; a heightmap finds roofs, treetops and the Nether's ceiling
+        Vec3 spot = SafeSpot.tryAround(level, new BlockPos(x, y, z));
+        if (spot == null && !level.dimensionType().hasCeiling()) {
+            spot = SafeSpot.tryAround(level, level.getHeightmapPos(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, new BlockPos(x, 0, z)));
+        }
+        if (spot == null) return;                     // open water or worse: the coach drives on
+
+        StagecoachState network = StagecoachState.get(player.level().getServer());
+        StopView fromView = fromView(network, journey), toView = toView(network, journey);
+        setTravelling(player.getUUID(), false);
+        player.teleportTo(level, spot.x, spot.y, spot.z, Set.of(), player.getYRot(), 0, true);
+        bring(player, COMPANIONS.get(player.getUUID()), journey.originDim, level, spot);
+        restoreMode(player, journey);
+        int percent = TravelMath.unriddenPercent(journey.startTime, journey.durationTicks, now);
+        refund(player, journey, percent, true);
+        finish(player, journey);
+        ServerNet.journeyEnd(player, Packets.END_INTERRUPTED);
+        player.sendSystemMessage(Stagecoach.text("end.ambushed", journey.destName, percent).withStyle(ChatFormatting.RED), false);
+        spawnBandits(level, player, spot);
+        Stagecoach.LOGGER.info("{}'s coach to '{}' was ambushed at {}, {}", player.getName().getString(), journey.destName, x, z);
+        EventHooks.post(new JourneyEndedEvent(player, fromView, toView, EndReason.AMBUSHED));
+    }
+
+    private static void spawnBandits(ServerLevel level, ServerPlayer player, Vec3 spot) {
+        StagecoachConfig cfg = Permissions.config(player);
+        List<EntityType<?>> types = new ArrayList<>();
+        for (String id : cfg.ambushMobs) {
+            Identifier key = Identifier.tryParse(id);
+            if (key != null && BuiltInRegistries.ENTITY_TYPE.containsKey(key)) types.add(BuiltInRegistries.ENTITY_TYPE.getValue(key));
+            else Stagecoach.LOGGER.warn("ambushMobs: there is no entity called '{}'", id);
+        }
+        if (types.isEmpty()) return;
+        for (int i = 0; i < cfg.ambushMobCount; i++) {
+            float angle = level.random.nextFloat() * Mth.TWO_PI;
+            double r = 6 + level.random.nextDouble() * 4;
+            Vec3 at = SafeSpot.tryAround(level, BlockPos.containing(spot.x + Mth.cos(angle) * r, spot.y, spot.z + Mth.sin(angle) * r));
+            if (at == null) at = spot;
+            // this create runs finalizeSpawn the way each loader wants it (Forge and NeoForge fire their spawn event there)
+            Entity e = types.get(level.random.nextInt(types.size())).create(level, null, BlockPos.containing(at), EntitySpawnReason.EVENT, false, false);
+            if (!(e instanceof Mob mob)) {
+                if (e != null) e.discard();
+                continue;
+            }
+            level.addFreshEntityWithPassengers(mob);
+            mob.setTarget(player);                    // after joining: NeoForge drops a target set before
+        }
+    }
+
+    /** Leashed to the traveller, their own pets that aren't sitting, and any non-hostile mob standing on the coach. */
+    private static List<UUID> companions(ServerPlayer player, Journey.Origin from, StagecoachConfig cfg) {
+        if (!cfg.companionsTravel) return List.of();
+        List<UUID> out = new ArrayList<>();
+        for (Mob mob : player.level().getEntitiesOfClass(Mob.class, player.getBoundingBox().inflate(cfg.companionRange),
+                m -> m.isAlive() && !m.isPassenger())) {
+            if (mob.getLeashHolder() == player || mob instanceof TamableAnimal pet && pet.isOwnedBy(player) && !pet.isOrderedToSit()
+                    || !(mob instanceof Enemy) && from.isCoach() && onCoach(mob, from.pos())) {
+                out.add(mob.getUUID());
+                if (mob.getLeashHolder() == player) LEASHED.add(mob.getUUID());
+            }
+        }
+        return out;
+    }
+
+    private static boolean onCoach(Mob mob, BlockPos controller) {
+        BlockPos under = mob.getOnPos();
+        BlockState state = mob.level().getBlockState(under);
+        return Hitching.isCoach(state) && Hitching.controllerOf(under, state).equals(controller);
+    }
+
+    /** shortcut: within one dimension only; moving mobs between dimensions differs per loader, so they stay behind. */
+    private static void bring(ServerPlayer player, @Nullable List<UUID> ids, ResourceKey<Level> from, ServerLevel to, Vec3 spot) {
+        if (ids == null || from != to.dimension()) return;
+        for (UUID id : ids) {
+            if (!(to.getEntity(id) instanceof Mob mob) || !mob.isAlive()) continue;
+            mob.teleportTo(spot.x, spot.y, spot.z);
+            mob.fallDistance = 0;
+            mob.getNavigation().stop();
+            if (LEASHED.remove(id) && !mob.isLeashed()) mob.setLeashedTo(player, true);
+        }
     }
 
     /** In front of the coach they left, or where they were sent from. */
@@ -400,6 +537,8 @@ public final class JourneyManager {
     private static void finish(ServerPlayer player, Journey journey) {
         MinecraftServer server = player.level().getServer();
         StagecoachState network = StagecoachState.get(server);
+        COMPANIONS.remove(journey.player);
+        AMBUSH_AT.removeLong(journey.player);
         network.removeJourney(journey.player);
         savePlayer(player);
         network.flush(server);
